@@ -1627,8 +1627,6 @@
         // ===== PROVEEDORES =====
         function poblarSelectsProveedor() {
             const nombres = datos.proveedores.map(p => p.nombre).filter(Boolean);
-            // Incluir nombres de proveedores que ya estaban en productos pero no están en la tabla proveedores
-            datos.productos.forEach(p => { if (p.proveedor && !nombres.includes(p.proveedor)) nombres.push(p.proveedor); });
             nombres.sort((a, b) => a.localeCompare(b));
 
             const sel1 = document.getElementById('productProveedor');
