@@ -381,6 +381,16 @@
             </div>
 
             <div class="section">
+                <h2>📊 Velocidad semanal de ventas</h2>
+                <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
+                    Total facturado por semana (últimas 12 semanas, semana de lunes a domingo)
+                </p>
+                <div style="position: relative; height: 280px;">
+                    <canvas id="ventasSemanalesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="section">
                 <h2>📈 Últimas Ventas</h2>
                 <table id="ultimasVentas">
                     <thead>
@@ -1723,6 +1733,8 @@
                         <td>${formatMoney(totalImpago)}</td>
                     </tr>
                 `;
+
+            actualizarVentasSemanalesChart();
         }
 
         function switchTab(tab, btn) {
@@ -1916,6 +1928,99 @@
                         </td>
                     </tr>
                 `;
+            });
+        }
+
+        let ventasSemanalesChart = null;
+
+        function inicioSemanaLunes(d) {
+            const r = new Date(d);
+            const day = r.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
+            const diff = day === 0 ? -6 : 1 - day;
+            r.setDate(r.getDate() + diff);
+            r.setHours(0, 0, 0, 0);
+            return r;
+        }
+
+        function actualizarVentasSemanalesChart() {
+            const canvas = document.getElementById('ventasSemanalesChart');
+            if (!canvas || typeof Chart === 'undefined') return;
+
+            // Acumular ventas por semana (clave: timestamp del lunes)
+            const buckets = new Map();
+            datos.ventas.forEach(v => {
+                const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v.fecha || '');
+                if (!m) return;
+                const d = new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
+                const semana = inicioSemanaLunes(d);
+                const key = semana.getTime();
+                if (!buckets.has(key)) buckets.set(key, { total: 0, unidades: 0, ventas: 0 });
+                const b = buckets.get(key);
+                b.total += v.valorFinal || 0;
+                b.unidades += v.cantidad || 0;
+                b.ventas += 1;
+            });
+
+            const semanasAMostrar = 12;
+            const semanaActual = inicioSemanaLunes(new Date());
+            const series = [];
+            for (let i = semanasAMostrar - 1; i >= 0; i--) {
+                const w = new Date(semanaActual);
+                w.setDate(w.getDate() - i * 7);
+                const fin = new Date(w);
+                fin.setDate(fin.getDate() + 6);
+                const b = buckets.get(w.getTime()) || { total: 0, unidades: 0, ventas: 0 };
+                const fmt = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+                series.push({
+                    label: fmt(w),
+                    rango: `${fmt(w)} – ${fmt(fin)}`,
+                    total: b.total,
+                    unidades: b.unidades,
+                    ventas: b.ventas
+                });
+            }
+
+            if (ventasSemanalesChart) ventasSemanalesChart.destroy();
+
+            ventasSemanalesChart = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: series.map(s => s.label),
+                    datasets: [{
+                        label: 'Ventas $',
+                        data: series.map(s => s.total),
+                        borderColor: '#2E75B6',
+                        backgroundColor: 'rgba(46,117,182,0.15)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#2E75B6',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: items => series[items[0].dataIndex].rango,
+                                label: ctx => `Total: ${formatMoney(ctx.parsed.y)}`,
+                                afterLabel: ctx => {
+                                    const s = series[ctx.dataIndex];
+                                    return [`Ventas: ${s.ventas}`, `Unidades: ${s.unidades}`];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => formatMoney(v) }
+                        }
+                    }
+                }
             });
         }
 
