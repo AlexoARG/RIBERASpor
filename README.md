@@ -11,6 +11,8 @@ Sistema web simple de control de stock y ventas. Datos en **PostgreSQL (Supabase
 3. Abrí el archivo `supabase_setup.sql` de este repo, copiá todo y pegá en el editor
 4. Click en **Run**
 
+> Si ya habías corrido la versión anterior del script (sin la tabla `proveedores`), volvé a correrlo: usa `create table if not exists` y `drop policy if exists`, así que es idempotente.
+
 ### 2. (Opcional) Migrar datos del Google Sheet anterior
 
 Si tenés datos cargados en el Google Sheet viejo:
@@ -54,6 +56,13 @@ La `anon key` de Supabase está embebida en el HTML (es pública por diseño). L
 ## Estructura
 
 - `sistema_compartido.html` — la app (frontend completo)
-- `supabase_setup.sql` — schema de las tablas
+- `supabase_setup.sql` — schema de las tablas (productos, ventas, proveedores)
 - `migrar.html` — herramienta one-shot para migrar del Google Sheet a Supabase
 - `iniciar_sistema.bat` — server local de Python para uso offline
+
+## Pestañas
+
+- **Dashboard** — resumen de ventas, stock, ganancia y balance de caja.
+- **Productos** — alta y baja de productos. El proveedor se elige de un dropdown poblado con la tabla de proveedores.
+- **Ventas** — alta y baja de ventas. Hay un filtro por proveedor que limita los productos del buscador.
+- **Proveedores** — alta, modificación y baja. Si renombrás un proveedor, los productos asociados se actualizan automáticamente.

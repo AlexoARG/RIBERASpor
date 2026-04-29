@@ -353,6 +353,7 @@
             <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
             <button class="tab-btn" onclick="switchTab('productos', this)">Productos</button>
             <button class="tab-btn" onclick="switchTab('ventas', this)">Ventas</button>
+            <button class="tab-btn" onclick="switchTab('proveedores', this)">Proveedores</button>
         </div>
 
         <!-- DASHBOARD -->
@@ -468,7 +469,9 @@
                         <option value="Niño">Niño</option>
                         <option value="Niña">Niña</option>
                     </select>
-                    <input type="text" id="productProveedor" placeholder="Proveedor">
+                    <select id="productProveedor">
+                        <option value="">Proveedor...</option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <input type="number" id="productCosto" placeholder="Costo unitario" step="0.01">
@@ -540,6 +543,9 @@
                     <input type="text" id="ventaCliente" placeholder="Cliente">
                 </div>
                 <div class="form-row">
+                    <select id="ventaProveedorFiltro" onchange="filtrarProductosVenta()" style="flex: 0 1 220px;">
+                        <option value="">Todos los proveedores</option>
+                    </select>
                     <div style="position: relative; flex: 1;">
                         <input type="hidden" id="ventaProducto">
                         <input type="text" id="ventaProductoBuscar" placeholder="🔍 Buscar producto..." autocomplete="off"
@@ -617,6 +623,47 @@
             </div>
         </div>
 
+        <!-- PROVEEDORES -->
+        <div id="proveedores" class="tab-content">
+            <div class="section">
+                <h2 id="proveedorFormTitulo">➕ Nuevo Proveedor</h2>
+                <input type="hidden" id="proveedorId">
+                <div class="form-row">
+                    <input type="text" id="proveedorNombre" placeholder="Nombre *">
+                    <input type="text" id="proveedorContacto" placeholder="Persona de contacto">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="proveedorTelefono" placeholder="Teléfono">
+                    <input type="email" id="proveedorEmail" placeholder="Email">
+                </div>
+                <div class="form-row">
+                    <textarea id="proveedorNotas" placeholder="Notas" style="resize: vertical; height: 60px;"></textarea>
+                </div>
+                <div class="form-row">
+                    <button class="btn-primary" id="proveedorBtnGuardar" onclick="guardarProveedor()">Agregar Proveedor</button>
+                    <button class="btn-small btn-danger" id="proveedorBtnCancelar" onclick="cancelarEdicionProveedor()" style="display:none;">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 Proveedores <span id="proveedoresContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
+                <table id="proveedoresTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Notas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -630,7 +677,8 @@
 
         let datos = {
             productos: [],
-            ventas: []
+            ventas: [],
+            proveedores: []
         };
         let sincronizando = false;
 
@@ -731,6 +779,25 @@
                 estado_pago: v.estadoPago,
                 forma_pago: v.formaPago,
                 obs: v.obs
+            };
+        }
+        function dbToJsProveedor(p) {
+            return {
+                id: p.id,
+                nombre: p.nombre || '',
+                contacto: p.contacto || '',
+                telefono: p.telefono || '',
+                email: p.email || '',
+                notas: p.notas || ''
+            };
+        }
+        function jsToDbProveedor(p) {
+            return {
+                nombre: p.nombre,
+                contacto: p.contacto,
+                telefono: p.telefono,
+                email: p.email,
+                notas: p.notas
             };
         }
         let productosPaginaActual = 1;
@@ -908,9 +975,10 @@
             sincronizando = true;
             mostrarSync('Cargando...', 'synced');
             try {
-                const [prods, vents] = await Promise.all([sbGet('productos'), sbGet('ventas')]);
+                const [prods, vents, provs] = await Promise.all([sbGet('productos'), sbGet('ventas'), sbGet('proveedores')]);
                 datos.productos = prods.map(dbToJsProducto);
                 datos.ventas = vents.map(dbToJsVenta);
+                datos.proveedores = provs.map(dbToJsProveedor);
                 mostrarSync('Sincronizado', 'synced');
                 actualizarTodo();
             } catch (error) {
@@ -1122,10 +1190,12 @@
 
         function filtrarProductosVenta() {
             const buscar = document.getElementById('ventaProductoBuscar').value.toLowerCase();
+            const proveedorFiltro = document.getElementById('ventaProveedorFiltro').value;
             const dropdown = document.getElementById('ventaProductoDropdown');
 
             const productosFiltrados = datos.productos.filter(p => {
                 if (p.stock <= 0) return false;
+                if (proveedorFiltro && p.proveedor !== proveedorFiltro) return false;
                 const txt = `${p.nombre} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada}`.toLowerCase();
                 return txt.includes(buscar);
             });
@@ -1553,10 +1623,152 @@
             document.getElementById('ventaObs').value = estado.obs;
         }
 
+        // ===== PROVEEDORES =====
+        function poblarSelectsProveedor() {
+            const nombres = datos.proveedores.map(p => p.nombre).filter(Boolean);
+            // Incluir nombres de proveedores que ya estaban en productos pero no están en la tabla proveedores
+            datos.productos.forEach(p => { if (p.proveedor && !nombres.includes(p.proveedor)) nombres.push(p.proveedor); });
+            nombres.sort((a, b) => a.localeCompare(b));
+
+            const sel1 = document.getElementById('productProveedor');
+            const valorActual1 = sel1.value;
+            sel1.innerHTML = '<option value="">Proveedor...</option>' +
+                nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+            sel1.value = valorActual1;
+
+            const sel2 = document.getElementById('ventaProveedorFiltro');
+            const valorActual2 = sel2.value;
+            sel2.innerHTML = '<option value="">Todos los proveedores</option>' +
+                nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+            sel2.value = valorActual2;
+        }
+
+        function limpiarFormProveedor() {
+            document.getElementById('proveedorId').value = '';
+            document.getElementById('proveedorNombre').value = '';
+            document.getElementById('proveedorContacto').value = '';
+            document.getElementById('proveedorTelefono').value = '';
+            document.getElementById('proveedorEmail').value = '';
+            document.getElementById('proveedorNotas').value = '';
+            document.getElementById('proveedorFormTitulo').textContent = '➕ Nuevo Proveedor';
+            document.getElementById('proveedorBtnGuardar').textContent = 'Agregar Proveedor';
+            document.getElementById('proveedorBtnCancelar').style.display = 'none';
+        }
+
+        function cancelarEdicionProveedor() {
+            limpiarFormProveedor();
+        }
+
+        function editarProveedor(id) {
+            const p = datos.proveedores.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('proveedorId').value = p.id;
+            document.getElementById('proveedorNombre').value = p.nombre;
+            document.getElementById('proveedorContacto').value = p.contacto;
+            document.getElementById('proveedorTelefono').value = p.telefono;
+            document.getElementById('proveedorEmail').value = p.email;
+            document.getElementById('proveedorNotas').value = p.notas;
+            document.getElementById('proveedorFormTitulo').textContent = '✏️ Editar Proveedor';
+            document.getElementById('proveedorBtnGuardar').textContent = 'Guardar cambios';
+            document.getElementById('proveedorBtnCancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function guardarProveedor() {
+            const id = document.getElementById('proveedorId').value;
+            const nombre = document.getElementById('proveedorNombre').value.trim();
+            const contacto = document.getElementById('proveedorContacto').value.trim();
+            const telefono = document.getElementById('proveedorTelefono').value.trim();
+            const email = document.getElementById('proveedorEmail').value.trim();
+            const notas = document.getElementById('proveedorNotas').value.trim();
+
+            if (!nombre) {
+                mostrarAlerta('El nombre es obligatorio', 'danger');
+                return;
+            }
+
+            try {
+                mostrarSync('Guardando...', 'synced');
+                const data = jsToDbProveedor({ nombre, contacto, telefono, email, notas });
+
+                if (id) {
+                    // Renombrar proveedor: actualizar también todos los productos asociados
+                    const proveedorPrevio = datos.proveedores.find(p => p.id === parseInt(id));
+                    await sbUpdate('proveedores', parseInt(id), data);
+                    if (proveedorPrevio && proveedorPrevio.nombre && proveedorPrevio.nombre !== nombre) {
+                        const productosAfectados = datos.productos.filter(p => p.proveedor === proveedorPrevio.nombre);
+                        for (const prod of productosAfectados) {
+                            await sbUpdate('productos', prod.id, { proveedor: nombre });
+                        }
+                    }
+                    mostrarAlerta('Proveedor actualizado', 'success');
+                } else {
+                    await sbInsert('proveedores', data);
+                    mostrarAlerta('Proveedor agregado', 'success');
+                }
+
+                limpiarFormProveedor();
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        async function eliminarProveedor(id) {
+            const p = datos.proveedores.find(x => x.id === id);
+            if (!p) return;
+            const enUso = datos.productos.filter(x => x.proveedor === p.nombre).length;
+            const msg = enUso > 0
+                ? `Hay ${enUso} producto(s) usando "${p.nombre}". ¿Eliminar igual? Los productos quedarán sin proveedor asignado en el dropdown, pero el texto se conserva.`
+                : '¿Eliminar proveedor?';
+            if (!confirm(msg)) return;
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbDelete('proveedores', id);
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        function actualizarProveedoresTable() {
+            const tbody = document.querySelector('#proveedoresTable tbody');
+            tbody.innerHTML = '';
+            document.getElementById('proveedoresContador').textContent = `(${datos.proveedores.length})`;
+
+            if (datos.proveedores.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Sin proveedores</td></tr>';
+                return;
+            }
+
+            const ordenados = [...datos.proveedores].sort((a, b) => a.nombre.localeCompare(b.nombre));
+            ordenados.forEach(p => {
+                const escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td><strong>${escapeHtml(p.nombre)}</strong></td>
+                        <td>${escapeHtml(p.contacto) || '—'}</td>
+                        <td>${escapeHtml(p.telefono) || '—'}</td>
+                        <td>${escapeHtml(p.email) || '—'}</td>
+                        <td>${escapeHtml(p.notas) || '—'}</td>
+                        <td>
+                            <button class="btn-small btn-primary" onclick="editarProveedor(${p.id})">✏️</button>
+                            <button class="btn-small btn-danger" onclick="eliminarProveedor(${p.id})">X</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
         function actualizarTodo() {
             const estado = guardarEstadoFormVenta();
             actualizarProductosTable();
             actualizarVentasTable();
+            actualizarProveedoresTable();
+            poblarSelectsProveedor();
             actualizarDashboard();
             restaurarEstadoFormVenta(estado);
         }
