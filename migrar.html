@@ -97,7 +97,7 @@
         }
 
         async function vaciarTablas() {
-            if (!confirm('¿Borrar TODOS los productos y ventas de Supabase? Esto no afecta el Google Sheet.')) return;
+            if (!confirm('¿Borrar TODOS los productos, ventas y proveedores de Supabase? Esto no afecta el Google Sheet.')) return;
             try {
                 log('Borrando ventas...', 'warn');
                 let r = await fetch(`${SUPABASE_URL}/rest/v1/ventas?id=gte.0`, { method: 'DELETE', headers: SB_HEADERS });
@@ -105,6 +105,9 @@
                 log('Borrando productos...', 'warn');
                 r = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=gte.0`, { method: 'DELETE', headers: SB_HEADERS });
                 if (!r.ok) throw new Error('productos: ' + await r.text());
+                log('Borrando proveedores...', 'warn');
+                r = await fetch(`${SUPABASE_URL}/rest/v1/proveedores?id=gte.0`, { method: 'DELETE', headers: SB_HEADERS });
+                if (!r.ok) throw new Error('proveedores: ' + await r.text());
                 log('✓ Tablas vacías', 'ok');
             } catch (e) {
                 log('ERROR: ' + e.message, 'err');
@@ -152,7 +155,9 @@
                         stock: parseInt(fila[8]) || 0,
                         stock_min: parseInt(fila[9]) || 0,
                         fecha_entrada: formatearFecha(fila[10]),
-                        proveedor: String(fila[11] || ''),
+                        // proveedor del Sheet (fila[11]): se preserva temporalmente como _proveedor_nombre
+                        // para que el bloque de migración de proveedores lo use después.
+                        _proveedor_nombre: String(fila[11] || '').trim(),
                         forma_pago_compra: String(fila[12] || 'Efectivo')
                     });
                 }
@@ -185,6 +190,21 @@
                 log(`Ventas a migrar: ${ventas.length}`);
 
                 if (productos.length > 0) {
+                    // 1) Crear proveedores únicos a partir de los nombres del Sheet
+                    const nombresUnicos = [...new Set(productos.map(p => p._proveedor_nombre).filter(Boolean))];
+                    if (nombresUnicos.length > 0) {
+                        log(`Insertando ${nombresUnicos.length} proveedores únicos...`);
+                        await bulkInsert('proveedores', nombresUnicos.map(nombre => ({ nombre })));
+                    }
+                    // 2) Releer proveedores para obtener sus ids
+                    const provR = await fetch(`${SUPABASE_URL}/rest/v1/proveedores?select=id,nombre`, { headers: SB_HEADERS });
+                    const provRows = await provR.json();
+                    const provMap = new Map(provRows.map(p => [p.nombre, p.id]));
+                    // 3) Reemplazar el nombre por proveedor_id en cada producto
+                    productos.forEach(p => {
+                        p.proveedor_id = p._proveedor_nombre ? (provMap.get(p._proveedor_nombre) || null) : null;
+                        delete p._proveedor_nombre;
+                    });
                     log('Insertando productos en Supabase...');
                     await bulkInsert('productos', productos);
                 }

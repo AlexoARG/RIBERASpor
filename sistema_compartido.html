@@ -642,7 +642,6 @@
                 <div class="form-row">
                     <button class="btn-primary" id="proveedorBtnGuardar" onclick="guardarProveedor()">Agregar Proveedor</button>
                     <button class="btn-small btn-danger" id="proveedorBtnCancelar" onclick="cancelarEdicionProveedor()" style="display:none;">Cancelar</button>
-                    <button class="btn-small btn-primary" onclick="importarProveedoresDesdeProductos()" style="margin-left: auto;">⬇️ Importar desde productos</button>
                 </div>
             </div>
 
@@ -727,7 +726,8 @@
                 stock: parseInt(p.stock) || 0,
                 stockMin: parseInt(p.stock_min) || 0,
                 fechaEntrada: p.fecha_entrada || '',
-                proveedor: p.proveedor || '',
+                proveedorId: p.proveedor_id != null ? parseInt(p.proveedor_id) : null,
+                proveedor: '', // se completa en cargarDatos via lookup
                 formaPagoCompra: p.forma_pago_compra || 'Efectivo'
             };
         }
@@ -743,7 +743,7 @@
                 stock: p.stock,
                 stock_min: p.stockMin,
                 fecha_entrada: p.fechaEntrada,
-                proveedor: p.proveedor,
+                proveedor_id: p.proveedorId || null,
                 forma_pago_compra: p.formaPagoCompra
             };
         }
@@ -980,6 +980,12 @@
                 datos.productos = prods.map(dbToJsProducto);
                 datos.ventas = vents.map(dbToJsVenta);
                 datos.proveedores = provs.map(dbToJsProveedor);
+
+                // Enriquecer productos con el nombre del proveedor (lookup por id)
+                const provMap = new Map(datos.proveedores.map(p => [p.id, p.nombre]));
+                datos.productos.forEach(p => {
+                    p.proveedor = p.proveedorId ? (provMap.get(p.proveedorId) || '') : '';
+                });
                 mostrarSync('Sincronizado', 'synced');
                 actualizarTodo();
             } catch (error) {
@@ -997,7 +1003,8 @@
             const talle = document.getElementById('productTalle').value.trim();
             const color = document.getElementById('productColor').value.trim();
             const genero = document.getElementById('productGenero').value;
-            const proveedor = document.getElementById('productProveedor').value.trim();
+            const proveedorIdRaw = document.getElementById('productProveedor').value;
+            const proveedorId = proveedorIdRaw ? parseInt(proveedorIdRaw) : null;
             const formaPagoCompra = document.getElementById('productFormaPago').value;
             const costo = parseFloat(document.getElementById('productCosto').value);
             const precio = parseFloat(document.getElementById('productPrecio').value);
@@ -1017,7 +1024,7 @@
 
             try {
                 mostrarSync('Guardando...', 'synced');
-                const nuevo = { nombre, descripcion, talle, color, genero, costo, precio, stock, stockMin: stockMin || 0, fechaEntrada: formatearFecha(fechaEntrada), proveedor, formaPagoCompra };
+                const nuevo = { nombre, descripcion, talle, color, genero, costo, precio, stock, stockMin: stockMin || 0, fechaEntrada: formatearFecha(fechaEntrada), proveedorId, formaPagoCompra };
                 await sbInsert('productos', jsToDbProducto(nuevo));
 
                 document.getElementById('productNombre').value = '';
@@ -1191,12 +1198,13 @@
 
         function filtrarProductosVenta() {
             const buscar = document.getElementById('ventaProductoBuscar').value.toLowerCase();
-            const proveedorFiltro = document.getElementById('ventaProveedorFiltro').value;
+            const proveedorFiltroRaw = document.getElementById('ventaProveedorFiltro').value;
+            const proveedorIdFiltro = proveedorFiltroRaw ? parseInt(proveedorFiltroRaw) : null;
             const dropdown = document.getElementById('ventaProductoDropdown');
 
             const productosFiltrados = datos.productos.filter(p => {
                 if (p.stock <= 0) return false;
-                if (proveedorFiltro && p.proveedor !== proveedorFiltro) return false;
+                if (proveedorIdFiltro != null && p.proveedorId !== proveedorIdFiltro) return false;
                 const txt = `${p.nombre} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada}`.toLowerCase();
                 return txt.includes(buscar);
             });
@@ -1626,19 +1634,18 @@
 
         // ===== PROVEEDORES =====
         function poblarSelectsProveedor() {
-            const nombres = datos.proveedores.map(p => p.nombre).filter(Boolean);
-            nombres.sort((a, b) => a.localeCompare(b));
+            const escHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const ordenados = [...datos.proveedores].sort((a, b) => a.nombre.localeCompare(b.nombre));
+            const opciones = ordenados.map(p => `<option value="${p.id}">${escHtml(p.nombre)}</option>`).join('');
 
             const sel1 = document.getElementById('productProveedor');
             const valorActual1 = sel1.value;
-            sel1.innerHTML = '<option value="">Proveedor...</option>' +
-                nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+            sel1.innerHTML = '<option value="">Proveedor...</option>' + opciones;
             sel1.value = valorActual1;
 
             const sel2 = document.getElementById('ventaProveedorFiltro');
             const valorActual2 = sel2.value;
-            sel2.innerHTML = '<option value="">Todos los proveedores</option>' +
-                nombres.map(n => `<option value="${n}">${n}</option>`).join('');
+            sel2.innerHTML = '<option value="">Todos los proveedores</option>' + opciones;
             sel2.value = valorActual2;
         }
 
@@ -1691,15 +1698,7 @@
                 const data = jsToDbProveedor({ nombre, contacto, telefono, email, notas });
 
                 if (id) {
-                    // Renombrar proveedor: actualizar también todos los productos asociados
-                    const proveedorPrevio = datos.proveedores.find(p => p.id === parseInt(id));
                     await sbUpdate('proveedores', parseInt(id), data);
-                    if (proveedorPrevio && proveedorPrevio.nombre && proveedorPrevio.nombre !== nombre) {
-                        const productosAfectados = datos.productos.filter(p => p.proveedor === proveedorPrevio.nombre);
-                        for (const prod of productosAfectados) {
-                            await sbUpdate('productos', prod.id, { proveedor: nombre });
-                        }
-                    }
                     mostrarAlerta('Proveedor actualizado', 'success');
                 } else {
                     await sbInsert('proveedores', data);
@@ -1714,40 +1713,12 @@
             }
         }
 
-        async function importarProveedoresDesdeProductos() {
-            const yaCargados = new Set(datos.proveedores.map(p => p.nombre.toLowerCase()));
-            const nuevosNombres = [...new Set(
-                datos.productos
-                    .map(p => (p.proveedor || '').trim())
-                    .filter(n => n && !yaCargados.has(n.toLowerCase()))
-            )];
-
-            if (nuevosNombres.length === 0) {
-                mostrarAlerta('No hay proveedores nuevos para importar', 'success');
-                return;
-            }
-
-            if (!confirm(`Se van a crear ${nuevosNombres.length} proveedor(es) a partir de los productos existentes:\n\n${nuevosNombres.join(', ')}\n\n¿Continuar?`)) return;
-
-            try {
-                mostrarSync('Importando...', 'synced');
-                for (const nombre of nuevosNombres) {
-                    await sbInsert('proveedores', { nombre, contacto: '', telefono: '', email: '', notas: '' });
-                }
-                await cargarDatos();
-                mostrarAlerta(`Importados ${nuevosNombres.length} proveedor(es)`, 'success');
-            } catch (error) {
-                mostrarSync('Error al importar', 'error');
-                mostrarAlerta('Error: ' + error.message, 'danger');
-            }
-        }
-
         async function eliminarProveedor(id) {
             const p = datos.proveedores.find(x => x.id === id);
             if (!p) return;
-            const enUso = datos.productos.filter(x => x.proveedor === p.nombre).length;
+            const enUso = datos.productos.filter(x => x.proveedorId === p.id).length;
             const msg = enUso > 0
-                ? `Hay ${enUso} producto(s) usando "${p.nombre}". ¿Eliminar igual? Los productos quedarán sin proveedor asignado en el dropdown, pero el texto se conserva.`
+                ? `Hay ${enUso} producto(s) usando "${p.nombre}". Si lo eliminás, esos productos quedan sin proveedor. ¿Continuar?`
                 : '¿Eliminar proveedor?';
             if (!confirm(msg)) return;
             try {
