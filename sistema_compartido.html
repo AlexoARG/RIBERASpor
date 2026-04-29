@@ -29,6 +29,11 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: var(--dark);
+            text-transform: uppercase;
+        }
+        /* Excepción: notas del proveedor pueden contener URLs (sensibles a mayúsculas) */
+        #proveedorNotas, .notas-cell {
+            text-transform: none;
         }
 
         .container {
@@ -472,13 +477,13 @@
                     <input type="text" id="productTalle" placeholder="Talle">
                     <input type="text" id="productColor" placeholder="Color">
                     <select id="productGenero">
-                        <option value="">Género...</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Hombre">Hombre</option>
-                        <option value="Mujer">Mujer</option>
-                        <option value="Unisex">Unisex</option>
-                        <option value="Niño">Niño</option>
-                        <option value="Niña">Niña</option>
+                        <option value="">GÉNERO...</option>
+                        <option value="ACCESORIOS">ACCESORIOS</option>
+                        <option value="HOMBRE">HOMBRE</option>
+                        <option value="MUJER">MUJER</option>
+                        <option value="UNISEX">UNISEX</option>
+                        <option value="NIÑO">NIÑO</option>
+                        <option value="NIÑA">NIÑA</option>
                     </select>
                     <select id="productProveedor">
                         <option value="">Proveedor...</option>
@@ -493,8 +498,8 @@
                     <input type="number" id="productStockMin" placeholder="Stock mínimo" step="1">
                     <input type="date" id="productFechaEntrada" title="Fecha de entrada">
                     <select id="productFormaPago">
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia">Transferencia</option>
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
                     <button class="btn-primary" id="productBtnGuardar" onclick="guardarProducto()">Agregar</button>
                     <button class="btn-small btn-danger" id="productBtnCancelar" onclick="cancelarEdicionProducto()" style="display:none;">Cancelar</button>
@@ -578,12 +583,12 @@
                 </div>
                 <div class="form-row">
                     <select id="ventaEstadoPago">
-                        <option value="Pago">Pago</option>
-                        <option value="Impago">Impago</option>
+                        <option value="PAGO">PAGO</option>
+                        <option value="IMPAGO">IMPAGO</option>
                     </select>
                     <select id="ventaFormaPago">
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia">Transferencia</option>
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
                 </div>
                 <div class="form-row">
@@ -727,6 +732,8 @@
             if (!r.ok) throw new Error(`DELETE ${tabla}: ${r.status} ${await r.text()}`);
         }
 
+        const upper = s => (s == null ? s : String(s).toUpperCase());
+
         function dbToJsProducto(p) {
             return {
                 id: p.id,
@@ -742,23 +749,23 @@
                 fechaEntrada: p.fecha_entrada || '',
                 proveedorId: p.proveedor_id != null ? parseInt(p.proveedor_id) : null,
                 proveedor: '', // se completa en cargarDatos via lookup
-                formaPagoCompra: p.forma_pago_compra || 'Efectivo'
+                formaPagoCompra: p.forma_pago_compra || 'EFECTIVO'
             };
         }
         function jsToDbProducto(p) {
             return {
-                nombre: p.nombre,
-                descripcion: p.descripcion,
-                talle: p.talle,
-                color: p.color,
-                genero: p.genero,
+                nombre: upper(p.nombre),
+                descripcion: upper(p.descripcion),
+                talle: upper(p.talle),
+                color: upper(p.color),
+                genero: upper(p.genero),
                 costo: p.costo,
                 precio: p.precio,
                 stock: p.stock,
                 stock_min: p.stockMin,
                 fecha_entrada: p.fechaEntrada,
                 proveedor_id: p.proveedorId || null,
-                forma_pago_compra: p.formaPagoCompra
+                forma_pago_compra: upper(p.formaPagoCompra)
             };
         }
         function dbToJsVenta(v) {
@@ -774,26 +781,26 @@
                 costoTotal: parseFloat(v.costo_total) || 0,
                 valorFinal: parseFloat(v.valor_final) || 0,
                 ganancia: parseFloat(v.ganancia) || 0,
-                estadoPago: v.estado_pago || 'Pago',
-                formaPago: v.forma_pago || 'Efectivo',
+                estadoPago: v.estado_pago || 'PAGO',
+                formaPago: v.forma_pago || 'EFECTIVO',
                 obs: v.obs || ''
             };
         }
         function jsToDbVenta(v) {
             return {
                 fecha: v.fecha,
-                cliente: v.cliente,
+                cliente: upper(v.cliente),
                 producto_id: v.productoId,
-                producto_nombre: v.productoNombre,
+                producto_nombre: upper(v.productoNombre),
                 cantidad: v.cantidad,
                 precio: v.precio,
                 costo_unitario: v.costoUnitario,
                 costo_total: v.costoTotal,
                 valor_final: v.valorFinal,
                 ganancia: v.ganancia,
-                estado_pago: v.estadoPago,
-                forma_pago: v.formaPago,
-                obs: v.obs
+                estado_pago: upper(v.estadoPago),
+                forma_pago: upper(v.formaPago),
+                obs: upper(v.obs)
             };
         }
         function dbToJsProveedor(p) {
@@ -808,11 +815,11 @@
         }
         function jsToDbProveedor(p) {
             return {
-                nombre: p.nombre,
-                contacto: p.contacto,
-                telefono: p.telefono,
-                email: p.email,
-                notas: p.notas
+                nombre: upper(p.nombre),
+                contacto: upper(p.contacto),
+                telefono: upper(p.telefono),
+                email: upper(p.email),
+                notas: p.notas // exento de upper: puede contener URLs
             };
         }
         let productosPaginaActual = 1;
@@ -982,6 +989,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('ventaFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+
+            // Forzar mayúsculas en cada tecla. Excepción: notas (puede tener URLs).
+            document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => {
+                if (el.id === 'proveedorNotas') return;
+                el.addEventListener('input', () => {
+                    const start = el.selectionStart;
+                    const end = el.selectionEnd;
+                    const u = el.value.toUpperCase();
+                    if (el.value !== u) {
+                        el.value = u;
+                        try { el.setSelectionRange(start, end); } catch (e) {}
+                    }
+                });
+            });
+
             cargarDatos();
         });
 
@@ -1019,7 +1041,7 @@
             document.getElementById('productColor').value = '';
             document.getElementById('productGenero').value = '';
             document.getElementById('productProveedor').value = '';
-            document.getElementById('productFormaPago').value = 'Efectivo';
+            document.getElementById('productFormaPago').value = 'EFECTIVO';
             document.getElementById('productCosto').value = '';
             document.getElementById('productPrecio').value = '';
             document.getElementById('productStock').value = '';
@@ -1044,7 +1066,7 @@
             document.getElementById('productColor').value = p.color;
             document.getElementById('productGenero').value = p.genero;
             document.getElementById('productProveedor').value = p.proveedorId || '';
-            document.getElementById('productFormaPago').value = p.formaPagoCompra || 'Efectivo';
+            document.getElementById('productFormaPago').value = p.formaPagoCompra || 'EFECTIVO';
             document.getElementById('productCosto').value = p.costo;
             document.getElementById('productPrecio').value = p.precio;
             document.getElementById('productStock').value = p.stock;
@@ -1332,8 +1354,8 @@
             document.getElementById('ventaCantidad').value = '';
             document.getElementById('ventaPrecio').value = '';
             document.getElementById('ventaValorFinal').value = '';
-            document.getElementById('ventaEstadoPago').value = 'Pago';
-            document.getElementById('ventaFormaPago').value = 'Efectivo';
+            document.getElementById('ventaEstadoPago').value = 'PAGO';
+            document.getElementById('ventaFormaPago').value = 'EFECTIVO';
             document.getElementById('ventaObs').value = '';
             document.getElementById('ventaFormTitulo').textContent = '➕ Nueva Venta';
             document.getElementById('ventaBtnGuardar').textContent = 'Registrar Venta';
@@ -1519,7 +1541,7 @@
             paginaVentas.forEach(v => {
                 const obsText = v.obs ? v.obs.substring(0, 10) + '...' : '—';
                 const gananciaColor = v.ganancia >= 0 ? '#27AE60' : '#E74C3C';
-                const estadoColor = v.estadoPago === 'Pago' ? '#27AE60' : '#E74C3C';
+                const estadoColor = v.estadoPago === 'PAGO' ? '#27AE60' : '#E74C3C';
 
                 tbody.innerHTML += `
                     <tr>
@@ -1545,7 +1567,7 @@
         async function toggleEstadoPago(id) {
             const venta = datos.ventas.find(v => v.id === id);
             if (!venta) return;
-            const nuevo = venta.estadoPago === 'Pago' ? 'Impago' : 'Pago';
+            const nuevo = venta.estadoPago === 'PAGO' ? 'IMPAGO' : 'PAGO';
             try {
                 mostrarSync('Guardando...', 'synced');
                 await sbUpdate('ventas', id, { estado_pago: nuevo });
@@ -1559,7 +1581,7 @@
         async function toggleFormaPago(id) {
             const venta = datos.ventas.find(v => v.id === id);
             if (!venta) return;
-            const nuevo = venta.formaPago === 'Efectivo' ? 'Transferencia' : 'Efectivo';
+            const nuevo = venta.formaPago === 'EFECTIVO' ? 'TRANSFERENCIA' : 'EFECTIVO';
             try {
                 mostrarSync('Guardando...', 'synced');
                 await sbUpdate('ventas', id, { forma_pago: nuevo });
@@ -1594,10 +1616,10 @@
             const stock = datos.productos.reduce((s, p) => s + p.stock, 0);
 
             const efectivo = datos.ventas
-                .filter(v => v.formaPago === 'Efectivo')
+                .filter(v => v.formaPago === 'EFECTIVO')
                 .reduce((s, v) => s + v.valorFinal, 0);
             const transferencia = datos.ventas
-                .filter(v => v.formaPago === 'Transferencia')
+                .filter(v => v.formaPago === 'TRANSFERENCIA')
                 .reduce((s, v) => s + v.valorFinal, 0);
 
             const inversionActual = datos.productos.reduce((s, p) => s + (p.costo * p.stock), 0);
@@ -1629,8 +1651,8 @@
             });
 
             // Detalle por estado de pago
-            const ventasPagas = datos.ventas.filter(v => v.estadoPago === 'Pago');
-            const ventasImpagas = datos.ventas.filter(v => v.estadoPago === 'Impago');
+            const ventasPagas = datos.ventas.filter(v => v.estadoPago === 'PAGO');
+            const ventasImpagas = datos.ventas.filter(v => v.estadoPago === 'IMPAGO');
             const totalPago = ventasPagas.reduce((s, v) => s + v.valorFinal, 0);
             const totalImpago = ventasImpagas.reduce((s, v) => s + v.valorFinal, 0);
 
@@ -1664,7 +1686,7 @@
                     .reduce((s, v) => s + v.cantidad, 0);
                 const stockOriginal = p.stock + vendidos;
                 const costoTotalCompra = p.costo * stockOriginal;
-                if (p.formaPagoCompra === 'Transferencia') comprasTransferencia += costoTotalCompra;
+                if (p.formaPagoCompra === 'TRANSFERENCIA') comprasTransferencia += costoTotalCompra;
                 else comprasEfectivo += costoTotalCompra;
             });
             const totalCompras = comprasEfectivo + comprasTransferencia;
@@ -1680,10 +1702,10 @@
 
             // Ingresos por ventas cobradas
             const ingresoPagoEfectivo = datos.ventas
-                .filter(v => v.estadoPago === 'Pago' && v.formaPago === 'Efectivo')
+                .filter(v => v.estadoPago === 'PAGO' && v.formaPago === 'EFECTIVO')
                 .reduce((s, v) => s + v.valorFinal, 0);
             const ingresoPagoTransferencia = datos.ventas
-                .filter(v => v.estadoPago === 'Pago' && v.formaPago === 'Transferencia')
+                .filter(v => v.estadoPago === 'PAGO' && v.formaPago === 'TRANSFERENCIA')
                 .reduce((s, v) => s + v.valorFinal, 0);
             const ingresosPagos = ingresoPagoEfectivo + ingresoPagoTransferencia;
 
@@ -1987,7 +2009,7 @@
                 data: {
                     labels: series.map(s => s.label),
                     datasets: [{
-                        label: 'Ventas $',
+                        label: 'VENTAS $',
                         data: series.map(s => s.total),
                         borderColor: '#2E75B6',
                         backgroundColor: 'rgba(46,117,182,0.15)',
@@ -2006,10 +2028,10 @@
                         tooltip: {
                             callbacks: {
                                 title: items => series[items[0].dataIndex].rango,
-                                label: ctx => `Total: ${formatMoney(ctx.parsed.y)}`,
+                                label: ctx => `TOTAL: ${formatMoney(ctx.parsed.y)}`,
                                 afterLabel: ctx => {
                                     const s = series[ctx.dataIndex];
-                                    return [`Ventas: ${s.ventas}`, `Unidades: ${s.unidades}`];
+                                    return [`VENTAS: ${s.ventas}`, `UNIDADES: ${s.unidades}`];
                                 }
                             }
                         }

@@ -145,20 +145,18 @@
                     if (isNaN(id) || id <= 0) continue;
                     productos.push({
                         id: id,
-                        nombre: String(fila[1] || ''),
-                        descripcion: String(fila[2] || ''),
-                        talle: String(fila[3] || ''),
-                        color: String(fila[4] || ''),
-                        genero: String(fila[5] || ''),
+                        nombre: String(fila[1] || '').toUpperCase(),
+                        descripcion: String(fila[2] || '').toUpperCase(),
+                        talle: String(fila[3] || '').toUpperCase(),
+                        color: String(fila[4] || '').toUpperCase(),
+                        genero: String(fila[5] || '').toUpperCase(),
                         costo: parseFloat(fila[6]) || 0,
                         precio: parseFloat(fila[7]) || 0,
                         stock: parseInt(fila[8]) || 0,
                         stock_min: parseInt(fila[9]) || 0,
                         fecha_entrada: formatearFecha(fila[10]),
-                        // proveedor del Sheet (fila[11]): se preserva temporalmente como _proveedor_nombre
-                        // para que el bloque de migración de proveedores lo use después.
-                        _proveedor_nombre: String(fila[11] || '').trim(),
-                        forma_pago_compra: String(fila[12] || 'Efectivo')
+                        _proveedor_nombre: String(fila[11] || '').trim().toUpperCase(),
+                        forma_pago_compra: String(fila[12] || 'EFECTIVO').toUpperCase()
                     });
                 }
 
@@ -171,18 +169,18 @@
                     ventas.push({
                         id: id,
                         fecha: formatearFecha(fila[1]),
-                        cliente: String(fila[2] || ''),
+                        cliente: String(fila[2] || '').toUpperCase(),
                         producto_id: parseInt(fila[3]) || 0,
-                        producto_nombre: String(fila[4] || ''),
+                        producto_nombre: String(fila[4] || '').toUpperCase(),
                         cantidad: parseInt(fila[5]) || 0,
                         precio: parseFloat(fila[6]) || 0,
                         costo_unitario: parseFloat(fila[7]) || 0,
                         costo_total: parseFloat(fila[8]) || 0,
                         valor_final: parseFloat(fila[9]) || 0,
                         ganancia: parseFloat(fila[10]) || 0,
-                        estado_pago: String(fila[11] || 'Pago'),
-                        forma_pago: String(fila[12] || 'Efectivo'),
-                        obs: String(fila[13] || '')
+                        estado_pago: String(fila[11] || 'PAGO').toUpperCase(),
+                        forma_pago: String(fila[12] || 'EFECTIVO').toUpperCase(),
+                        obs: String(fila[13] || '').toUpperCase()
                     });
                 }
 
