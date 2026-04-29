@@ -1879,17 +1879,37 @@
                 return;
             }
 
+            const escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const formatTel = tel => {
+                const t = (tel || '').trim();
+                if (!t) return '—';
+                const digits = t.replace(/\D/g, '');
+                if (!digits) return escapeHtml(t);
+                return `<a href="https://wa.me/${digits}" target="_blank" rel="noopener" title="Abrir en WhatsApp">${escapeHtml(t)}</a>`;
+            };
+            const formatEmail = em => {
+                const e = (em || '').trim();
+                if (!e) return '—';
+                return `<a href="mailto:${escapeHtml(e)}" title="Enviar email">${escapeHtml(e)}</a>`;
+            };
+            const formatNotas = notas => {
+                const n = (notas || '').trim();
+                if (!n) return '—';
+                // Linkificar URLs http(s) embebidas en el texto
+                return escapeHtml(n).replace(/(https?:\/\/[^\s]+)/gi,
+                    '<a href="$1" target="_blank" rel="noopener">$1</a>');
+            };
+
             const ordenados = [...datos.proveedores].sort((a, b) => a.nombre.localeCompare(b.nombre));
             ordenados.forEach(p => {
-                const escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
                 tbody.innerHTML += `
                     <tr>
                         <td>${p.id}</td>
                         <td><strong>${escapeHtml(p.nombre)}</strong></td>
                         <td>${escapeHtml(p.contacto) || '—'}</td>
-                        <td>${escapeHtml(p.telefono) || '—'}</td>
-                        <td>${escapeHtml(p.email) || '—'}</td>
-                        <td>${escapeHtml(p.notas) || '—'}</td>
+                        <td>${formatTel(p.telefono)}</td>
+                        <td>${formatEmail(p.email)}</td>
+                        <td>${formatNotas(p.notas)}</td>
                         <td>
                             <button class="btn-small btn-primary" onclick="editarProveedor(${p.id})">✏️</button>
                             <button class="btn-small btn-danger" onclick="eliminarProveedor(${p.id})">X</button>
