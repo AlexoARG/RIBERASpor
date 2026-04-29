@@ -452,7 +452,8 @@
         <!-- PRODUCTOS -->
         <div id="productos" class="tab-content">
             <div class="section">
-                <h2>➕ Agregar Nuevo Producto</h2>
+                <h2 id="productFormTitulo">➕ Agregar Nuevo Producto</h2>
+                <input type="hidden" id="productId">
                 <div class="form-row">
                     <input type="text" id="productNombre" placeholder="Nombre">
                     <input type="text" id="productDescripcion" placeholder="Descripción">
@@ -485,7 +486,8 @@
                         <option value="Efectivo">Efectivo</option>
                         <option value="Transferencia">Transferencia</option>
                     </select>
-                    <button class="btn-primary" onclick="agregarProducto()">Agregar</button>
+                    <button class="btn-primary" id="productBtnGuardar" onclick="guardarProducto()">Agregar</button>
+                    <button class="btn-small btn-danger" id="productBtnCancelar" onclick="cancelarEdicionProducto()" style="display:none;">Cancelar</button>
                 </div>
             </div>
 
@@ -537,7 +539,8 @@
         <!-- VENTAS -->
         <div id="ventas" class="tab-content">
             <div class="section">
-                <h2>➕ Nueva Venta</h2>
+                <h2 id="ventaFormTitulo">➕ Nueva Venta</h2>
+                <input type="hidden" id="ventaId">
                 <div class="form-row">
                     <input type="date" id="ventaFecha">
                     <input type="text" id="ventaCliente" placeholder="Cliente">
@@ -577,7 +580,8 @@
                     <textarea id="ventaObs" placeholder="Observaciones" style="resize: vertical; height: 60px;"></textarea>
                 </div>
                 <div class="form-row">
-                    <button class="btn-primary" onclick="agregarVenta()">Registrar Venta</button>
+                    <button class="btn-primary" id="ventaBtnGuardar" onclick="guardarVenta()">Registrar Venta</button>
+                    <button class="btn-small btn-danger" id="ventaBtnCancelar" onclick="cancelarEdicionVenta()" style="display:none;">Cancelar</button>
                 </div>
             </div>
 
@@ -997,7 +1001,54 @@
             }
         }
 
-        async function agregarProducto() {
+        function limpiarFormProducto() {
+            document.getElementById('productId').value = '';
+            document.getElementById('productNombre').value = '';
+            document.getElementById('productDescripcion').value = '';
+            document.getElementById('productTalle').value = '';
+            document.getElementById('productColor').value = '';
+            document.getElementById('productGenero').value = '';
+            document.getElementById('productProveedor').value = '';
+            document.getElementById('productFormaPago').value = 'Efectivo';
+            document.getElementById('productCosto').value = '';
+            document.getElementById('productPrecio').value = '';
+            document.getElementById('productStock').value = '';
+            document.getElementById('productStockMin').value = '';
+            document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+            document.getElementById('productFormTitulo').textContent = '➕ Agregar Nuevo Producto';
+            document.getElementById('productBtnGuardar').textContent = 'Agregar';
+            document.getElementById('productBtnCancelar').style.display = 'none';
+        }
+
+        function cancelarEdicionProducto() {
+            limpiarFormProducto();
+        }
+
+        function editarProducto(id) {
+            const p = datos.productos.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('productId').value = p.id;
+            document.getElementById('productNombre').value = p.nombre;
+            document.getElementById('productDescripcion').value = p.descripcion;
+            document.getElementById('productTalle').value = p.talle;
+            document.getElementById('productColor').value = p.color;
+            document.getElementById('productGenero').value = p.genero;
+            document.getElementById('productProveedor').value = p.proveedorId || '';
+            document.getElementById('productFormaPago').value = p.formaPagoCompra || 'Efectivo';
+            document.getElementById('productCosto').value = p.costo;
+            document.getElementById('productPrecio').value = p.precio;
+            document.getElementById('productStock').value = p.stock;
+            document.getElementById('productStockMin').value = p.stockMin;
+            const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(p.fechaEntrada || '');
+            document.getElementById('productFechaEntrada').value = m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+            document.getElementById('productFormTitulo').textContent = '✏️ Editar Producto';
+            document.getElementById('productBtnGuardar').textContent = 'Guardar cambios';
+            document.getElementById('productBtnCancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function guardarProducto() {
+            const id = document.getElementById('productId').value;
             const nombre = document.getElementById('productNombre').value.trim();
             const descripcion = document.getElementById('productDescripcion').value.trim();
             const talle = document.getElementById('productTalle').value.trim();
@@ -1008,15 +1059,19 @@
             const formaPagoCompra = document.getElementById('productFormaPago').value;
             const costo = parseFloat(document.getElementById('productCosto').value);
             const precio = parseFloat(document.getElementById('productPrecio').value);
-            const stock = parseInt(document.getElementById('productStock').value);
+            const stockRaw = document.getElementById('productStock').value;
+            const stock = parseInt(stockRaw);
             const stockMin = parseInt(document.getElementById('productStockMin').value);
             const fechaEntrada = document.getElementById('productFechaEntrada').value;
 
-            if (!nombre || !costo || !precio || !stock) {
+            if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
                 mostrarAlerta('Completa los campos obligatorios', 'danger');
                 return;
             }
-
+            if (!id && stock <= 0) {
+                mostrarAlerta('El stock inicial debe ser mayor a 0', 'danger');
+                return;
+            }
             if (costo >= precio) {
                 mostrarAlerta('El costo debe ser menor al precio', 'danger');
                 return;
@@ -1024,24 +1079,24 @@
 
             try {
                 mostrarSync('Guardando...', 'synced');
-                const nuevo = { nombre, descripcion, talle, color, genero, costo, precio, stock, stockMin: stockMin || 0, fechaEntrada: formatearFecha(fechaEntrada), proveedorId, formaPagoCompra };
-                await sbInsert('productos', jsToDbProducto(nuevo));
+                const datosProd = {
+                    nombre, descripcion, talle, color, genero,
+                    costo, precio, stock,
+                    stockMin: stockMin || 0,
+                    fechaEntrada: formatearFecha(fechaEntrada),
+                    proveedorId, formaPagoCompra
+                };
 
-                document.getElementById('productNombre').value = '';
-                document.getElementById('productDescripcion').value = '';
-                document.getElementById('productTalle').value = '';
-                document.getElementById('productColor').value = '';
-                document.getElementById('productGenero').value = '';
-                document.getElementById('productProveedor').value = '';
-                document.getElementById('productFormaPago').value = 'Efectivo';
-                document.getElementById('productCosto').value = '';
-                document.getElementById('productPrecio').value = '';
-                document.getElementById('productStock').value = '';
-                document.getElementById('productStockMin').value = '';
-                document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+                if (id) {
+                    await sbUpdate('productos', parseInt(id), jsToDbProducto(datosProd));
+                    mostrarAlerta('Producto actualizado', 'success');
+                } else {
+                    await sbInsert('productos', jsToDbProducto(datosProd));
+                    mostrarAlerta('Producto agregado', 'success');
+                }
 
+                limpiarFormProducto();
                 await cargarDatos();
-                mostrarAlerta('Producto agregado', 'success');
             } catch (error) {
                 mostrarSync('Error al guardar', 'error');
                 mostrarAlerta('Error al guardar: ' + error.message, 'danger');
@@ -1107,7 +1162,10 @@
                         <td>${prod.fechaEntrada || '—'}</td>
                         <td>${prod.proveedor || '—'}</td>
                         <td>${prod.formaPagoCompra || '—'}</td>
-                        <td><button class="btn-small btn-danger" onclick="eliminarProducto(${prod.id})">X</button></td>
+                        <td>
+                            <button class="btn-small btn-primary" onclick="editarProducto(${prod.id})">✏️</button>
+                            <button class="btn-small btn-danger" onclick="eliminarProducto(${prod.id})">X</button>
+                        </td>
                     </tr>
                 `;
             });
@@ -1255,7 +1313,56 @@
             document.getElementById('ventaValorFinal').value = subtotal.toFixed(2);
         }
 
-        async function agregarVenta() {
+        function limpiarFormVenta() {
+            document.getElementById('ventaId').value = '';
+            document.getElementById('ventaFecha').value = fechaLocalHoy();
+            document.getElementById('ventaCliente').value = '';
+            document.getElementById('ventaProducto').value = '';
+            document.getElementById('ventaProductoBuscar').value = '';
+            document.getElementById('ventaCantidad').value = '';
+            document.getElementById('ventaPrecio').value = '';
+            document.getElementById('ventaValorFinal').value = '';
+            document.getElementById('ventaEstadoPago').value = 'Pago';
+            document.getElementById('ventaFormaPago').value = 'Efectivo';
+            document.getElementById('ventaObs').value = '';
+            document.getElementById('ventaFormTitulo').textContent = '➕ Nueva Venta';
+            document.getElementById('ventaBtnGuardar').textContent = 'Registrar Venta';
+            document.getElementById('ventaBtnCancelar').style.display = 'none';
+        }
+
+        function cancelarEdicionVenta() {
+            limpiarFormVenta();
+        }
+
+        function editarVenta(id) {
+            const v = datos.ventas.find(x => x.id === id);
+            if (!v) return;
+            const prod = datos.productos.find(p => p.id === v.productoId);
+            document.getElementById('ventaId').value = v.id;
+            const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v.fecha || '');
+            document.getElementById('ventaFecha').value = m ? `${m[3]}-${m[2]}-${m[1]}` : fechaLocalHoy();
+            document.getElementById('ventaCliente').value = v.cliente;
+            document.getElementById('ventaProducto').value = v.productoId;
+            if (prod) {
+                const label = [prod.nombre, prod.talle || '-', prod.color || '-', prod.proveedor || '-', prod.fechaEntrada || '-'].join(' · ');
+                document.getElementById('ventaProductoBuscar').value = label;
+            } else {
+                document.getElementById('ventaProductoBuscar').value = v.productoNombre + ' (producto eliminado)';
+            }
+            document.getElementById('ventaCantidad').value = v.cantidad;
+            document.getElementById('ventaPrecio').value = v.precio;
+            document.getElementById('ventaValorFinal').value = v.valorFinal;
+            document.getElementById('ventaEstadoPago').value = v.estadoPago;
+            document.getElementById('ventaFormaPago').value = v.formaPago;
+            document.getElementById('ventaObs').value = v.obs;
+            document.getElementById('ventaFormTitulo').textContent = '✏️ Editar Venta';
+            document.getElementById('ventaBtnGuardar').textContent = 'Guardar cambios';
+            document.getElementById('ventaBtnCancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function guardarVenta() {
+            const id = document.getElementById('ventaId').value;
             const fecha = document.getElementById('ventaFecha').value;
             const cliente = document.getElementById('ventaCliente').value.trim();
             const productoId = parseInt(document.getElementById('ventaProducto').value);
@@ -1280,16 +1387,12 @@
                     mostrarAlerta('Producto no encontrado', 'danger');
                     return;
                 }
-                if (prod.stock < cantidad) {
-                    mostrarAlerta('Stock insuficiente', 'danger');
-                    return;
-                }
 
                 const costoUnitario = prod.costo;
                 const costoTotal = costoUnitario * cantidad;
                 const ganancia = valorFinal - costoTotal;
 
-                const nuevaVenta = {
+                const ventaData = {
                     fecha: formatearFecha(fecha),
                     cliente,
                     productoId,
@@ -1305,21 +1408,53 @@
                     obs
                 };
 
-                await sbInsert('ventas', jsToDbVenta(nuevaVenta));
-                await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
+                if (id) {
+                    // EDIT: ajustar stock teniendo en cuenta lo que ya estaba descontado
+                    const ventaOrig = datos.ventas.find(v => v.id === parseInt(id));
+                    if (!ventaOrig) {
+                        mostrarAlerta('Venta no encontrada', 'danger');
+                        return;
+                    }
 
-                document.getElementById('ventaCliente').value = '';
-                document.getElementById('ventaProducto').value = '';
-                document.getElementById('ventaProductoBuscar').value = '';
-                document.getElementById('ventaCantidad').value = '';
-                document.getElementById('ventaPrecio').value = '';
-                document.getElementById('ventaValorFinal').value = '';
-                document.getElementById('ventaEstadoPago').value = 'Pago';
-                document.getElementById('ventaFormaPago').value = 'Efectivo';
-                document.getElementById('ventaObs').value = '';
+                    if (ventaOrig.productoId === productoId) {
+                        // Mismo producto: chequear stock con la cantidad original "devuelta"
+                        const stockDisp = prod.stock + ventaOrig.cantidad;
+                        if (stockDisp < cantidad) {
+                            mostrarAlerta('Stock insuficiente', 'danger');
+                            return;
+                        }
+                        const delta = cantidad - ventaOrig.cantidad;
+                        if (delta !== 0) {
+                            await sbUpdate('productos', prod.id, { stock: prod.stock - delta });
+                        }
+                    } else {
+                        // Producto cambió: devolver al original y descontar al nuevo
+                        if (prod.stock < cantidad) {
+                            mostrarAlerta('Stock insuficiente en el producto nuevo', 'danger');
+                            return;
+                        }
+                        const prodOrig = datos.productos.find(p => p.id === ventaOrig.productoId);
+                        if (prodOrig) {
+                            await sbUpdate('productos', prodOrig.id, { stock: prodOrig.stock + ventaOrig.cantidad });
+                        }
+                        await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
+                    }
 
+                    await sbUpdate('ventas', parseInt(id), jsToDbVenta(ventaData));
+                    mostrarAlerta('Venta actualizada', 'success');
+                } else {
+                    // INSERT nuevo
+                    if (prod.stock < cantidad) {
+                        mostrarAlerta('Stock insuficiente', 'danger');
+                        return;
+                    }
+                    await sbInsert('ventas', jsToDbVenta(ventaData));
+                    await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
+                    mostrarAlerta('Venta registrada', 'success');
+                }
+
+                limpiarFormVenta();
                 await cargarDatos();
-                mostrarAlerta('Venta registrada', 'success');
             } catch (error) {
                 mostrarSync('Error al guardar', 'error');
                 mostrarAlerta('Error al guardar: ' + error.message, 'danger');
@@ -1388,7 +1523,10 @@
                         <td><button class="btn-small" style="background:${estadoColor};color:white;" onclick="toggleEstadoPago(${v.id})">${v.estadoPago || '—'}</button></td>
                         <td><button class="btn-small" style="background:#7f8c8d;color:white;" onclick="toggleFormaPago(${v.id})">${v.formaPago || '—'}</button></td>
                         <td>${obsText}</td>
-                        <td><button class="btn-small btn-danger" onclick="eliminarVenta(${v.id})">X</button></td>
+                        <td>
+                            <button class="btn-small btn-primary" onclick="editarVenta(${v.id})">✏️</button>
+                            <button class="btn-small btn-danger" onclick="eliminarVenta(${v.id})">X</button>
+                        </td>
                     </tr>
                 `;
             });
