@@ -642,6 +642,7 @@
                 <div class="form-row">
                     <button class="btn-primary" id="proveedorBtnGuardar" onclick="guardarProveedor()">Agregar Proveedor</button>
                     <button class="btn-small btn-danger" id="proveedorBtnCancelar" onclick="cancelarEdicionProveedor()" style="display:none;">Cancelar</button>
+                    <button class="btn-small btn-primary" onclick="importarProveedoresDesdeProductos()" style="margin-left: auto;">⬇️ Importar desde productos</button>
                 </div>
             </div>
 
@@ -1711,6 +1712,34 @@
                 await cargarDatos();
             } catch (error) {
                 mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        async function importarProveedoresDesdeProductos() {
+            const yaCargados = new Set(datos.proveedores.map(p => p.nombre.toLowerCase()));
+            const nuevosNombres = [...new Set(
+                datos.productos
+                    .map(p => (p.proveedor || '').trim())
+                    .filter(n => n && !yaCargados.has(n.toLowerCase()))
+            )];
+
+            if (nuevosNombres.length === 0) {
+                mostrarAlerta('No hay proveedores nuevos para importar', 'success');
+                return;
+            }
+
+            if (!confirm(`Se van a crear ${nuevosNombres.length} proveedor(es) a partir de los productos existentes:\n\n${nuevosNombres.join(', ')}\n\n¿Continuar?`)) return;
+
+            try {
+                mostrarSync('Importando...', 'synced');
+                for (const nombre of nuevosNombres) {
+                    await sbInsert('proveedores', { nombre, contacto: '', telefono: '', email: '', notas: '' });
+                }
+                await cargarDatos();
+                mostrarAlerta(`Importados ${nuevosNombres.length} proveedor(es)`, 'success');
+            } catch (error) {
+                mostrarSync('Error al importar', 'error');
                 mostrarAlerta('Error: ' + error.message, 'danger');
             }
         }
