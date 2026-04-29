@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Control de Stock y Ventas</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📦%3C/text%3E%3C/svg%3E">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2E75B6;
+            --secondary: #70AD47;
+            --danger: #E74C3C;
+            --warning: #F39C12;
+            --success: #27AE60;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+            --border: #BDC3C7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header-content .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .sync-status {
+            text-align: right;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .sync-status.synced {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .sync-status.error {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--border);
+            background: white;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 117, 182, 0.1);
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e5a96;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--light);
+            color: var(--dark);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--light);
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--primary), var(--primary));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card.secondary {
+            background: linear-gradient(135deg, var(--secondary), #5a8c3a);
+        }
+
+        .card.danger {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stock-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-critical {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed { color: var(--success); font-weight: 600; }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        th.sortable:hover {
+            background: #dde4e6;
+        }
+        th.sortable .sort-arrow {
+            display: inline-block;
+            margin-left: 4px;
+            opacity: 0.3;
+            font-size: 11px;
+        }
+        th.sortable.sorted .sort-arrow {
+            opacity: 1;
+            color: var(--primary);
+        }
+        .filtro-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .filtro-row input[type="text"] {
+            max-width: 300px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>📦 Sistema de Control de Stock y Ventas</h1>
+                <p class="subtitle">Base de datos PostgreSQL (Supabase) - Sincronizado en tiempo real</p>
+            </div>
+            <div class="sync-status" id="syncStatus">
+                Cargando...
+            </div>
+        </header>
+
+        <div class="alert" id="alert"></div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('productos', this)">Productos</button>
+            <button class="tab-btn" onclick="switchTab('ventas', this)">Ventas</button>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Total de Ventas</h3>
+                    <div class="value" id="totalVentas">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        <div>💵 Efectivo: <span id="totalEfectivo">$0</span></div>
+                        <div>🏦 Transferencia: <span id="totalTransferencia">$0</span></div>
+                    </div>
+                </div>
+                <div class="card secondary">
+                    <h3>Stock Total</h3>
+                    <div class="value" id="stockTotal">0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        💼 Inversión actual: <span id="inversionActual">$0</span>
+                    </div>
+                </div>
+                <div class="card danger">
+                    <h3>Ganancia Neta</h3>
+                    <div class="value" id="gananciaNeta">$0</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📈 Últimas Ventas</h2>
+                <table id="ultimasVentas">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Producto</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="card-grid">
+                <div class="card secondary">
+                    <h3>Costo Total (Vendido)</h3>
+                    <div class="value" id="costoTotal">$0</div>
+                </div>
+                <div class="card secondary">
+                    <h3>Inversión Total Real</h3>
+                    <div class="value" id="inversionTotalReal">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        Costo de todo el stock actual
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Inversión Histórica</h3>
+                    <div class="value" id="inversionHistorica">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        Stock actual + costo vendido
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💰 Detalle por Estado de Pago</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Estado</th>
+                            <th>Cantidad</th>
+                            <th>Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reporteEstadoPago"></tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>💼 Balance de Caja (Dinero que deberías tener)</h2>
+                <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
+                    Préstamo inicial: <strong id="textoPrestamoInicial"></strong> — El sistema calcula automáticamente cuánto reinvertiste con las ventas y cuánto deberías tener en mano.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Efectivo</th>
+                            <th>Transferencia</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reporteBalanceCaja"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div id="productos" class="tab-content">
+            <div class="section">
+                <h2>➕ Agregar Nuevo Producto</h2>
+                <div class="form-row">
+                    <input type="text" id="productNombre" placeholder="Nombre">
+                    <input type="text" id="productDescripcion" placeholder="Descripción">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="productTalle" placeholder="Talle">
+                    <input type="text" id="productColor" placeholder="Color">
+                    <select id="productGenero">
+                        <option value="">Género...</option>
+                        <option value="Accesorios">Accesorios</option>
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
+                        <option value="Unisex">Unisex</option>
+                        <option value="Niño">Niño</option>
+                        <option value="Niña">Niña</option>
+                    </select>
+                    <input type="text" id="productProveedor" placeholder="Proveedor">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="productCosto" placeholder="Costo unitario" step="0.01">
+                    <input type="number" id="productPrecio" placeholder="Precio de venta" step="0.01">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="productStock" placeholder="Stock inicial" step="1">
+                    <input type="number" id="productStockMin" placeholder="Stock mínimo" step="1">
+                    <input type="date" id="productFechaEntrada" title="Fecha de entrada">
+                    <select id="productFormaPago">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                    <button class="btn-primary" onclick="agregarProducto()">Agregar</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📋 Productos <span id="productosContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
+                <div class="filtro-row">
+                    <input type="text" id="productosFiltro" placeholder="🔍 Buscar por nombre, talle, color, proveedor..." oninput="aplicarFiltroProductos()">
+                    <button class="btn-small btn-danger" onclick="limpiarFiltroProductos()">Limpiar</button>
+                    <button class="btn-primary btn-small" style="margin-left: auto;" onclick="exportarProductos()">📥 Exportar a Excel</button>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                    <label style="font-size: 13px;">Filas por página:
+                        <select id="productosPorPagina" onchange="cambiarPorPagina()" style="width: auto; display: inline-block; padding: 4px 8px;">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </label>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-small btn-primary" onclick="cambiarPagina(-1)">◀ Ant</button>
+                        <span id="productosPaginaInfo" style="font-size: 13px;">Página 1 de 1</span>
+                        <button class="btn-small btn-primary" onclick="cambiarPagina(1)">Sig ▶</button>
+                    </div>
+                </div>
+                <table id="productosTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="ordenarProductos('id')">ID<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('nombre')">Nombre<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('talle')">Talle<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('color')">Color<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('genero')">Género<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('costo')">Costo<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('precio')">Precio<span class="sort-arrow">▼</span></th>
+                            <th>Margen</th>
+                            <th class="sortable" onclick="ordenarProductos('stock')">Stock<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('fechaEntrada')">Fecha Entrada<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('proveedor')">Proveedor<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('formaPagoCompra')">Forma Pago<span class="sort-arrow">▼</span></th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VENTAS -->
+        <div id="ventas" class="tab-content">
+            <div class="section">
+                <h2>➕ Nueva Venta</h2>
+                <div class="form-row">
+                    <input type="date" id="ventaFecha">
+                    <input type="text" id="ventaCliente" placeholder="Cliente">
+                </div>
+                <div class="form-row">
+                    <div style="position: relative; flex: 1;">
+                        <input type="hidden" id="ventaProducto">
+                        <input type="text" id="ventaProductoBuscar" placeholder="🔍 Buscar producto..." autocomplete="off"
+                            oninput="filtrarProductosVenta()" onfocus="filtrarProductosVenta()">
+                        <div id="ventaProductoDropdown" style="
+                            display: none; position: absolute; top: 100%; left: 0; right: 0;
+                            background: white; border: 1px solid var(--border); border-top: none;
+                            border-radius: 0 0 6px 6px; max-height: 250px; overflow-y: auto;
+                            z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                        "></div>
+                    </div>
+                    <input type="number" id="ventaCantidad" placeholder="Cantidad" step="1" onchange="calcularVenta()">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="ventaPrecio" placeholder="Precio unitario" step="0.01" onchange="calcularVenta()">
+                    <input type="number" id="ventaValorFinal" placeholder="Valor final" step="0.01">
+                </div>
+                <div class="form-row">
+                    <select id="ventaEstadoPago">
+                        <option value="Pago">Pago</option>
+                        <option value="Impago">Impago</option>
+                    </select>
+                    <select id="ventaFormaPago">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <textarea id="ventaObs" placeholder="Observaciones" style="resize: vertical; height: 60px;"></textarea>
+                </div>
+                <div class="form-row">
+                    <button class="btn-primary" onclick="agregarVenta()">Registrar Venta</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📝 Ventas <span id="ventasContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
+                <div class="filtro-row">
+                    <input type="text" id="ventasFiltro" placeholder="🔍 Buscar por cliente, producto, observaciones..." oninput="aplicarFiltroVentas()">
+                    <button class="btn-small btn-danger" onclick="limpiarFiltroVentas()">Limpiar</button>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                    <label style="font-size: 13px;">Filas por página:
+                        <select id="ventasPorPagina" onchange="cambiarVentasPorPagina()" style="width: auto; display: inline-block; padding: 4px 8px;">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </label>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-small btn-primary" onclick="cambiarVentasPagina(-1)">◀ Ant</button>
+                        <span id="ventasPaginaInfo" style="font-size: 13px;">Página 1 de 1</span>
+                        <button class="btn-small btn-primary" onclick="cambiarVentasPagina(1)">Sig ▶</button>
+                    </div>
+                </div>
+                <table id="ventasTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="ordenarVentas('fecha')">Fecha<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('cliente')">Cliente<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('productoNombre')">Producto<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('cantidad')">Cant<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('costoTotal')">Costo Total<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('valorFinal')">Valor Final<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('ganancia')">Ganancia<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('estadoPago')">Estado<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('formaPago')">Forma Pago<span class="sort-arrow">▼</span></th>
+                            <th>Obs</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh';
+        const SB_HEADERS = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        };
+
+        let datos = {
+            productos: [],
+            ventas: []
+        };
+        let sincronizando = false;
+
+        async function sbGet(tabla) {
+            const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?select=*&order=id.asc`, { headers: SB_HEADERS });
+            if (!r.ok) throw new Error(`GET ${tabla}: ${r.status} ${await r.text()}`);
+            return r.json();
+        }
+        async function sbInsert(tabla, obj) {
+            const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}`, {
+                method: 'POST',
+                headers: { ...SB_HEADERS, 'Prefer': 'return=representation' },
+                body: JSON.stringify(obj)
+            });
+            if (!r.ok) throw new Error(`INSERT ${tabla}: ${r.status} ${await r.text()}`);
+            const arr = await r.json();
+            return arr[0];
+        }
+        async function sbUpdate(tabla, id, obj) {
+            const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?id=eq.${id}`, {
+                method: 'PATCH',
+                headers: SB_HEADERS,
+                body: JSON.stringify(obj)
+            });
+            if (!r.ok) throw new Error(`UPDATE ${tabla}: ${r.status} ${await r.text()}`);
+        }
+        async function sbDelete(tabla, id) {
+            const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}?id=eq.${id}`, {
+                method: 'DELETE',
+                headers: SB_HEADERS
+            });
+            if (!r.ok) throw new Error(`DELETE ${tabla}: ${r.status} ${await r.text()}`);
+        }
+
+        function dbToJsProducto(p) {
+            return {
+                id: p.id,
+                nombre: p.nombre || '',
+                descripcion: p.descripcion || '',
+                talle: p.talle || '',
+                color: p.color || '',
+                genero: p.genero || '',
+                costo: parseFloat(p.costo) || 0,
+                precio: parseFloat(p.precio) || 0,
+                stock: parseInt(p.stock) || 0,
+                stockMin: parseInt(p.stock_min) || 0,
+                fechaEntrada: p.fecha_entrada || '',
+                proveedor: p.proveedor || '',
+                formaPagoCompra: p.forma_pago_compra || 'Efectivo'
+            };
+        }
+        function jsToDbProducto(p) {
+            return {
+                nombre: p.nombre,
+                descripcion: p.descripcion,
+                talle: p.talle,
+                color: p.color,
+                genero: p.genero,
+                costo: p.costo,
+                precio: p.precio,
+                stock: p.stock,
+                stock_min: p.stockMin,
+                fecha_entrada: p.fechaEntrada,
+                proveedor: p.proveedor,
+                forma_pago_compra: p.formaPagoCompra
+            };
+        }
+        function dbToJsVenta(v) {
+            return {
+                id: v.id,
+                fecha: v.fecha || '',
+                cliente: v.cliente || '',
+                productoId: parseInt(v.producto_id) || 0,
+                productoNombre: v.producto_nombre || '',
+                cantidad: parseInt(v.cantidad) || 0,
+                precio: parseFloat(v.precio) || 0,
+                costoUnitario: parseFloat(v.costo_unitario) || 0,
+                costoTotal: parseFloat(v.costo_total) || 0,
+                valorFinal: parseFloat(v.valor_final) || 0,
+                ganancia: parseFloat(v.ganancia) || 0,
+                estadoPago: v.estado_pago || 'Pago',
+                formaPago: v.forma_pago || 'Efectivo',
+                obs: v.obs || ''
+            };
+        }
+        function jsToDbVenta(v) {
+            return {
+                fecha: v.fecha,
+                cliente: v.cliente,
+                producto_id: v.productoId,
+                producto_nombre: v.productoNombre,
+                cantidad: v.cantidad,
+                precio: v.precio,
+                costo_unitario: v.costoUnitario,
+                costo_total: v.costoTotal,
+                valor_final: v.valorFinal,
+                ganancia: v.ganancia,
+                estado_pago: v.estadoPago,
+                forma_pago: v.formaPago,
+                obs: v.obs
+            };
+        }
+        let productosPaginaActual = 1;
+        let productosPorPagina = 10;
+        let productosFiltroTexto = '';
+        let productosOrdenCol = null;
+        let productosOrdenDir = 'asc';
+        let ventasPaginaActual = 1;
+        let ventasPorPagina = 10;
+        let ventasFiltroTexto = '';
+        let ventasOrdenCol = null;
+        let ventasOrdenDir = 'asc';
+
+        function aplicarFiltroProductos() {
+            productosFiltroTexto = document.getElementById('productosFiltro').value.toLowerCase();
+            productosPaginaActual = 1;
+            actualizarProductosTable();
+        }
+
+        function limpiarFiltroProductos() {
+            document.getElementById('productosFiltro').value = '';
+            productosFiltroTexto = '';
+            productosPaginaActual = 1;
+            actualizarProductosTable();
+        }
+
+        function ordenarProductos(col) {
+            if (productosOrdenCol === col) {
+                productosOrdenDir = productosOrdenDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                productosOrdenCol = col;
+                productosOrdenDir = 'asc';
+            }
+            actualizarProductosTable();
+        }
+
+        function aplicarFiltroVentas() {
+            ventasFiltroTexto = document.getElementById('ventasFiltro').value.toLowerCase();
+            ventasPaginaActual = 1;
+            actualizarVentasTable();
+        }
+
+        function limpiarFiltroVentas() {
+            document.getElementById('ventasFiltro').value = '';
+            ventasFiltroTexto = '';
+            ventasPaginaActual = 1;
+            actualizarVentasTable();
+        }
+
+        function ordenarVentas(col) {
+            if (ventasOrdenCol === col) {
+                ventasOrdenDir = ventasOrdenDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                ventasOrdenCol = col;
+                ventasOrdenDir = 'asc';
+            }
+            actualizarVentasTable();
+        }
+
+        function compararValores(a, b, dir) {
+            if (a == null) a = '';
+            if (b == null) b = '';
+            if (typeof a === 'number' && typeof b === 'number') {
+                return dir === 'asc' ? a - b : b - a;
+            }
+            // Detectar fechas dd/MM/yyyy y comparar cronológicamente
+            const fechaRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            const ma = fechaRegex.exec(String(a));
+            const mb = fechaRegex.exec(String(b));
+            if (ma && mb) {
+                const da = new Date(parseInt(ma[3]), parseInt(ma[2]) - 1, parseInt(ma[1])).getTime();
+                const db = new Date(parseInt(mb[3]), parseInt(mb[2]) - 1, parseInt(mb[1])).getTime();
+                return dir === 'asc' ? da - db : db - da;
+            }
+            const sa = String(a).toLowerCase();
+            const sb = String(b).toLowerCase();
+            if (sa < sb) return dir === 'asc' ? -1 : 1;
+            if (sa > sb) return dir === 'asc' ? 1 : -1;
+            return 0;
+        }
+
+        function actualizarIndicadoresOrden(tableId, col, dir) {
+            const headers = document.querySelectorAll(`#${tableId} th.sortable`);
+            headers.forEach(th => {
+                th.classList.remove('sorted');
+                const arrow = th.querySelector('.sort-arrow');
+                if (arrow) arrow.textContent = '▼';
+            });
+            if (!col) return;
+            headers.forEach(th => {
+                if (th.getAttribute('onclick') && th.getAttribute('onclick').includes(`'${col}'`)) {
+                    th.classList.add('sorted');
+                    const arrow = th.querySelector('.sort-arrow');
+                    if (arrow) arrow.textContent = dir === 'asc' ? '▲' : '▼';
+                }
+            });
+        }
+
+        function cambiarPorPagina() {
+            productosPorPagina = parseInt(document.getElementById('productosPorPagina').value);
+            productosPaginaActual = 1;
+            actualizarProductosTable();
+        }
+
+        function cambiarPagina(delta) {
+            const total = datos.productos.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / productosPorPagina));
+            const nueva = productosPaginaActual + delta;
+            if (nueva < 1 || nueva > totalPaginas) return;
+            productosPaginaActual = nueva;
+            actualizarProductosTable();
+        }
+
+        function cambiarVentasPorPagina() {
+            ventasPorPagina = parseInt(document.getElementById('ventasPorPagina').value);
+            ventasPaginaActual = 1;
+            actualizarVentasTable();
+        }
+
+        function cambiarVentasPagina(delta) {
+            const total = datos.ventas.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / ventasPorPagina));
+            const nueva = ventasPaginaActual + delta;
+            if (nueva < 1 || nueva > totalPaginas) return;
+            ventasPaginaActual = nueva;
+            actualizarVentasTable();
+        }
+
+        // Devuelve la fecha local como yyyy-MM-dd para inputs type=date
+        function fechaLocalHoy() {
+            const hoy = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            const dd = String(hoy.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Formatea número como moneda: 842000 → $842.000,00
+        function formatMoney(num) {
+            const n = Number(num) || 0;
+            const parts = n.toFixed(2).split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return '$' + parts.join(',');
+        }
+
+        // Convierte yyyy-MM-dd (input type=date) a dd/MM/yyyy
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return '';
+            // Ya está en formato dd/MM/yyyy
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(fechaStr)) return fechaStr;
+            // Viene como yyyy-MM-dd
+            const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
+            if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+            // Viene como Date object serializado (ISO)
+            const d = new Date(fechaStr);
+            if (!isNaN(d.getTime())) {
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+            }
+            return fechaStr;
+        }
+
+        const PRESTAMO_INICIAL = 1076330;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('ventaFecha').value = fechaLocalHoy();
+            document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+            cargarDatos();
+        });
+
+        async function cargarDatos() {
+            if (sincronizando) return;
+            sincronizando = true;
+            mostrarSync('Cargando...', 'synced');
+            try {
+                const [prods, vents] = await Promise.all([sbGet('productos'), sbGet('ventas')]);
+                datos.productos = prods.map(dbToJsProducto);
+                datos.ventas = vents.map(dbToJsVenta);
+                mostrarSync('Sincronizado', 'synced');
+                actualizarTodo();
+            } catch (error) {
+                mostrarSync('Error al cargar', 'error');
+                console.error('Error:', error);
+                mostrarAlerta('Error al conectar: ' + error.message, 'danger');
+            } finally {
+                sincronizando = false;
+            }
+        }
+
+        async function agregarProducto() {
+            const nombre = document.getElementById('productNombre').value.trim();
+            const descripcion = document.getElementById('productDescripcion').value.trim();
+            const talle = document.getElementById('productTalle').value.trim();
+            const color = document.getElementById('productColor').value.trim();
+            const genero = document.getElementById('productGenero').value;
+            const proveedor = document.getElementById('productProveedor').value.trim();
+            const formaPagoCompra = document.getElementById('productFormaPago').value;
+            const costo = parseFloat(document.getElementById('productCosto').value);
+            const precio = parseFloat(document.getElementById('productPrecio').value);
+            const stock = parseInt(document.getElementById('productStock').value);
+            const stockMin = parseInt(document.getElementById('productStockMin').value);
+            const fechaEntrada = document.getElementById('productFechaEntrada').value;
+
+            if (!nombre || !costo || !precio || !stock) {
+                mostrarAlerta('Completa los campos obligatorios', 'danger');
+                return;
+            }
+
+            if (costo >= precio) {
+                mostrarAlerta('El costo debe ser menor al precio', 'danger');
+                return;
+            }
+
+            try {
+                mostrarSync('Guardando...', 'synced');
+                const nuevo = { nombre, descripcion, talle, color, genero, costo, precio, stock, stockMin: stockMin || 0, fechaEntrada: formatearFecha(fechaEntrada), proveedor, formaPagoCompra };
+                await sbInsert('productos', jsToDbProducto(nuevo));
+
+                document.getElementById('productNombre').value = '';
+                document.getElementById('productDescripcion').value = '';
+                document.getElementById('productTalle').value = '';
+                document.getElementById('productColor').value = '';
+                document.getElementById('productGenero').value = '';
+                document.getElementById('productProveedor').value = '';
+                document.getElementById('productFormaPago').value = 'Efectivo';
+                document.getElementById('productCosto').value = '';
+                document.getElementById('productPrecio').value = '';
+                document.getElementById('productStock').value = '';
+                document.getElementById('productStockMin').value = '';
+                document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+
+                await cargarDatos();
+                mostrarAlerta('Producto agregado', 'success');
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error al guardar: ' + error.message, 'danger');
+            }
+        }
+
+        function actualizarProductosTable() {
+            const tbody = document.querySelector('#productosTable tbody');
+            tbody.innerHTML = '';
+
+            const totalUnidades = datos.productos.reduce((s, p) => s + p.stock, 0);
+            document.getElementById('productosContador').textContent =
+                `(${datos.productos.length} productos · ${totalUnidades} unidades)`;
+
+            actualizarIndicadoresOrden('productosTable', productosOrdenCol, productosOrdenDir);
+
+            // Filtrar
+            let listaProductos = datos.productos;
+            if (productosFiltroTexto) {
+                listaProductos = listaProductos.filter(p => {
+                    const txt = `${p.nombre} ${p.descripcion} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada} ${p.formaPagoCompra}`.toLowerCase();
+                    return txt.includes(productosFiltroTexto);
+                });
+            }
+
+            // Ordenar
+            if (productosOrdenCol) {
+                listaProductos = [...listaProductos].sort((a, b) =>
+                    compararValores(a[productosOrdenCol], b[productosOrdenCol], productosOrdenDir));
+            }
+
+            if (listaProductos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="13" style="text-align: center;">Sin productos</td></tr>';
+                document.getElementById('productosPaginaInfo').textContent = 'Página 1 de 1';
+                return;
+            }
+
+            const totalPaginas = Math.max(1, Math.ceil(listaProductos.length / productosPorPagina));
+            if (productosPaginaActual > totalPaginas) productosPaginaActual = totalPaginas;
+
+            const inicio = (productosPaginaActual - 1) * productosPorPagina;
+            const fin = inicio + productosPorPagina;
+            const paginaProductos = listaProductos.slice(inicio, fin);
+
+            document.getElementById('productosPaginaInfo').textContent =
+                `Página ${productosPaginaActual} de ${totalPaginas}`;
+
+            paginaProductos.forEach(prod => {
+                const margen = ((prod.precio - prod.costo) / prod.precio * 100).toFixed(1);
+                const stockClass = prod.stock <= prod.stockMin ? 'stock-critical' : 'stock-ok';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${prod.id}</td>
+                        <td>${prod.nombre}</td>
+                        <td>${prod.talle || '—'}</td>
+                        <td>${prod.color || '—'}</td>
+                        <td>${prod.genero || '—'}</td>
+                        <td>${formatMoney(prod.costo)}</td>
+                        <td>${formatMoney(prod.precio)}</td>
+                        <td>${margen}%</td>
+                        <td><span class="stock-badge ${stockClass}">${prod.stock}</span></td>
+                        <td>${prod.fechaEntrada || '—'}</td>
+                        <td>${prod.proveedor || '—'}</td>
+                        <td>${prod.formaPagoCompra || '—'}</td>
+                        <td><button class="btn-small btn-danger" onclick="eliminarProducto(${prod.id})">X</button></td>
+                    </tr>
+                `;
+            });
+
+            const select = document.getElementById('ventaProducto');
+            select.innerHTML = '<option value="">Seleccionar...</option>';
+            datos.productos.filter(p => p.stock > 0).forEach(p => {
+                const partes = [
+                    p.nombre,
+                    p.talle || '-',
+                    p.color || '-',
+                    p.proveedor || '-',
+                    p.fechaEntrada || '-'
+                ];
+                const label = partes.join(' · ');
+                select.innerHTML += `<option value="${p.id}">${label}</option>`;
+            });
+        }
+
+        function exportarProductos() {
+            const productosConStock = datos.productos.filter(p => p.stock > 0);
+
+            if (productosConStock.length === 0) {
+                mostrarAlerta('No hay productos con stock para exportar', 'danger');
+                return;
+            }
+
+            const headers = ['ID', 'Nombre', 'Descripción', 'Talle', 'Color', 'Género', 'Costo', 'Precio', 'Margen %', 'Stock', 'Stock Mín', 'Fecha Entrada', 'Proveedor', 'Inversión'];
+
+            const escapar = (v) => {
+                const s = String(v == null ? '' : v);
+                if (s.includes(';') || s.includes('"') || s.includes('\n')) {
+                    return '"' + s.replace(/"/g, '""') + '"';
+                }
+                return s;
+            };
+
+            const filas = productosConStock.map(p => {
+                const margen = p.precio > 0 ? ((p.precio - p.costo) / p.precio * 100).toFixed(1) : '0';
+                const inversion = (p.costo * p.stock).toFixed(2);
+                return [
+                    p.id,
+                    p.nombre,
+                    p.descripcion,
+                    p.talle,
+                    p.color,
+                    p.genero,
+                    p.costo.toFixed(2),
+                    p.precio.toFixed(2),
+                    margen,
+                    p.stock,
+                    p.stockMin,
+                    p.fechaEntrada,
+                    p.proveedor,
+                    inversion
+                ].map(escapar).join(';');
+            });
+
+            // BOM para que Excel detecte UTF-8 correctamente
+            const csv = '\ufeff' + headers.join(';') + '\n' + filas.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+            const hoy = new Date();
+            const fechaArchivo = `${String(hoy.getDate()).padStart(2, '0')}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${hoy.getFullYear()}`;
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `stock_productos_${fechaArchivo}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            mostrarAlerta('Stock exportado correctamente', 'success');
+        }
+
+        async function eliminarProducto(id) {
+            if (!confirm('¿Eliminar?')) return;
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbDelete('productos', id);
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error al eliminar: ' + error.message, 'danger');
+            }
+        }
+
+        function filtrarProductosVenta() {
+            const buscar = document.getElementById('ventaProductoBuscar').value.toLowerCase();
+            const dropdown = document.getElementById('ventaProductoDropdown');
+
+            const productosFiltrados = datos.productos.filter(p => {
+                if (p.stock <= 0) return false;
+                const txt = `${p.nombre} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada}`.toLowerCase();
+                return txt.includes(buscar);
+            });
+
+            if (productosFiltrados.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 10px; color: #999; font-size: 13px;">Sin resultados</div>';
+                dropdown.style.display = 'block';
+                return;
+            }
+
+            dropdown.innerHTML = '';
+            productosFiltrados.forEach(p => {
+                const label = [p.nombre, p.talle || '-', p.color || '-', p.proveedor || '-', p.fechaEntrada || '-'].join(' · ');
+                const item = document.createElement('div');
+                item.textContent = `${label}  (stock: ${p.stock})`;
+                item.style.cssText = 'padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f0f0f0;';
+                item.onmouseenter = () => item.style.background = '#f0f6ff';
+                item.onmouseleave = () => item.style.background = 'white';
+                item.onclick = () => seleccionarProductoVenta(p);
+                dropdown.appendChild(item);
+            });
+            dropdown.style.display = 'block';
+        }
+
+        function seleccionarProductoVenta(p) {
+            document.getElementById('ventaProducto').value = p.id;
+            const label = [p.nombre, p.talle || '-', p.color || '-', p.proveedor || '-', p.fechaEntrada || '-'].join(' · ');
+            document.getElementById('ventaProductoBuscar').value = label;
+            document.getElementById('ventaProductoDropdown').style.display = 'none';
+            document.getElementById('ventaPrecio').value = p.precio;
+            document.getElementById('ventaCantidad').value = 1;
+            calcularVenta();
+        }
+
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener('click', function(e) {
+            const buscar = document.getElementById('ventaProductoBuscar');
+            const dropdown = document.getElementById('ventaProductoDropdown');
+            if (buscar && dropdown && !buscar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        function calcularVenta() {
+            const precio = parseFloat(document.getElementById('ventaPrecio').value) || 0;
+            const cantidad = parseInt(document.getElementById('ventaCantidad').value) || 0;
+            const subtotal = precio * cantidad;
+            document.getElementById('ventaValorFinal').value = subtotal.toFixed(2);
+        }
+
+        async function agregarVenta() {
+            const fecha = document.getElementById('ventaFecha').value;
+            const cliente = document.getElementById('ventaCliente').value.trim();
+            const productoId = parseInt(document.getElementById('ventaProducto').value);
+            const cantidad = parseInt(document.getElementById('ventaCantidad').value);
+            const precio = parseFloat(document.getElementById('ventaPrecio').value);
+            const valorFinal = parseFloat(document.getElementById('ventaValorFinal').value);
+            const estadoPago = document.getElementById('ventaEstadoPago').value;
+            const formaPago = document.getElementById('ventaFormaPago').value;
+            const obs = document.getElementById('ventaObs').value.trim();
+
+            if (!fecha || !cliente || !productoId || !cantidad || isNaN(precio) || isNaN(valorFinal)) {
+                mostrarAlerta('Completa todos los campos', 'danger');
+                return;
+            }
+
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await cargarDatos();
+
+                const prod = datos.productos.find(p => p.id === productoId);
+                if (!prod) {
+                    mostrarAlerta('Producto no encontrado', 'danger');
+                    return;
+                }
+                if (prod.stock < cantidad) {
+                    mostrarAlerta('Stock insuficiente', 'danger');
+                    return;
+                }
+
+                const costoUnitario = prod.costo;
+                const costoTotal = costoUnitario * cantidad;
+                const ganancia = valorFinal - costoTotal;
+
+                const nuevaVenta = {
+                    fecha: formatearFecha(fecha),
+                    cliente,
+                    productoId,
+                    productoNombre: prod.nombre,
+                    cantidad,
+                    precio,
+                    costoUnitario,
+                    costoTotal,
+                    valorFinal,
+                    ganancia,
+                    estadoPago,
+                    formaPago,
+                    obs
+                };
+
+                await sbInsert('ventas', jsToDbVenta(nuevaVenta));
+                await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
+
+                document.getElementById('ventaCliente').value = '';
+                document.getElementById('ventaProducto').value = '';
+                document.getElementById('ventaProductoBuscar').value = '';
+                document.getElementById('ventaCantidad').value = '';
+                document.getElementById('ventaPrecio').value = '';
+                document.getElementById('ventaValorFinal').value = '';
+                document.getElementById('ventaEstadoPago').value = 'Pago';
+                document.getElementById('ventaFormaPago').value = 'Efectivo';
+                document.getElementById('ventaObs').value = '';
+
+                await cargarDatos();
+                mostrarAlerta('Venta registrada', 'success');
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error al guardar: ' + error.message, 'danger');
+            }
+        }
+
+        function actualizarVentasTable() {
+            const tbody = document.querySelector('#ventasTable tbody');
+            tbody.innerHTML = '';
+
+            const totalIngresos = datos.ventas.reduce((s, v) => s + v.valorFinal, 0);
+            const totalUnidadesVendidas = datos.ventas.reduce((s, v) => s + v.cantidad, 0);
+            document.getElementById('ventasContador').textContent =
+                `(${datos.ventas.length} ventas · ${totalUnidadesVendidas} unidades · ${formatMoney(totalIngresos)})`;
+
+            actualizarIndicadoresOrden('ventasTable', ventasOrdenCol, ventasOrdenDir);
+
+            // Filtrar
+            let listaVentas = datos.ventas;
+            if (ventasFiltroTexto) {
+                listaVentas = listaVentas.filter(v => {
+                    const txt = `${v.cliente} ${v.productoNombre} ${v.obs} ${v.estadoPago} ${v.formaPago} ${v.fecha}`.toLowerCase();
+                    return txt.includes(ventasFiltroTexto);
+                });
+            }
+
+            // Ordenar (si no hay orden manual, usar el default: más nuevas primero)
+            let ventasOrdenadas;
+            if (ventasOrdenCol) {
+                ventasOrdenadas = [...listaVentas].sort((a, b) =>
+                    compararValores(a[ventasOrdenCol], b[ventasOrdenCol], ventasOrdenDir));
+            } else {
+                ventasOrdenadas = [...listaVentas].reverse();
+            }
+
+            if (ventasOrdenadas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center;">Sin ventas</td></tr>';
+                document.getElementById('ventasPaginaInfo').textContent = 'Página 1 de 1';
+                return;
+            }
+
+            const totalPaginas = Math.max(1, Math.ceil(ventasOrdenadas.length / ventasPorPagina));
+            if (ventasPaginaActual > totalPaginas) ventasPaginaActual = totalPaginas;
+
+            const inicio = (ventasPaginaActual - 1) * ventasPorPagina;
+            const fin = inicio + ventasPorPagina;
+            const paginaVentas = ventasOrdenadas.slice(inicio, fin);
+
+            document.getElementById('ventasPaginaInfo').textContent =
+                `Página ${ventasPaginaActual} de ${totalPaginas}`;
+
+            paginaVentas.forEach(v => {
+                const obsText = v.obs ? v.obs.substring(0, 10) + '...' : '—';
+                const gananciaColor = v.ganancia >= 0 ? '#27AE60' : '#E74C3C';
+                const estadoColor = v.estadoPago === 'Pago' ? '#27AE60' : '#E74C3C';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${v.fecha}</td>
+                        <td>${v.cliente}</td>
+                        <td>${v.productoNombre}</td>
+                        <td>${v.cantidad}</td>
+                        <td>${formatMoney(v.costoTotal)}</td>
+                        <td>${formatMoney(v.valorFinal)}</td>
+                        <td style="color: ${gananciaColor}; font-weight: 600;">${formatMoney(v.ganancia)}</td>
+                        <td><button class="btn-small" style="background:${estadoColor};color:white;" onclick="toggleEstadoPago(${v.id})">${v.estadoPago || '—'}</button></td>
+                        <td><button class="btn-small" style="background:#7f8c8d;color:white;" onclick="toggleFormaPago(${v.id})">${v.formaPago || '—'}</button></td>
+                        <td>${obsText}</td>
+                        <td><button class="btn-small btn-danger" onclick="eliminarVenta(${v.id})">X</button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function toggleEstadoPago(id) {
+            const venta = datos.ventas.find(v => v.id === id);
+            if (!venta) return;
+            const nuevo = venta.estadoPago === 'Pago' ? 'Impago' : 'Pago';
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbUpdate('ventas', id, { estado_pago: nuevo });
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        async function toggleFormaPago(id) {
+            const venta = datos.ventas.find(v => v.id === id);
+            if (!venta) return;
+            const nuevo = venta.formaPago === 'Efectivo' ? 'Transferencia' : 'Efectivo';
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbUpdate('ventas', id, { forma_pago: nuevo });
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        async function eliminarVenta(id) {
+            if (!confirm('¿Eliminar?')) return;
+            try {
+                mostrarSync('Guardando...', 'synced');
+                const venta = datos.ventas.find(v => v.id === id);
+                const prod = venta ? datos.productos.find(p => p.id === venta.productoId) : null;
+                if (prod && venta) {
+                    await sbUpdate('productos', prod.id, { stock: prod.stock + venta.cantidad });
+                }
+                await sbDelete('ventas', id);
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        function actualizarDashboard() {
+            const ingresos = datos.ventas.reduce((s, v) => s + v.valorFinal, 0);
+            const ganancia = datos.ventas.reduce((s, v) => s + v.ganancia, 0);
+            const costo = datos.ventas.reduce((s, v) => s + v.costoTotal, 0);
+            const stock = datos.productos.reduce((s, p) => s + p.stock, 0);
+
+            const efectivo = datos.ventas
+                .filter(v => v.formaPago === 'Efectivo')
+                .reduce((s, v) => s + v.valorFinal, 0);
+            const transferencia = datos.ventas
+                .filter(v => v.formaPago === 'Transferencia')
+                .reduce((s, v) => s + v.valorFinal, 0);
+
+            const inversionActual = datos.productos.reduce((s, p) => s + (p.costo * p.stock), 0);
+            const inversionHistorica = inversionActual + costo;
+
+            document.getElementById('totalVentas').textContent = formatMoney(ingresos);
+            document.getElementById('totalEfectivo').textContent = formatMoney(efectivo);
+            document.getElementById('totalTransferencia').textContent = formatMoney(transferencia);
+            document.getElementById('gananciaNeta').textContent = formatMoney(ganancia);
+            document.getElementById('stockTotal').textContent = stock;
+            document.getElementById('inversionActual').textContent = formatMoney(inversionActual);
+            document.getElementById('costoTotal').textContent = formatMoney(costo);
+            document.getElementById('inversionTotalReal').textContent = formatMoney(inversionActual);
+            document.getElementById('inversionHistorica').textContent = formatMoney(inversionHistorica);
+
+            const ultimasBody = document.querySelector('#ultimasVentas tbody');
+            ultimasBody.innerHTML = '';
+            const ultimas = [...datos.ventas].reverse().slice(0, 5);
+
+            ultimas.forEach(v => {
+                ultimasBody.innerHTML += `
+                    <tr>
+                        <td>${v.fecha}</td>
+                        <td>${v.cliente}</td>
+                        <td>${v.productoNombre}</td>
+                        <td>${formatMoney(v.valorFinal)}</td>
+                    </tr>
+                `;
+            });
+
+            // Detalle por estado de pago
+            const ventasPagas = datos.ventas.filter(v => v.estadoPago === 'Pago');
+            const ventasImpagas = datos.ventas.filter(v => v.estadoPago === 'Impago');
+            const totalPago = ventasPagas.reduce((s, v) => s + v.valorFinal, 0);
+            const totalImpago = ventasImpagas.reduce((s, v) => s + v.valorFinal, 0);
+
+            const tbody = document.getElementById('reporteEstadoPago');
+            tbody.innerHTML = `
+                <tr>
+                    <td style="color: #27AE60; font-weight: 600;">Pago</td>
+                    <td>${ventasPagas.length}</td>
+                    <td>${formatMoney(totalPago)}</td>
+                </tr>
+                <tr>
+                    <td style="color: #E74C3C; font-weight: 600;">Impago</td>
+                    <td>${ventasImpagas.length}</td>
+                    <td>${formatMoney(totalImpago)}</td>
+                </tr>
+            `;
+
+            // Balance de caja
+            // Deuda = monto ingresado por el usuario
+            // Total compras = costo de toda la mercadería (stock original)
+            // Reinversión = Total compras - Deuda (lo que se compró con plata de ventas)
+            // Saldo en mano = Ingresos cobrados - Reinversión
+            const deudaTotal = PRESTAMO_INICIAL;
+            document.getElementById('textoPrestamoInicial').textContent = formatMoney(deudaTotal);
+
+            // Total compras separado por forma de pago
+            let comprasEfectivo = 0, comprasTransferencia = 0;
+            datos.productos.forEach(p => {
+                const vendidos = datos.ventas
+                    .filter(v => v.productoId === p.id)
+                    .reduce((s, v) => s + v.cantidad, 0);
+                const stockOriginal = p.stock + vendidos;
+                const costoTotalCompra = p.costo * stockOriginal;
+                if (p.formaPagoCompra === 'Transferencia') comprasTransferencia += costoTotalCompra;
+                else comprasEfectivo += costoTotalCompra;
+            });
+            const totalCompras = comprasEfectivo + comprasTransferencia;
+
+            // El préstamo cubrió las compras iniciales. Todo lo demás es reinversión.
+            // Distribuimos el préstamo primero en efectivo, luego en transferencia.
+            let deudaEnEfectivo = Math.min(deudaTotal, comprasEfectivo);
+            let deudaEnTransferencia = Math.min(deudaTotal - deudaEnEfectivo, comprasTransferencia);
+
+            const reinversionEfectivo = comprasEfectivo - deudaEnEfectivo;
+            const reinversionTransferencia = comprasTransferencia - deudaEnTransferencia;
+            const reinversionTotal = reinversionEfectivo + reinversionTransferencia;
+
+            // Ingresos por ventas cobradas
+            const ingresoPagoEfectivo = datos.ventas
+                .filter(v => v.estadoPago === 'Pago' && v.formaPago === 'Efectivo')
+                .reduce((s, v) => s + v.valorFinal, 0);
+            const ingresoPagoTransferencia = datos.ventas
+                .filter(v => v.estadoPago === 'Pago' && v.formaPago === 'Transferencia')
+                .reduce((s, v) => s + v.valorFinal, 0);
+            const ingresosPagos = ingresoPagoEfectivo + ingresoPagoTransferencia;
+
+            // Saldo por forma de pago
+            const saldoEfectivo = ingresoPagoEfectivo - reinversionEfectivo;
+            const saldoTransferencia = ingresoPagoTransferencia - reinversionTransferencia;
+            const saldoTotal = saldoEfectivo + saldoTransferencia;
+
+            const balanceReal = saldoTotal - deudaTotal;
+
+            const colorVal = (v) => v >= 0 ? '#27AE60' : '#E74C3C';
+
+            const tbodyBalance = document.getElementById('reporteBalanceCaja');
+
+            tbodyBalance.innerHTML = `
+                    <tr>
+                        <td style="color: #27AE60; font-weight: 600;">Ingresos por ventas (cobradas)</td>
+                        <td>${formatMoney(ingresoPagoEfectivo)}</td>
+                        <td>${formatMoney(ingresoPagoTransferencia)}</td>
+                        <td>${formatMoney(ingresosPagos)}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #2E75B6; font-weight: 600;">Reinversión (compras con ventas)</td>
+                        <td>-${formatMoney(reinversionEfectivo)}</td>
+                        <td>-${formatMoney(reinversionTransferencia)}</td>
+                        <td>-${formatMoney(reinversionTotal)}</td>
+                    </tr>
+                    <tr style="border-top: 2px solid var(--border);">
+                        <td style="font-weight: 700;">Saldo disponible (en mano)</td>
+                        <td style="color: ${colorVal(saldoEfectivo)}; font-weight: 700; font-size: 16px;">${formatMoney(saldoEfectivo)}</td>
+                        <td style="color: ${colorVal(saldoTransferencia)}; font-weight: 700; font-size: 16px;">${formatMoney(saldoTransferencia)}</td>
+                        <td style="color: ${colorVal(saldoTotal)}; font-weight: 700; font-size: 18px;">${formatMoney(saldoTotal)}</td>
+                    </tr>
+                    <tr style="background: #fff5f5;">
+                        <td style="color: #E74C3C; font-weight: 700;">Deuda inicial (préstamo pendiente)</td>
+                        <td colspan="2" style="font-size: 12px; color: #7f8c8d;">Préstamo: ${formatMoney(deudaTotal)} de ${formatMoney(totalCompras)} en compras</td>
+                        <td style="color: #E74C3C; font-weight: 700;">-${formatMoney(deudaTotal)}</td>
+                    </tr>
+                    <tr style="border-top: 3px solid var(--dark); font-size: 16px;">
+                        <td style="font-weight: 700;">Balance real (si pagás la deuda)</td>
+                        <td colspan="2"></td>
+                        <td style="color: ${colorVal(balanceReal)}; font-weight: 700;">${formatMoney(balanceReal)}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #F39C12; font-weight: 600;">Ventas impagas (pendiente de cobro)</td>
+                        <td colspan="2"></td>
+                        <td>${formatMoney(totalImpago)}</td>
+                    </tr>
+                `;
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            btn.classList.add('active');
+            cargarDatos();
+        }
+
+        function mostrarAlerta(msg, tipo) {
+            const alert = document.getElementById('alert');
+            alert.textContent = msg;
+            alert.className = `alert alert-${tipo} show`;
+            setTimeout(() => alert.classList.remove('show'), 3000);
+        }
+
+        function mostrarSync(msg, tipo) {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = msg;
+            syncStatus.className = `sync-status ${tipo}`;
+        }
+
+        function guardarEstadoFormVenta() {
+            return {
+                fecha: document.getElementById('ventaFecha').value,
+                cliente: document.getElementById('ventaCliente').value,
+                producto: document.getElementById('ventaProducto').value,
+                productoBuscar: document.getElementById('ventaProductoBuscar').value,
+                cantidad: document.getElementById('ventaCantidad').value,
+                precio: document.getElementById('ventaPrecio').value,
+                valorFinal: document.getElementById('ventaValorFinal').value,
+                obs: document.getElementById('ventaObs').value
+            };
+        }
+
+        function restaurarEstadoFormVenta(estado) {
+            document.getElementById('ventaFecha').value = estado.fecha;
+            document.getElementById('ventaCliente').value = estado.cliente;
+            document.getElementById('ventaProducto').value = estado.producto;
+            document.getElementById('ventaProductoBuscar').value = estado.productoBuscar;
+            document.getElementById('ventaCantidad').value = estado.cantidad;
+            document.getElementById('ventaPrecio').value = estado.precio;
+            document.getElementById('ventaValorFinal').value = estado.valorFinal;
+            document.getElementById('ventaObs').value = estado.obs;
+        }
+
+        function actualizarTodo() {
+            const estado = guardarEstadoFormVenta();
+            actualizarProductosTable();
+            actualizarVentasTable();
+            actualizarDashboard();
+            restaurarEstadoFormVenta(estado);
+        }
+    </script>
+</body>
+</html>

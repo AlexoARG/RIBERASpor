@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Migrar datos del Google Sheet a Supabase</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f5f5f5; }
+        h1 { color: #2E75B6; }
+        .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        button { background: #2E75B6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; cursor: pointer; margin-right: 10px; }
+        button:hover { background: #1c5689; }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+        .danger { background: #E74C3C; }
+        .danger:hover { background: #c0392b; }
+        #log { background: #1e1e1e; color: #ddd; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .ok { color: #27AE60; }
+        .err { color: #E74C3C; }
+        .warn { color: #F39C12; }
+    </style>
+</head>
+<body>
+    <h1>Migración Google Sheet → Supabase</h1>
+
+    <div class="box">
+        <h3>Paso 1 — Verificar conexión a Supabase</h3>
+        <button onclick="probarConexion()">Probar conexión</button>
+    </div>
+
+    <div class="box">
+        <h3>Paso 2 — Vaciar tablas Supabase (opcional)</h3>
+        <p style="color: #666; font-size: 13px;">Si ya hiciste pruebas y querés empezar limpio antes de migrar.</p>
+        <button class="danger" onclick="vaciarTablas()">Vaciar productos y ventas en Supabase</button>
+    </div>
+
+    <div class="box">
+        <h3>Paso 3 — Migrar datos del Google Sheet</h3>
+        <p style="color: #666; font-size: 13px;">Lee el Sheet actual y carga todo en Supabase. Mantiene los IDs originales.</p>
+        <button onclick="migrar()">Migrar ahora</button>
+    </div>
+
+    <div class="box">
+        <h3>Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdy1B2TvE1Jl1bWkk_imIv5gzWqdj2FdNuKmb0qFTH05cIOQg-wJOUCs_qNnuKPOvZ/exec';
+        const SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh';
+        const SB_HEADERS = {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        };
+
+        const logEl = document.getElementById('log');
+        function log(msg, cls) {
+            const line = document.createElement('div');
+            if (cls) line.className = cls;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return '';
+            if (/^\d{2}\/\d{2}\/\d{4}$/.test(fechaStr)) return fechaStr;
+            const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(fechaStr);
+            if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+            const d = new Date(fechaStr);
+            if (!isNaN(d.getTime())) {
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return `${dd}/${mm}/${yyyy}`;
+            }
+            return String(fechaStr);
+        }
+
+        async function probarConexion() {
+            try {
+                log('Probando conexión a Supabase...');
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/productos?select=id&limit=1`, { headers: SB_HEADERS });
+                if (!r.ok) {
+                    log(`ERROR ${r.status}: ${await r.text()}`, 'err');
+                    return;
+                }
+                log('✓ Supabase OK', 'ok');
+
+                log('Probando conexión a Google Sheet...');
+                const r2 = await fetch(APPS_SCRIPT_URL, { redirect: 'follow' });
+                const data = await r2.json();
+                log(`✓ Sheet OK — productos: ${(data.productos||[]).length-1}, ventas: ${(data.ventas||[]).length-1}`, 'ok');
+            } catch (e) {
+                log('ERROR: ' + e.message, 'err');
+            }
+        }
+
+        async function vaciarTablas() {
+            if (!confirm('¿Borrar TODOS los productos y ventas de Supabase? Esto no afecta el Google Sheet.')) return;
+            try {
+                log('Borrando ventas...', 'warn');
+                let r = await fetch(`${SUPABASE_URL}/rest/v1/ventas?id=gte.0`, { method: 'DELETE', headers: SB_HEADERS });
+                if (!r.ok) throw new Error('ventas: ' + await r.text());
+                log('Borrando productos...', 'warn');
+                r = await fetch(`${SUPABASE_URL}/rest/v1/productos?id=gte.0`, { method: 'DELETE', headers: SB_HEADERS });
+                if (!r.ok) throw new Error('productos: ' + await r.text());
+                log('✓ Tablas vacías', 'ok');
+            } catch (e) {
+                log('ERROR: ' + e.message, 'err');
+            }
+        }
+
+        async function bulkInsert(tabla, filas) {
+            // Insertamos de a 100 para no superar límites
+            const chunkSize = 100;
+            for (let i = 0; i < filas.length; i += chunkSize) {
+                const chunk = filas.slice(i, i + chunkSize);
+                const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabla}`, {
+                    method: 'POST',
+                    headers: SB_HEADERS,
+                    body: JSON.stringify(chunk)
+                });
+                if (!r.ok) throw new Error(`${tabla} chunk ${i}: ${r.status} ${await r.text()}`);
+                log(`  ${tabla}: ${Math.min(i+chunkSize, filas.length)}/${filas.length}`);
+            }
+        }
+
+        async function migrar() {
+            try {
+                log('Leyendo Google Sheet...');
+                const r = await fetch(APPS_SCRIPT_URL, { redirect: 'follow' });
+                const data = await r.json();
+                const filasProductos = data.productos || [];
+                const filasVentas = data.ventas || [];
+
+                const productos = [];
+                for (let i = 1; i < filasProductos.length; i++) {
+                    const fila = filasProductos[i];
+                    if (!fila || !fila[0]) continue;
+                    const id = parseInt(fila[0]);
+                    if (isNaN(id) || id <= 0) continue;
+                    productos.push({
+                        id: id,
+                        nombre: String(fila[1] || ''),
+                        descripcion: String(fila[2] || ''),
+                        talle: String(fila[3] || ''),
+                        color: String(fila[4] || ''),
+                        genero: String(fila[5] || ''),
+                        costo: parseFloat(fila[6]) || 0,
+                        precio: parseFloat(fila[7]) || 0,
+                        stock: parseInt(fila[8]) || 0,
+                        stock_min: parseInt(fila[9]) || 0,
+                        fecha_entrada: formatearFecha(fila[10]),
+                        proveedor: String(fila[11] || ''),
+                        forma_pago_compra: String(fila[12] || 'Efectivo')
+                    });
+                }
+
+                const ventas = [];
+                for (let i = 1; i < filasVentas.length; i++) {
+                    const fila = filasVentas[i];
+                    if (!fila || !fila[0]) continue;
+                    const id = parseInt(fila[0]);
+                    if (isNaN(id) || id <= 0) continue;
+                    ventas.push({
+                        id: id,
+                        fecha: formatearFecha(fila[1]),
+                        cliente: String(fila[2] || ''),
+                        producto_id: parseInt(fila[3]) || 0,
+                        producto_nombre: String(fila[4] || ''),
+                        cantidad: parseInt(fila[5]) || 0,
+                        precio: parseFloat(fila[6]) || 0,
+                        costo_unitario: parseFloat(fila[7]) || 0,
+                        costo_total: parseFloat(fila[8]) || 0,
+                        valor_final: parseFloat(fila[9]) || 0,
+                        ganancia: parseFloat(fila[10]) || 0,
+                        estado_pago: String(fila[11] || 'Pago'),
+                        forma_pago: String(fila[12] || 'Efectivo'),
+                        obs: String(fila[13] || '')
+                    });
+                }
+
+                log(`Productos a migrar: ${productos.length}`);
+                log(`Ventas a migrar: ${ventas.length}`);
+
+                if (productos.length > 0) {
+                    log('Insertando productos en Supabase...');
+                    await bulkInsert('productos', productos);
+                }
+                if (ventas.length > 0) {
+                    log('Insertando ventas en Supabase...');
+                    await bulkInsert('ventas', ventas);
+                }
+
+                // Resetear secuencias para que el próximo INSERT use un id mayor al máximo
+                log('Ajustando secuencias de IDs...', 'warn');
+                log('IMPORTANTE: si no podés agregar productos/ventas nuevas, ejecutá esto en Supabase SQL Editor:', 'warn');
+                log("  SELECT setval(pg_get_serial_sequence('productos','id'), COALESCE((SELECT MAX(id) FROM productos), 1));", 'warn');
+                log("  SELECT setval(pg_get_serial_sequence('ventas','id'), COALESCE((SELECT MAX(id) FROM ventas), 1));", 'warn');
+
+                log('✓ MIGRACIÓN COMPLETA', 'ok');
+            } catch (e) {
+                log('ERROR: ' + e.message, 'err');
+            }
+        }
+    </script>
+</body>
+</html>
