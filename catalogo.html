@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de productos en stock</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #f5f5f7;
+        color: #2C3E50;
+        text-transform: uppercase;
+        line-height: 1.4;
+    }
+    .top {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+    }
+    .top h1 { font-size: 28px; }
+    .top p { margin-top: 6px; opacity: 0.9; font-size: 14px; }
+    .top .stats {
+        margin-top: 15px;
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        flex-wrap: wrap;
+        font-size: 13px;
+    }
+    .top .stats div { font-weight: 600; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+    .proveedor { margin-bottom: 50px; }
+    .proveedor-header {
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid #2E75B6;
+    }
+    .proveedor-header h2 { font-size: 22px; color: #2E75B6; }
+    .prov-stats { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
+    .prov-link {
+        display: inline-block;
+        margin-top: 4px;
+        color: #2E75B6;
+        text-decoration: none;
+        font-size: 12px;
+        text-transform: none;
+    }
+    .prov-link:hover { text-decoration: underline; }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 18px;
+    }
+    .card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+    .img-wrap {
+        aspect-ratio: 1 / 1;
+        background: #ECF0F1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .sin-imagen {
+        color: #BDC3C7;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .card h3 { font-size: 13px; line-height: 1.3; }
+    .meta { display: flex; flex-wrap: wrap; gap: 4px; }
+    .badge {
+        background: #ECF0F1;
+        color: #2C3E50;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .precio { font-size: 18px; font-weight: 700; color: #27AE60; margin-top: 4px; }
+    .stock { font-size: 11px; font-weight: 600; }
+    .stock-ok { color: #27AE60; }
+    .stock-bajo { color: #E67E22; }
+    .ver-btn {
+        margin-top: auto;
+        display: block;
+        text-align: center;
+        background: #2E75B6;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .ver-btn:hover { background: #1c5689; }
+    @media print {
+        body { background: white; }
+        .top { background: white !important; color: #2C3E50 !important; -webkit-print-color-adjust: exact; }
+        .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+        .ver-btn { display: none; }
+    }
+</style>
+</head>
+<body>
+    <div class="top">
+        <h1>📦 Catálogo de productos en stock</h1>
+        <p>Generado el 30/04/2026</p>
+        <div class="stats">
+            <div>97 PRODUCTOS</div>
+            <div>104 UNIDADES</div>
+            <div>VALOR TOTAL: $2.568.200,00</div>
+        </div>
+    </div>
+    <div class="container">
+    <section class="proveedor">
+        <div class="proveedor-header">
+            <h2>FACTIONSHOP</h2>
+            <div class="prov-stats">
+                14 PRODUCTOS · 14 UNIDADES · $271.000,00
+            </div>
+            <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="prov-link">https://www.factionshop.com.ar/</a>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/5506b9fd8e2daf9614828005450d3742adf20507fc0ff8ed501b7bd6c1217a1d107510.png" alt="CALZA CORTA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA CORTA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">VERDE PETROLEO</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-petroleo" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/5506b9fd8e2daf9614828005450d3742adf20507fc0ff8ed501b7bd6c1217a1d107510.png" alt="CALZA CORTA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA CORTA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-petroleo" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/5506b9fd8e2daf9614828005450d3742adf20507fc0ff8ed501b7bd6c1217a1d107510.png" alt="CALZA CORTA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA CORTA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-petroleo" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/0904c97031151fb3fb83bc9c6a61cceabf377ae49aba4a38f9058e3c626a07bc107510.jpg" alt="CALZA CORTA LYCRA MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA CORTA LYCRA MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">MARRON</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-marron" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/45d418cf5dfb49e6204111f9a046b78aadf21e1d48b8333919422ea184bdb2c9107510.png" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA DRIFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 2</span>
+                        <span class="badge">CELESTE</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/musculosa-morley" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/45d418cf5dfb49e6204111f9a046b78aadf21e1d48b8333919422ea184bdb2c9107510.png" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA DRIFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">BLANCA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/musculosa-morley" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA DRIFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">GRIS TOPO</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/7046b831bb9a20c47048efc031b94478904df02ae2e2c848d0937eb1c4dd3555107510.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 2</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/remera-micromorley-frizada" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/7046b831bb9a20c47048efc031b94478904df02ae2e2c848d0937eb1c4dd3555107510.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">(3) LILA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/remera-micromorley-frizada" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/7046b831bb9a20c47048efc031b94478904df02ae2e2c848d0937eb1c4dd3555107510.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">BEIGE</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/remera-micromorley-frizada" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/7046b831bb9a20c47048efc031b94478904df02ae2e2c848d0937eb1c4dd3555107510.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/remeras/remera-micromorley-frizada" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">LILA</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">FUCSIA</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRANDE AMARILLO FLUOR</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
+                </div>
+            </div></div>
+    </section>
+    <section class="proveedor">
+        <div class="proveedor-header">
+            <h2>MAIK STORE</h2>
+            <div class="prov-stats">
+                28 PRODUCTOS · 28 UNIDADES · $642.000,00
+            </div>
+            <a href="https://www.maikmayoristas.com/" target="_blank" rel="noopener" class="prov-link">https://www.maikmayoristas.com/</a>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/956dd2a2-6491-429b-8486-e34815ca1347-d56dffd39d6958af1f17556236993864-1024-1024.webp" alt="CALZA BIKER POWER MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA BIKER POWER MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRIS TOPO</span>
+                    </div>
+                    <div class="precio">$27.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/biker-power-recortes-morley-gris-topo/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/cd59e7c2-1af1-4f85-a5dd-ac71f496e2e0-58735171179f00c51117556239469857-1024-1024.webp" alt="CALZA LARGA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/8deb1974-da58-45bb-afde-33052b30a9db-b68d11a7b5f70cb65f17765237165717-1024-1024.webp" alt="CALZA LARGA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRIS AERO</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-gris-aero-tww9z/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/cd59e7c2-1af1-4f85-a5dd-ac71f496e2e0-58735171179f00c51117556239469857-1024-1024.webp" alt="CALZA LARGA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/cd59e7c2-1af1-4f85-a5dd-ac71f496e2e0-58735171179f00c51117556239469857-1024-1024.webp" alt="CALZA LARGA LYCRA MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA LYCRA MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/58e27b04-0188-4cbe-95a7-c28596b0daa8-eef93c5d7bc36c1b9817765201229093-1024-1024.webp" alt="CALZA LARGA POWER RECORTES MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA POWER RECORTES MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">DENIM</span>
+                    </div>
+                    <div class="precio">$22.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-morley-denim-g319x/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/9e7639eb-6137-4cd5-9119-3b28731121bd-8cfa513a1899c48ae517556242161172-1024-1024.webp" alt="CALZA LARGA POWER RECORTES MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA POWER RECORTES MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">VERDE MILITAR</span>
+                    </div>
+                    <div class="precio">$22.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-verde-militar/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/c8368cd5-30a7-4a2d-b578-0249186ae5cb-995a22fae54a9526a017556241709924-1024-1024.webp" alt="CALZA LARGA POWER RECORTES MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA LARGA POWER RECORTES MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">CHOCO</span>
+                    </div>
+                    <div class="precio">$22.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-morley-choco-adobe1/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/12198a40-b207-45f2-9726-6d05de90c531-5e549feb56a309541f17572806019150-1024-1024.webp" alt="CAMPERA KAIRO FRESIA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CAMPERA KAIRO FRESIA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S-M</span>
+                        <span class="badge">NEGRO VERDE</span>
+                    </div>
+                    <div class="precio">$31.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/campera-kairo-fresia/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/e3428850-6fd9-4341-b151-69c8a0d90ff1-e7712f3e62c671301e17572806071176-1024-1024.webp" alt="CAMPERA KAIRO JAZMIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CAMPERA KAIRO JAZMIN</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L-XL</span>
+                        <span class="badge">NEGRO BLANCO</span>
+                    </div>
+                    <div class="precio">$31.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/campera-kairo-jazmin/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/b379e147-b34c-4966-8c81-4109c3f7ae0f-f4440d87e45563d44c17628973729586-1024-1024.webp" alt="CAMPERA SIGMA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CAMPERA SIGMA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">CHERRY</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-cherry/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/2f3eed38-e4bb-44f8-bd69-ea44e19bfa88-1ceaf4f208d798c7e217604700999831-1024-1024.webp" alt="CAMPERA SIGMA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CAMPERA SIGMA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">PETROLEO</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-petroleo/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/e44187a1-7114-4e95-a2fe-fec8f3d0be46-f569ab6df78323fd8017604471015332-1024-1024.webp" alt="CAMPERA SIGMA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CAMPERA SIGMA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">VISION</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-beige/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/0634391f-f050-4717-8130-fb6285cf4bb3-c77f3ba6fbb9ebeed817584671108745-1024-1024.webp" alt="MEDIA POLERA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MEDIA POLERA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">VERDE OLIVA</span>
+                    </div>
+                    <div class="precio">$12.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/media-polera-verde-oliva/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/25adb0d5-4af4-4a1c-8c9f-b0fb2af91087-ef50d87adb754ae6e717685016568754-1024-1024.webp" alt="MUSCULOSA HOMBRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA HOMBRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">VERDE SECO</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/musculosa-active-verde-seco-hombre-zvgwz/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/2dc04e01-bfdf-4751-b23f-90b767b7b680-ea40e9deb0b3688af017740326227696-1024-1024.webp" alt="PESCADOR MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>PESCADOR MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">DENIM</span>
+                    </div>
+                    <div class="precio">$18.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/pescadora-morley-denim-11mrx/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/becad44d-4b30-46c5-96f9-401cba9f315f-ae90261ed5938c0c1e17604689604354-1024-1024.webp" alt="PESCADOR MORLEY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>PESCADOR MORLEY </h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/biker-morley-azul/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/40c0d46e-d70e-465d-bd59-e1fb985eccdf-6a70e57947fde3b9a617626283842269-1024-1024.webp" alt="PESCADOR MORLEY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>PESCADOR MORLEY </h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/musculosa-negra-morley/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/bd6a990d-b3d5-418d-8391-01027641fc67-b51e0a3ec408b0e7c817556254251764-1024-1024.webp" alt="PESCADOR MORLEY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>PESCADOR MORLEY </h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">VERDE MILITAR</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/short-morley-verde-militar/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/a2120669-0d00-46c8-afa8-29d752aac4f5-7e7cb5c1ca0b7c41ec17604722998330-1024-1024.webp" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$12.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-azul/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/cd27345d-82da-4b18-8088-047d87799cce-bb96a27908eb54925817731823709380-1024-1024.webp" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">LILA</span>
+                    </div>
+                    <div class="precio">$12.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-lila/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/992d671d-6c22-497e-af59-05e9810123f7-17b7c7e64cae37c45317658221297638-1024-1024.webp" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-blanca/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/20b9a2b0-9bee-4c1e-aaaa-c037c824844d-b1a747bd67864f2e9517619214844931-1024-1024.webp" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">CELESTE</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-celeste/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/992d671d-6c22-497e-af59-05e9810123f7-17b7c7e64cae37c45317658221297638-1024-1024.webp" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">GRIS</span>
+                    </div>
+                    <div class="precio">$12.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-blanca/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/992d671d-6c22-497e-af59-05e9810123f7-17b7c7e64cae37c45317658221297638-1024-1024.webp" alt="REMERA DRYFIT MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-blanca/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/bd6a990d-b3d5-418d-8391-01027641fc67-b51e0a3ec408b0e7c817556254251764-1024-1024.webp" alt="SHORT MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">VERDE MILITAR</span>
+                    </div>
+                    <div class="precio">$13.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/short-morley-verde-militar/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/c8e767ef-7f77-4fec-84d5-cfeb21298f35-88ccf6b7dee8f2158517659014274949-1024-1024.webp" alt="TOP SIENNA LYCRA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TOP SIENNA LYCRA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">LAVANDA</span>
+                    </div>
+                    <div class="precio">$13.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/top-sienna-lavanda-876bl/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/7219917e-8ad3-435b-bb8a-663fca64f450-60e9b457d79498252417658220784803-1024-1024.webp" alt="TOP UP MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TOP UP MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">UVA</span>
+                    </div>
+                    <div class="precio">$12.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://www.maikmayoristas.com/productos/top-up-morley-negro/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
+                </div>
+            </div></div>
+    </section>
+    <section class="proveedor">
+        <div class="proveedor-header">
+            <h2>NOBRAND</h2>
+            <div class="prov-stats">
+                16 PRODUCTOS · 16 UNIDADES · $510.200,00
+            </div>
+            <a href="https://nobrand-54113928092018s.sumerlabs.com/" target="_blank" rel="noopener" class="prov-link">https://nobrand-54113928092018s.sumerlabs.com/</a>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO FLOW CUELLO REDONDO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">BLANCO</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-flow-cuello-redondo-smr-2455e9077d6876530251cfb1fa8fe45917f607ba" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO INSPIREN</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$35.200,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-bliss-mayormente-negro-smr-f04cdafeaa5d918e6fc5b180f583edef70a12744" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">CREMA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO TRUST</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">AERO GRIS</span>
+                    </div>
+                    <div class="precio">$41.600,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-trust-smr-f6b0146b0e64d3d00f313da67e3180674775fcf0" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>BUZO TRUST</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$41.600,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-trust-smr-f6b0146b0e64d3d00f313da67e3180674775fcf0" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>CAMPERA BRAVE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$42.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>CAMPERA BRAVE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$42.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>CAMPERA BRAVE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XXL</span>
+                        <span class="badge">AZUL MARINO</span>
+                    </div>
+                    <div class="precio">$42.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>JOGGING FLORIDA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">CREMA</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/chupin-dama-algodon--florida-smr-4f40705785eebc5cbdd10f59de3cffa1f1e3fd5c" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>JOGGING FLORIDA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">PETROLEO</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/chupin-dama-algodon--florida-smr-4f40705785eebc5cbdd10f59de3cffa1f1e3fd5c" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>REMERA TERMICA DAMA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$16.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/remera-termica-dama-s-l-xl-smr-cf0ec4021fbe9e38e9b7843fd363637cce20c981" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>REMERA TERMICA HOMBRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">VERDE</span>
+                    </div>
+                    <div class="precio">$18.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/remera-termica-hombre-s-m-l-xl-smr-2bf1f88bfb6c3ad6849523ec521e9e8b441d6b21" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>TOP MAUI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$14.400,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/top-maui-s-l-xl-xxl-smr-f3917b143210689934581d82f61680cb49b2f7db" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><div class="sin-imagen">SIN IMAGEN</div></div>
+                <div class="card-body">
+                    <h3>TOP PULSE</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$14.400,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://nobrand-54113928092018s.domun.co/producto/top-pulse-smr-53e46b827131a9e4aada533fd8ba47c9788a85ea" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
+                </div>
+            </div></div>
+    </section>
+    <section class="proveedor">
+        <div class="proveedor-header">
+            <h2>SIXTY</h2>
+            <div class="prov-stats">
+                39 PRODUCTOS · 46 UNIDADES · $1.145.000,00
+            </div>
+            <a href="HTTPS://SIXTYPADEL.COM/" target="_blank" rel="noopener" class="prov-link">HTTPS://SIXTYPADEL.COM/</a>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-23t105824-567-99ca1e24cfb8507ee517532791157111-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO GAME CIERRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">ROJO</span>
+                    </div>
+                    <div class="precio">$45.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-23t105824-567-99ca1e24cfb8507ee517532791157111-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO GAME CIERRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$45.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t113620-651-ad92b048aa098d534417521582953641-1024-1024.webp" alt="BUZO TRAINING CUELLO REDONDO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO TRAINING CUELLO REDONDO</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">BLANCO</span>
+                    </div>
+                    <div class="precio">$45.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/buzo-training-cuello-redondo-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/task_01ka1v2r8cfrf8bpjm3p9qzk2k_1763146167_img_0-d006d2aecb3b59640e17631475222849-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 35/40</span>
+                        <span class="badge">GRIS/BORDO</span>
+                    </div>
+                    <div class="precio">$5.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/medias-padel-cana-alta-tenis-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/task_01ka1v2r8cfrf8bpjm3p9qzk2k_1763146167_img_0-d006d2aecb3b59640e17631475222849-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 35/40</span>
+                        <span class="badge">NEGRO/ROSA</span>
+                    </div>
+                    <div class="precio">$5.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/medias-padel-cana-alta-tenis-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-10-30t111745-653-164966b50c5d68110917618339124237-1024-1024.webp" alt="MOCHILA PALETERO LUXURY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MOCHILA PALETERO LUXURY </h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        <span class="badge">NEGRO/GRIS</span>
+                    </div>
+                    <div class="precio">$65.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/mochila-paletero-sixty-padel-invictus-yh82m/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        <span class="badge">AMARILLO</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                    <div class="stock stock-ok">STOCK: 2 U.</div>
+                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        <span class="badge">FUCSIA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                    <div class="stock stock-ok">STOCK: 2 U.</div>
+                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        <span class="badge">NARANJA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                    <div class="stock stock-ok">STOCK: 2 U.</div>
+                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        <span class="badge">NARANJA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-20-834192bb88f3bd410417327132710938-1024-1024.webp" alt="PANTALON LARGO HOMBRE COSMO ACETATO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>PANTALON LARGO HOMBRE COSMO ACETATO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$45.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/pantalon-jogging-padel-game-acetato/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154900-986-4d6ba9932588e2f92e17550246091238-1024-1024.webp" alt="POLLERA LUXURY TABLAS MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA LUXURY TABLAS MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">BLANCA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154900-986-4d6ba9932588e2f92e17550246091238-1024-1024.webp" alt="POLLERA LUXURY TABLAS PROMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA LUXURY TABLAS PROMO</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t094343-884-11df41d705cc2eb65d17478315749325-1024-1024.webp" alt="POLLERA SIXTY STELLAR" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA SIXTY STELLAR</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRIS</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/pollera-stellar-c-calza-entrenamientos1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t094343-884-11df41d705cc2eb65d17478315749325-1024-1024.webp" alt="POLLERA STELLAR" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA STELLAR</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">CELESTE</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/pollera-stellar-c-calza-entrenamientos1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093432-813-7202df633882caee1317490406596482-1024-1024.webp" alt="REMERA CLUB 2" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA CLUB 2</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">NEGRA </span>
+                    </div>
+                    <div class="precio">$32.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">BLANCA </span>
+                    </div>
+                    <div class="precio">$32.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">BORDO</span>
+                    </div>
+                    <div class="precio">$32.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">ROJO</span>
+                    </div>
+                    <div class="precio">$32.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DOMINUS</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">GRIS TOPO</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DOMINUS</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">VERDE</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DOMINUS</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">BORDO</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DOMINUS</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XXL</span>
+                        <span class="badge">BORDO</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DOMINUS MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">GRIS TOPO </span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-10-06t160400-153-15fc87bf6f386b068217597774581018-1024-1024.webp" alt="SHORT ARMY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT ARMY</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">ROSA</span>
+                    </div>
+                    <div class="precio">$36.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-army-deportivo-hombre-r56if/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-10-06t160400-153-15fc87bf6f386b068217597774581018-1024-1024.webp" alt="SHORT ARMY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT ARMY</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">BLANCO</span>
+                    </div>
+                    <div class="precio">$36.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-army-deportivo-hombre-r56if/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t095539-764-8c58c1cf42c124105d17478321570009-1024-1024.webp" alt="SHORT GAME S CALZA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT GAME S CALZA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$25.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-motion-layer-c-calza/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t092655-421-d3e79219e8eb9fc4c217478306237023-1024-1024.webp" alt="SHORT HOMBRE COSMO PROMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT HOMBRE COSMO PROMO</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">ROJO</span>
+                    </div>
+                    <div class="precio">$36.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-cosmo/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT LUXURY </h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$36.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT LUXURY </h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">VERDE </span>
+                    </div>
+                    <div class="precio">$26.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY MAXI" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT LUXURY MAXI</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-18t151854-650-43e96d766463d77b6817502707740614-1024-1024.webp" alt="SHORT MUJER C/CALZA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT MUJER C/CALZA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/calza-larga-stellar-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-18t151854-650-43e96d766463d77b6817502707740614-1024-1024.webp" alt="SHORT MUJER C/CALZA " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT MUJER C/CALZA </h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$30.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/calza-larga-stellar-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TUBO PELOTAS</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        
+                        
+                    </div>
+                    <div class="precio">$10.000,00</div>
+                    <div class="stock stock-ok">STOCK: 2 U.</div>
+                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TUBO PELOTAS</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        <span class="badge">TALLE: X 2</span>
+                        <span class="badge">X 2</span>
+                    </div>
+                    <div class="precio">$10.000,00</div>
+                    <div class="stock stock-ok">STOCK: 3 U.</div>
+                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TUBO PELOTAS</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        <span class="badge">TALLE: X 2</span>
+                        <span class="badge">X 2</span>
+                    </div>
+                    <div class="precio">$10.000,00</div>
+                    <div class="stock stock-bajo">STOCK: 1 U.</div>
+                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS MAXI X2" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>TUBO PELOTAS MAXI X2</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+                        <span class="badge">TALLE: X 2</span>
+                        <span class="badge">X 2</span>
+                    </div>
+                    <div class="precio">$10.000,00</div>
+                    <div class="stock stock-ok">STOCK: 2 U.</div>
+                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x2-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div></div>
+    </section></div>
+</body>
+</html>
