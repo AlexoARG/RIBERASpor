@@ -191,6 +191,18 @@
             font-size: 12px;
         }
 
+        /* Acciones en filas: botones siempre en una línea y compactos */
+        td.acciones-cell {
+            white-space: nowrap;
+        }
+        td.acciones-cell .btn-small {
+            padding: 4px 8px;
+            margin-right: 4px;
+        }
+        td.acciones-cell .btn-small:last-child {
+            margin-right: 0;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -201,14 +213,15 @@
         th {
             background: var(--light);
             color: var(--dark);
-            padding: 12px;
+            padding: 10px 8px;
             text-align: left;
             font-weight: 600;
             border-bottom: 2px solid var(--border);
+            white-space: nowrap;
         }
 
         td {
-            padding: 12px;
+            padding: 10px 8px;
             border-bottom: 1px solid var(--light);
         }
 
@@ -1194,7 +1207,7 @@
                         <td>${prod.fechaEntrada || '—'}</td>
                         <td>${prod.proveedor || '—'}</td>
                         <td>${prod.formaPagoCompra || '—'}</td>
-                        <td>
+                        <td class="acciones-cell">
                             <button class="btn-small btn-primary" onclick="editarProducto(${prod.id})">✏️</button>
                             <button class="btn-small btn-danger" onclick="eliminarProducto(${prod.id})">X</button>
                         </td>
@@ -1555,7 +1568,7 @@
                         <td><button class="btn-small" style="background:${estadoColor};color:white;" onclick="toggleEstadoPago(${v.id})">${v.estadoPago || '—'}</button></td>
                         <td><button class="btn-small" style="background:#7f8c8d;color:white;" onclick="toggleFormaPago(${v.id})">${v.formaPago || '—'}</button></td>
                         <td>${obsText}</td>
-                        <td>
+                        <td class="acciones-cell">
                             <button class="btn-small btn-primary" onclick="editarVenta(${v.id})">✏️</button>
                             <button class="btn-small btn-danger" onclick="eliminarVenta(${v.id})">X</button>
                         </td>
@@ -1944,7 +1957,7 @@
                         <td>${formatTel(p.telefono)}</td>
                         <td>${formatEmail(p.email)}</td>
                         <td>${formatNotas(p.notas)}</td>
-                        <td>
+                        <td class="acciones-cell">
                             <button class="btn-small btn-primary" onclick="editarProveedor(${p.id})">✏️</button>
                             <button class="btn-small btn-danger" onclick="eliminarProveedor(${p.id})">X</button>
                         </td>
