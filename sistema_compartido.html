@@ -1231,10 +1231,8 @@
         }
 
         function exportarProductos() {
-            const productosConStock = datos.productos.filter(p => p.stock > 0);
-
-            if (productosConStock.length === 0) {
-                mostrarAlerta('No hay productos con stock para exportar', 'danger');
+            if (datos.productos.length === 0) {
+                mostrarAlerta('No hay productos para exportar', 'danger');
                 return;
             }
 
@@ -1248,7 +1246,7 @@
                 return s;
             };
 
-            const filas = productosConStock.map(p => {
+            const filas = datos.productos.map(p => {
                 const margen = p.precio > 0 ? ((p.precio - p.costo) / p.precio * 100).toFixed(1) : '0';
                 const inversion = (p.costo * p.stock).toFixed(2);
                 return [
