@@ -19,9 +19,23 @@ SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
 
 # Overrides manuales: cuando el matcher automático no acierta, mapear acá.
 # Clave: (NOMBRE, COLOR, TALLE, proveedor_id)  — todo en MAYÚSCULAS, sin acentos
-# Valor: URL exacta del producto en el sitio del proveedor (debe existir en su sitemap)
+# Valor:
+#   - string: URL exacta del producto en el sitio del proveedor (toma imagen del sitemap)
+#   - dict {'image': 'imagenes/foo.jpg', 'url': 'opcional'}: imagen local + link opcional
 OVERRIDES = {
     ('CALZA CORTA LYCRA', 'AZUL', 'S', 1): 'https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino',
+    ('MUSCULOSA DRIFIT', 'CELESTE', '2', 1): {
+        'image': 'imagenes/musculosa-drifit.jpg',
+        'url': 'https://www.factionshop.com.ar/'
+    },
+    ('MUSCULOSA DRIFIT', 'BLANCA', '3', 1): {
+        'image': 'imagenes/musculosa-drifit.jpg',
+        'url': 'https://www.factionshop.com.ar/'
+    },
+    ('MUSCULOSA DRIFIT', 'GRIS TOPO', '3', 1): {
+        'image': 'imagenes/musculosa-drifit.jpg',
+        'url': 'https://www.factionshop.com.ar/'
+    },
 }
 
 CTX = ssl.create_default_context()
@@ -268,15 +282,30 @@ def main():
 
         # 1) Override manual?
         key = (prod['nombre'], prod.get('color') or '', prod.get('talle') or '', pid)
-        url_override = OVERRIDES.get(key)
-        if url_override:
-            for item in sm:
-                if item['url'] == url_override:
-                    match = item
-                    overrides_aplicados += 1
-                    break
-            if not match:
-                print(f"   ⚠ override URL no encontrada en sitemap para {key}: {url_override}")
+        ov = OVERRIDES.get(key)
+        if ov:
+            if isinstance(ov, dict):
+                # Imagen local
+                match = {
+                    'url': ov.get('url', ''),
+                    'image': ov['image'],
+                    'slug': '',
+                    'tokens': set()
+                }
+                overrides_aplicados += 1
+                # Aviso si el archivo local no existe todavía
+                import os
+                if ov['image'] and not os.path.exists(ov['image']):
+                    print(f"   ⚠ falta archivo: {ov['image']}  (producto: {prod['nombre']} / {prod.get('color')} / {prod.get('talle')})")
+            else:
+                # URL del proveedor: buscar en sitemap
+                for item in sm:
+                    if item['url'] == ov:
+                        match = item
+                        overrides_aplicados += 1
+                        break
+                if not match:
+                    print(f"   ⚠ override URL no encontrada en sitemap para {key}: {ov}")
 
         # 2) Matcher automático
         if not match:
