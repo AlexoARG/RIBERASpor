@@ -91,50 +91,123 @@ def parse_sitemap(content_bytes, root_domain):
         })
     return items
 
+COLORES_CONOCIDOS = {
+    'NEGRO','NEGRA','BLANCO','BLANCA','AZUL','AZULES','ROJO','ROJA','VERDE','AMARILLO','AMARILLA',
+    'NARANJA','GRIS','GRISES','MARRON','BEIGE','ROSA','FUCSIA','VIOLETA','MORADO','LILA',
+    'CELESTE','BORDO','TURQUESA','PETROLEO','PETROL','CREMA','MILITAR','NUDE','MARINO',
+    'PERLA','CARAMELO','MOSTAZA','CORAL','MENTA','OLIVA','OCRE','CIRUELA','VINO','MUSGO',
+    'MAGENTA','PURPURA','FLUOR','NEON','DORADO','DORADA','PLATEADO','PLATEADA','COBRE',
+    'CHOCOLATE','CAFE','TOSTADO','VISON','MELANGE','UVA','MALBEC','MOCA','PEPPER','LIMA',
+    'AERO','ORQUIDEA','TIZA','NATURAL','TOPO','PLATA','VISION','CHERRY','PINK','BLUE',
+    'BLACK','WHITE','GREEN','RED','GRAY','GREY','YELLOW','BROWN','PURPLE','VIOLET',
+    'JAZMIN','FRESIA','SIGMA','KAIRO','ARENA','SALMON','BERMELLON','BORDEAUX','ESMERALDA',
+    'COBALTO','INDIGO','LAVANDA','CAQUI','KAKI','OLIVA','SEPIA','TERRACOTA','TANGO',
+    'CHAMPAGNE','VAINILLA','HUMO','OXIDO','OXIDADO','HIELO','MUSTARD','CARAMEL','SAND'
+}
+
+def stem_color(t):
+    """Stem básico para igualar variantes de color: NEGRO/NEGRA → NEGR, etc."""
+    if len(t) >= 5:
+        if t.endswith('AS') or t.endswith('OS'):
+            return t[:-2]
+        if t.endswith('A') or t.endswith('O'):
+            return t[:-1]
+    return t
+
+def color_overlap(color_str, slug_tokens):
+    """Cuántos tokens de color (con stem) están en los tokens del slug."""
+    if not color_str:
+        return 0
+    color_tokens = slug_a_tokens(color_str, ignorar_numeros=True)
+    GENERICOS = {'DE', 'CON', 'Y', 'O'}
+    color_tokens -= GENERICOS
+    color_stems = {stem_color(t) for t in color_tokens}
+    slug_stems = {stem_color(t) for t in slug_tokens}
+    return len(color_stems & slug_stems)
+
 def matchear(producto_nombre, sitemap_items, color=None):
-    """Devuelve el mejor item del sitemap para el producto, o None."""
-    # Ignorar números en nombre porque suelen ser talles (35/40) que no aparecen en slugs
+    """Devuelve el mejor item del sitemap para el producto, o None.
+
+    Prioriza fuertemente el color: si hay slugs candidatos con color matching,
+    elige entre esos. Si el color no aparece en ningún slug pero hay múltiples
+    candidatos por nombre con URLs distintas (indica que el proveedor tiene
+    variantes por color), devuelve None para no asignar una imagen incorrecta.
+    """
     nombre_tokens = slug_a_tokens(producto_nombre, ignorar_numeros=True)
     if not nombre_tokens or not sitemap_items:
         return None
 
-    color_tokens = slug_a_tokens(color, ignorar_numeros=True) if color else set()
-
     GENERICOS = {'DE', 'CON', 'PARA', 'EL', 'LA', 'LOS', 'LAS', 'SIN', 'POR', 'Y', 'O'}
     nombre_tokens = nombre_tokens - GENERICOS
-
     if not nombre_tokens:
         return None
 
-    mejor = None
-    mejor_score = 0
+    n = len(nombre_tokens)
+    if n <= 2: umbral = 1
+    elif n <= 4: umbral = 2
+    else: umbral = (n + 2) // 3
+
+    # Candidatos: slugs que matchean al menos `umbral` tokens del nombre
+    candidatos = []
     for item in sitemap_items:
         comunes = nombre_tokens & item['tokens']
-        score = len(comunes)
-        if color_tokens and (color_tokens & item['tokens']):
-            score += len(color_tokens & item['tokens']) * 0.5
-        if score == 0:
-            continue
-        extras = len(item['tokens'] - nombre_tokens - color_tokens)
-        score_final = score - 0.05 * extras
-        if score_final > mejor_score:
-            mejor_score = score_final
-            mejor = item
+        if len(comunes) >= umbral:
+            candidatos.append({
+                'item': item,
+                'name_score': len(comunes),
+                'extras': len(item['tokens'] - nombre_tokens),
+            })
 
-    if not mejor:
+    if not candidatos:
         return None
 
-    matches = len(nombre_tokens & mejor['tokens'])
-    n = len(nombre_tokens)
-    # Umbral más permisivo: nombres cortos (1-2 tokens) → 1 match basta
-    # Nombres medios (3-4) → 2 matches; largos (5+) → ceil(n/3)
-    if n <= 2:
-        umbral = 1
-    elif n <= 4:
-        umbral = 2
-    else:
-        umbral = (n + 2) // 3
-    return mejor if matches >= umbral else None
+    # Subgrupo "exactos": candidatos que matchean TODOS los tokens del nombre
+    # Estos son los slugs del producto base (variantes por color).
+    exactos = [c for c in candidatos if nombre_tokens.issubset(c['item']['tokens'])]
+
+    if color:
+        # 1) Buscar entre exactos uno con color matching
+        if exactos:
+            con_color = []
+            for c in exactos:
+                cm = color_overlap(color, c['item']['tokens'])
+                if cm > 0:
+                    con_color.append((c, cm))
+            if con_color:
+                con_color.sort(key=lambda x: (-x[1], -x[0]['name_score'], x[0]['extras']))
+                return con_color[0][0]['item']
+            # Hay variantes exactas pero ninguna del color pedido.
+            # Solo abortar si los slugs realmente contienen NOMBRES DE COLOR conocidos
+            # (variantes por color identificables). Si los slugs son numerados o usan
+            # códigos hash, son productos del mismo nombre pero indistinguibles por slug
+            # → tomar el primero como foto general.
+            urls_exactas = {c['item']['url'] for c in exactos}
+            if len(urls_exactas) > 1:
+                color_stems_known = {stem_color(c) for c in COLORES_CONOCIDOS}
+                extras_set = set()
+                for c in exactos:
+                    extras_set |= (c['item']['tokens'] - nombre_tokens)
+                tienen_colores = any(stem_color(t) in color_stems_known for t in extras_set)
+                if tienen_colores:
+                    return None  # variantes por color reales, no engañar
+                # Slugs numerados / sin color: usar el primero
+            exactos.sort(key=lambda c: (-c['name_score'], c['extras']))
+            return exactos[0]['item']
+
+        # 2) Sin exactos: buscar color en cualquier candidato
+        con_color = []
+        for c in candidatos:
+            cm = color_overlap(color, c['item']['tokens'])
+            if cm > 0:
+                con_color.append((c, cm))
+        if con_color:
+            con_color.sort(key=lambda x: (-x[1], -x[0]['name_score'], x[0]['extras']))
+            return con_color[0][0]['item']
+
+    # Sin color, o color que no matcheó: el mejor por nombre (preferir exactos)
+    pool = exactos if exactos else candidatos
+    pool.sort(key=lambda c: (-c['name_score'], c['extras']))
+    return pool[0]['item']
 
 def format_money(n):
     s = f'{n:,.2f}'
@@ -257,8 +330,6 @@ def main():
                 else ''
             )
 
-            stock_class = 'stock-bajo' if p['stock'] <= (p.get('stock_min') or 0) else 'stock-ok'
-
             cards.append(f'''
             <div class="card">
                 <div class="img-wrap">{img_html}</div>
@@ -270,7 +341,6 @@ def main():
                         {('<span class="badge">'+html_escape(p["color"])+'</span>') if p.get('color') else ''}
                     </div>
                     <div class="precio">{format_money(p["precio"])}</div>
-                    <div class="stock {stock_class}">STOCK: {p["stock"]} U.</div>
                     {link_btn}
                 </div>
             </div>''')
