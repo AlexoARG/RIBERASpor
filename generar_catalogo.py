@@ -329,12 +329,20 @@ def main():
             continue
         try:
             html = http_get(url).decode('utf-8', errors='ignore')
-            m = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)', html, re.I)
-            if not m:
-                m = re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']', html, re.I)
-            if m:
-                p['_match']['image'] = m.group(1)
-                cache_og[url] = m.group(1)
+            # og:image puede venir con property= o name= (NoBrand/Sumerlabs usa name=)
+            patrones = [
+                r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)',
+                r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']',
+            ]
+            img_url = None
+            for pat in patrones:
+                m = re.search(pat, html, re.I)
+                if m:
+                    img_url = m.group(1)
+                    break
+            if img_url:
+                p['_match']['image'] = img_url
+                cache_og[url] = img_url
         except Exception:
             pass
         if i % 5 == 0:
