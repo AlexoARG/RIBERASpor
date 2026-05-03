@@ -42,6 +42,41 @@ CTX = ssl.create_default_context()
 CTX.check_hostname = False
 CTX.verify_mode = ssl.CERT_NONE
 
+# Mapeo de nombres de color → RGB target (centroide aproximado)
+COLORES_RGB = {
+    'NEGRO': (30, 30, 30), 'NEGRA': (30, 30, 30),
+    'BLANCO': (240, 240, 240), 'BLANCA': (240, 240, 240),
+    'GRIS': (130, 130, 130), 'TOPO': (110, 100, 90),
+    'AZUL': (50, 80, 170), 'MARINO': (30, 40, 90),
+    'ROJO': (180, 30, 30), 'ROJA': (180, 30, 30),
+    'VERDE': (60, 130, 60), 'MILITAR': (90, 100, 60), 'OLIVA': (110, 110, 60),
+    'CREMA': (230, 220, 200), 'BEIGE': (220, 200, 170), 'TIZA': (245, 240, 230),
+    'ROSA': (240, 180, 180), 'FUCSIA': (220, 60, 140), 'CORAL': (240, 130, 110),
+    'LILA': (200, 180, 220), 'VIOLETA': (140, 70, 180), 'UVA': (140, 70, 180), 'MORADO': (140, 70, 180), 'PURPURA': (140, 70, 180),
+    'CELESTE': (160, 200, 230), 'TURQUESA': (60, 180, 180), 'AGUA': (130, 200, 220),
+    'AMARILLO': (240, 220, 80), 'AMARILLA': (240, 220, 80), 'MOSTAZA': (210, 170, 50),
+    'NARANJA': (240, 130, 50), 'OCRE': (210, 160, 80),
+    'MARRON': (110, 80, 60), 'CHOCOLATE': (90, 60, 40), 'CAFE': (110, 80, 60), 'TOSTADO': (180, 130, 90), 'CARAMELO': (190, 130, 70),
+    'BORDO': (110, 30, 50), 'VINO': (110, 30, 50), 'CIRUELA': (110, 50, 80),
+    'PETROLEO': (40, 90, 100), 'PETROL': (40, 90, 100),
+    'ORQUIDEA': (190, 130, 200), 'NUDE': (220, 195, 180),
+    'VISON': (170, 150, 130), 'PERLA': (220, 215, 200),
+    'CHERRY': (180, 30, 60),
+}
+
+def color_target_rgb(color_str):
+    """Resuelve un string de color a RGB target. Si tiene varios tokens (ej. 'AZUL MARINO'),
+    promedia los reconocidos."""
+    if not color_str:
+        return None
+    s = color_str.upper().strip()
+    if s in COLORES_RGB:
+        return COLORES_RGB[s]
+    rgbs = [COLORES_RGB[tok] for tok in s.split() if tok in COLORES_RGB]
+    if not rgbs:
+        return None
+    return tuple(sum(c[i] for c in rgbs) // len(rgbs) for i in range(3))
+
 def http_get(url, headers=None):
     req = urllib.request.Request(url, headers=headers or {'User-Agent': 'Mozilla/5.0'})
     with urllib.request.urlopen(req, timeout=20, context=CTX) as r:
@@ -318,36 +353,81 @@ def main():
         enriquecidos.append({**prod, '_match': match})
     print(f'   matches: {matches}, sin match: {sin_match} (overrides: {overrides_aplicados})')
 
-    # Para matches sin imagen (típico nobrand), intentar extraer og:image de la página del producto
-    print('4b) Extrayendo og:image de productos matched sin imagen...')
+    # Para matches sin imagen (típico NoBrand): bajar la página, sacar todas las imágenes
+    # del producto, y elegir la que mejor matchee el color (color promedio del centro).
+    print('4b) Eligiendo mejor imagen por color en productos sin imagen en sitemap...')
     pendientes = [p for p in enriquecidos if p.get('_match') and not p['_match'].get('image')]
-    cache_og = {}
+    cache_pages = {}     # url_pagina → html
+    cache_imgs = {}      # url_imagen → (r, g, b) o None
+    cache_color_pick = {} # (url_pagina, color_str) → url_imagen elegida
+
+    def color_dominante(url_img):
+        if url_img in cache_imgs:
+            return cache_imgs[url_img]
+        try:
+            from PIL import Image as _PILImage
+            from io import BytesIO as _BytesIO
+            data = http_get(url_img)
+            img = _PILImage.open(_BytesIO(data)).convert('RGB').resize((100, 100))
+            # Centro 60x60 (excluye margen)
+            center = img.crop((20, 20, 80, 80))
+            pixels = list(center.getdata())
+            n = len(pixels)
+            r = sum(p[0] for p in pixels) // n
+            g = sum(p[1] for p in pixels) // n
+            b = sum(p[2] for p in pixels) // n
+            cache_imgs[url_img] = (r, g, b)
+            return (r, g, b)
+        except Exception:
+            cache_imgs[url_img] = None
+            return None
+
+    def og_image(html):
+        for pat in [
+            r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)',
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']',
+        ]:
+            m = re.search(pat, html, re.I)
+            if m:
+                return m.group(1)
+        return None
+
     for i, p in enumerate(pendientes, 1):
-        url = p['_match']['url']
-        if url in cache_og:
-            p['_match']['image'] = cache_og[url]
+        url_pagina = p['_match']['url']
+        color_str = p.get('color') or ''
+        cache_key = (url_pagina, color_str)
+        if cache_key in cache_color_pick:
+            p['_match']['image'] = cache_color_pick[cache_key]
             continue
         try:
-            html = http_get(url).decode('utf-8', errors='ignore')
-            # og:image puede venir con property= o name= (NoBrand/Sumerlabs usa name=)
-            patrones = [
-                r'<meta[^>]+(?:property|name)=["\']og:image["\'][^>]+content=["\']([^"\']+)',
-                r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+(?:property|name)=["\']og:image["\']',
-            ]
-            img_url = None
-            for pat in patrones:
-                m = re.search(pat, html, re.I)
-                if m:
-                    img_url = m.group(1)
-                    break
-            if img_url:
-                p['_match']['image'] = img_url
-                cache_og[url] = img_url
-        except Exception:
+            if url_pagina not in cache_pages:
+                cache_pages[url_pagina] = http_get(url_pagina).decode('utf-8', errors='ignore')
+            html = cache_pages[url_pagina]
+            img_urls = list(dict.fromkeys(
+                re.findall(r'https://(?:sumerlabs\.com|assets\.domun\.co)/prod/catalogue/[a-f0-9]+/[\w-]+\.(?:jpg|jpeg|png|webp)', html)
+            ))
+            target = color_target_rgb(color_str)
+            chosen = None
+            if img_urls and target:
+                best, best_d = None, float('inf')
+                for u in img_urls[:12]:  # limitar a 12 imágenes por producto
+                    c = color_dominante(u)
+                    if c is None:
+                        continue
+                    d = (c[0]-target[0])**2 + (c[1]-target[1])**2 + (c[2]-target[2])**2
+                    if d < best_d:
+                        best_d, best = d, u
+                chosen = best
+            if not chosen:
+                chosen = og_image(html)
+            if chosen:
+                p['_match']['image'] = chosen
+                cache_color_pick[cache_key] = chosen
+        except Exception as e:
             pass
-        if i % 5 == 0:
+        if i % 4 == 0:
             print(f'    {i}/{len(pendientes)}')
-    print(f'   og:image extraídas: {sum(1 for p in pendientes if p["_match"].get("image"))}')
+    print(f'   imágenes elegidas: {sum(1 for p in pendientes if p["_match"].get("image"))}')
 
     print('5) Generando catalogo.html...')
     # Agrupar por proveedor
