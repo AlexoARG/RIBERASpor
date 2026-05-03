@@ -25,15 +25,15 @@ SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
 OVERRIDES = {
     ('CALZA CORTA LYCRA', 'AZUL', 'S', 1): 'https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino',
     ('MUSCULOSA DRIFIT', 'CELESTE', '2', 1): {
-        'image': 'imagenes/musculosa-drifit.jpg',
+        'image': 'imagenes/musculosa-drifit.jpeg',
         'url': 'https://www.factionshop.com.ar/'
     },
     ('MUSCULOSA DRIFIT', 'BLANCA', '3', 1): {
-        'image': 'imagenes/musculosa-drifit.jpg',
+        'image': 'imagenes/musculosa-drifit.jpeg',
         'url': 'https://www.factionshop.com.ar/'
     },
     ('MUSCULOSA DRIFIT', 'GRIS TOPO', '3', 1): {
-        'image': 'imagenes/musculosa-drifit.jpg',
+        'image': 'imagenes/musculosa-drifit.jpeg',
         'url': 'https://www.factionshop.com.ar/'
     },
 }
