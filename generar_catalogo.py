@@ -416,7 +416,6 @@ def main():
             <div class="prov-stats">
                 {len(items_grupo)} PRODUCTOS · {prov_unidades} UNIDADES · {format_money(prov_subtotal)}
             </div>
-            {('<a href="'+html_escape(prov_url)+'" target="_blank" rel="noopener" class="prov-link">'+html_escape(prov_url)+'</a>') if prov_url else ''}
         </div>
         <div class="grid">{"".join(cards)}</div>
     </section>''')
