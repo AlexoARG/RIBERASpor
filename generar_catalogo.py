@@ -17,6 +17,13 @@ from datetime import datetime
 SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co'
 SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
 
+# Overrides manuales: cuando el matcher automático no acierta, mapear acá.
+# Clave: (NOMBRE, COLOR, TALLE, proveedor_id)  — todo en MAYÚSCULAS, sin acentos
+# Valor: URL exacta del producto en el sitio del proveedor (debe existir en su sitemap)
+OVERRIDES = {
+    ('CALZA CORTA LYCRA', 'AZUL', 'S', 1): 'https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino',
+}
+
 CTX = ssl.create_default_context()
 CTX.check_hostname = False
 CTX.verify_mode = ssl.CERT_NONE
@@ -253,16 +260,34 @@ def main():
     enriquecidos = []
     matches = 0
     sin_match = 0
+    overrides_aplicados = 0
     for prod in productos:
         pid = prod.get('proveedor_id')
         sm = sitemaps.get(pid, [])
-        match = matchear(prod['nombre'], sm, prod.get('color'))
+        match = None
+
+        # 1) Override manual?
+        key = (prod['nombre'], prod.get('color') or '', prod.get('talle') or '', pid)
+        url_override = OVERRIDES.get(key)
+        if url_override:
+            for item in sm:
+                if item['url'] == url_override:
+                    match = item
+                    overrides_aplicados += 1
+                    break
+            if not match:
+                print(f"   ⚠ override URL no encontrada en sitemap para {key}: {url_override}")
+
+        # 2) Matcher automático
+        if not match:
+            match = matchear(prod['nombre'], sm, prod.get('color'))
+
         if match:
             matches += 1
         else:
             sin_match += 1
         enriquecidos.append({**prod, '_match': match})
-    print(f'   matches: {matches}, sin match: {sin_match}')
+    print(f'   matches: {matches}, sin match: {sin_match} (overrides: {overrides_aplicados})')
 
     # Para matches sin imagen (típico nobrand), intentar extraer og:image de la página del producto
     print('4b) Extrayendo og:image de productos matched sin imagen...')
