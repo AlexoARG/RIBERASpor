@@ -73,6 +73,20 @@ OVERRIDES = {
         'image': 'imagenes/remera-dryfit-lila.jpg',
         'url': 'https://www.factionshop.com.ar/remeras',
     },
+    # SUDADERA DRYFIT (FactionShop): no esta en su sitemap. Foto base lila + recoloreadas
+    # con recolorear_sudadera_dryfit.py.
+    ('SUDADERA DRYFIT', 'LILA', '3', 1): {
+        'image': 'imagenes/sudadera-dryfit-original.png',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
+    ('SUDADERA DRYFIT', 'FUCSIA', 'S', 1): {
+        'image': 'imagenes/sudadera-dryfit-fucsia.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
+    ('SUDADERA DRYFIT', 'GRANDE AMARILLO FLUOR', 'M', 1): {
+        'image': 'imagenes/sudadera-dryfit-amarillo-fluor.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
 }
 
 CTX = ssl.create_default_context()
