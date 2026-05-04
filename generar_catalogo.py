@@ -21,9 +21,14 @@ SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
 # Clave: (NOMBRE, COLOR, TALLE, proveedor_id)  — todo en MAYÚSCULAS, sin acentos
 # Valor:
 #   - string: URL exacta del producto en el sitio del proveedor (toma imagen del sitemap)
-#   - dict {'image': 'imagenes/foo.jpg', 'url': 'opcional'}: imagen local + link opcional
+#   - dict {'image': 'imagenes/foo.jpg' | 'https://...', 'url': 'opcional'}:
+#       imagen pinned (local o URL remota) + link opcional
 OVERRIDES = {
     ('CALZA CORTA LYCRA', 'AZUL', 'S', 1): 'https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino',
+    ('BUZO INSPIRE', 'NEGRO', 'L', 4): {
+        'image': 'https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image1rvzv1prpqumnsvtp0q.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-inspire-smr-76de8fdaafa07dbc323072a5752f34af781db0e4',
+    },
     ('MUSCULOSA DRIFIT', 'CELESTE', '2', 1): {
         'image': 'imagenes/musculosa-drifit-celeste.jpg',
         'url': 'https://www.factionshop.com.ar/'
@@ -320,7 +325,7 @@ def main():
         ov = OVERRIDES.get(key)
         if ov:
             if isinstance(ov, dict):
-                # Imagen local
+                # Imagen pinned (local o URL remota)
                 match = {
                     'url': ov.get('url', ''),
                     'image': ov['image'],
@@ -328,10 +333,12 @@ def main():
                     'tokens': set()
                 }
                 overrides_aplicados += 1
-                # Aviso si el archivo local no existe todavía
-                import os
-                if ov['image'] and not os.path.exists(ov['image']):
-                    print(f"   ⚠ falta archivo: {ov['image']}  (producto: {prod['nombre']} / {prod.get('color')} / {prod.get('talle')})")
+                # Aviso si el archivo local no existe (sólo aplica a rutas locales)
+                img_val = ov['image'] or ''
+                if img_val and not img_val.startswith(('http://', 'https://')):
+                    import os
+                    if not os.path.exists(img_val):
+                        print(f"   ⚠ falta archivo: {img_val}  (producto: {prod['nombre']} / {prod.get('color')} / {prod.get('talle')})")
             else:
                 # URL del proveedor: buscar en sitemap
                 for item in sm:
