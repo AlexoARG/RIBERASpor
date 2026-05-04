@@ -46,6 +46,13 @@
         gap: 50px;
         flex-wrap: wrap;
     }
+    .top-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        flex-shrink: 0;
+    }
     .top .logo {
         display: block;
         width: 220px;
@@ -56,8 +63,31 @@
         padding: 4px;
         background: var(--bg-soft);
         box-shadow: 0 6px 24px rgba(201, 162, 91, 0.25);
-        flex-shrink: 0;
     }
+    .top .descripcion {
+        text-align: center;
+        max-width: 240px;
+    }
+    .top .descripcion .linea {
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--text);
+        font-weight: 500;
+        line-height: 1.5;
+    }
+    .top .descripcion .linea + .linea { margin-top: 4px; }
+    .top .descripcion .oficial {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        line-height: 1.5;
+    }
+    .top .descripcion .oficial b { color: var(--accent); font-weight: 600; }
     .top-center {
         text-align: center;
         display: flex;
@@ -269,7 +299,14 @@
 <body>
     <div class="top">
       <div class="top-inner">
-        <img src="imagenes/logo.jpeg" alt="Ribera Sport" class="logo">
+        <div class="top-left">
+          <img src="imagenes/logo.jpeg" alt="Ribera Sport" class="logo">
+          <div class="descripcion">
+            <div class="linea">Multimarca Deportiva</div>
+            <div class="linea">Indumentaria y Accesorios</div>
+            <div class="oficial">Revendedor oficial de <b>Sixty</b> y <b>No Brand</b></div>
+          </div>
+        </div>
         <div class="top-center">
         <img src="imagenes/logo-nombre.jpeg" alt="Ribera Sport" class="logo-nombre">
         <p class="subtitle">Catálogo de productos en stock</p>
