@@ -128,6 +128,151 @@ OVERRIDES = {
     ('REMERA DRYFIT', 'GRIS', 'XL', 2): 'https://www.maikmayoristas.com/productos/remera-dryfit-gris1/',
     # Slug `top-up-uva-pastel` no contiene "morley".
     ('TOP UP MORLEY', 'UVA', 'L', 2): 'https://www.maikmayoristas.com/productos/top-up-uva-pastel/',
+    # BUZO GAME CIERRE (Sixty): el matcher devuelve la imagen del variant Negro.
+    # Las URLs reales por color salen del data-store="product-image" del producto.
+    ('BUZO GAME CIERRE', 'ROJO', 'M', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100315-452-copia-e794e9db65c5d6b32417536214678171-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/',
+    },
+    ('BUZO GAME CIERRE', 'AZUL', 'S', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100254-247-5d714ff2bd74bd3ede17536214676439-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/',
+    },
+    ('BUZO GAME CIERRE', 'AZUL', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100254-247-5d714ff2bd74bd3ede17536214676439-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/',
+    },
+    ('BUZO GAME CIERRE', 'AZUL', 'XL', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100254-247-5d714ff2bd74bd3ede17536214676439-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/',
+    },
+    # MEDIAS DAMA 35/40 CAÑA ALTA (Sixty): el matcher las mandaba al producto
+    # de hombre con foto genérica. URL real: medias-termicas-trekking-unisex.
+    # Variantes en data-store="product-image": Gris/Bordo, Negro/Fucsia (≈ NEGRO/ROSA), Negro/Verde.
+    ('MEDIAS DAMA 35/40 CAÑA ALTA', 'GRIS/BORDO', '35/40', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t093125-928-c37e275f706415d0e517521507887210-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/medias-termicas-trekking-unisex/',
+    },
+    ('MEDIAS DAMA 35/40 CAÑA ALTA', 'NEGRO/ROSA', '35/40', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/assets_task_01jz5pxew0eknat5aqss2cwcwp_1751464837_img_1-572cdffffc81bf427e17521516471521-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/medias-termicas-trekking-unisex/',
+    },
+    # MOCHILA PALETERO LUXURY (Sixty): foto provista por el cliente.
+    ('MOCHILA PALETERO LUXURY ', 'NEGRO/GRIS', '', 3): {
+        'image': 'imagenes/mochila-paletero-luxury.jpg',
+        'url': 'https://sixtypadel.com/productos/mochila-paletero-sixty-padel-invictus-yh82m/',
+    },
+    # OVERGRIPS THIN (Sixty): URL real es cubregrip-get-overgrip-x1-tenis-padel-squash-lisos.
+    # Variantes en data-store="product-image": Negro, Rosa, Celeste, Blanco, Amarillo.
+    # NARANJA no existe como variante; uso Amarillo (más cercano visualmente).
+    # FUCSIA mapea a Rosa.
+    ('OVERGRIPS THIN', 'AMARILLO', '', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122329-089-96e214a01856af13ef17547530867696-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/cubregrip-get-overgrip-x1-tenis-padel-squash-lisos/',
+    },
+    ('OVERGRIPS THIN', 'BLANCO', '', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122347-500-c6f66d50a063be6ccf17547530867845-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/cubregrip-get-overgrip-x1-tenis-padel-squash-lisos/',
+    },
+    ('OVERGRIPS THIN', 'FUCSIA', '', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122311-293-0ae0336c7dbbb76ae117547530873915-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/cubregrip-get-overgrip-x1-tenis-padel-squash-lisos/',
+    },
+    ('OVERGRIPS THIN', 'NARANJA', '', 3): {
+        'image': 'imagenes/overgrips-thin-naranja.jpg',
+        'url': 'https://sixtypadel.com/productos/cubregrip-get-overgrip-x1-tenis-padel-squash-lisos/',
+    },
+    # POLLERA LUXURY TABLAS NEGRA (Sixty): URL real es pollera-luxury-tenis-padel-tableada-con-short
+    # (sin el "1" del slug duplicado). Variante Negro en data-store="product-image".
+    # En DB hay duplicados NEGRO/NEGRA L — cubrimos ambos.
+    ('POLLERA LUXURY TABLAS', 'NEGRA', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short/',
+    },
+    ('POLLERA LUXURY TABLAS', 'NEGRO', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short/',
+    },
+    # REMERA CLUB 2 NEGRA (Sixty): el slug base `remera-club-2-mujer-dry-fitness/` es la version LILA.
+    # La variante negra vive en otra URL: `remera-club-2-mujer-dry-fitness2/`.
+    ('REMERA CLUB 2', 'NEGRA', 'S', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness2/',
+    },
+    # REMERA COSMO BLANCA (Sixty): el slug `remera-cosmo-hombre1/` es la version negra.
+    # La variante blanca vive en `remera-cosmo1/`. Variante única Blanco.
+    ('REMERA COSMO', 'BLANCA ', 'M', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-35-e3807d5da3963f3c9d17261020996071-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-cosmo1/',
+    },
+    ('REMERA COSMO', 'BLANCO', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-35-e3807d5da3963f3c9d17261020996071-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-cosmo1/',
+    },
+    # REMERA COSMO ROJO (Sixty): variante Rojo del slug `remera-cosmo-hombre1/`
+    # (la página tiene Azul Marino y Rojo).
+    ('REMERA COSMO', 'ROJO', 'XL', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-09-20t125340-348-eda764a609cfb8121317583836736948-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-cosmo-hombre1/',
+    },
+    # REMERA COSMO BORDO (Sixty): la variante bordo vive en otro slug:
+    # `remera-cosmo-deportiva-hombre-datzy/`. Variante única Bordó.
+    ('REMERA COSMO', 'BORDO', 'XL', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-12-02t131742-768-6c31826b5ae1cd20d717646923272009-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-cosmo-deportiva-hombre-datzy/',
+    },
+    # REMERA DOMINUS VERDE (Sixty): el matcher devolvía la imagen Gris/Topo.
+    # Variante Verde del slug `remera-dominus-hombre-sport-18wi3/`.
+    ('REMERA DOMINUS', 'VERDE', 'M', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/bf58f921-adec-4591-97b3-72c1030701a3-1-177ee17ed8fc54feb017702101851404-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/',
+    },
+    # SHORT GAME S CALZA AZUL (Sixty): el slug `short-motion-layer-c-calza/` era el viejo.
+    # URL real: `short-corto-game-deportivo-mujer-padel-running/`. Variante "Azul marino".
+    ('SHORT GAME S CALZA', 'AZUL', 'M', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/chatgpt-image-28-ene-2026-12_12_44-b215babc3ca420cc0917696134323557-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-corto-game-deportivo-mujer-padel-running/',
+    },
+    # SHORT HOMBRE COSMO ROJO (Sixty): foto provista por el cliente.
+    ('SHORT HOMBRE COSMO', 'ROJO', 'M', 3): {
+        'image': 'imagenes/short-hombre-cosmo-rojo.jpg',
+        'url': 'https://sixtypadel.com/productos/short-cosmo/',
+    },
+    # SHORT MUJER C/CALZA NEGRO (Sixty): el matcher mandaba a calza-larga-stellar-mujer.
+    # URL real: short-motion-layer-love-c-calza-q87ve. Variante única Negro/Rosa.
+    # En DB hay duplicados con/sin espacio al final del nombre.
+    ('SHORT MUJER C/CALZA', 'NEGRO', 'XL', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-motion-layer-love-c-calza-q87ve/',
+    },
+    ('SHORT MUJER C/CALZA ', 'NEGRO', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-motion-layer-love-c-calza-q87ve/',
+    },
+    # SHORT LUXURY HOMBRE AZUL (Sixty): el matcher elegía la URL del modelo viejo
+    # (`short-luxury-25-hombre/`) cuya foto principal es verde. La versión Azul Marino
+    # vive en otro slug: `short-luxury-25-hombre-09rth/`.
+    # En DB hay duplicados de nombre (`SHORT LUXURY` y `SHORT LUXURY ` con espacio).
+    ('SHORT LUXURY', 'AZUL', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-luxury-25-hombre-09rth/',
+    },
+    ('SHORT LUXURY ', 'AZUL', 'L', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-luxury-25-hombre-09rth/',
+    },
+    # SHORT LUXURY VERDE (Sixty): URL indicada por el cliente: `short-luxury-25-hombre-dpdnl/`.
+    ('SHORT LUXURY', 'VERDE', 'S', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-06t123020-225-7419c8402c80a6142517624430295057-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/short-luxury-25-hombre-dpdnl/',
+    },
+    # TUBO PELOTAS X2 (Sixty): el matcher elige el slug `tubo-pelotas-premium-x3-balls/`
+    # (X3 balls) por similitud de nombre. La versión correcta (X2 balls) vive en
+    # `tubo-pelotas-premium-x2-balls/`. En DB hay 3 entradas duplicadas.
+    ('TUBO PELOTAS', 'X 2', 'X 2', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/tubo-pelotas-premium-x2-balls/',
+    },
 }
 
 CTX = ssl.create_default_context()
@@ -569,18 +714,11 @@ def main():
         for p in items_grupo:
             match = p.get('_match')
             img = match['image'] if match and match.get('image') else None
-            link = match['url'] if match else prov_url
 
             img_html = (
                 f'<img src="{html_escape(img)}" alt="{html_escape(p["nombre"])}" loading="lazy">'
                 if img
                 else '<div class="sin-imagen">SIN IMAGEN</div>'
-            )
-
-            link_btn = (
-                f'<a href="{html_escape(link)}" target="_blank" rel="noopener" class="ver-btn">VER EN {html_escape(prov_nombre)}</a>'
-                if link
-                else ''
             )
 
             cards.append(f'''
@@ -594,18 +732,16 @@ def main():
                         {('<span class="badge">'+html_escape(p["color"])+'</span>') if p.get('color') else ''}
                     </div>
                     <div class="precio">{format_money(p["precio"])}</div>
-                    {link_btn}
                 </div>
             </div>''')
 
-        prov_subtotal = sum(p['precio'] * p['stock'] for p in items_grupo)
         prov_unidades = sum(p['stock'] for p in items_grupo)
         secciones_html.append(f'''
     <section class="proveedor">
         <div class="proveedor-header">
             <h2>{html_escape(prov_nombre)}</h2>
             <div class="prov-stats">
-                {len(items_grupo)} PRODUCTOS · {prov_unidades} UNIDADES · {format_money(prov_subtotal)}
+                {len(items_grupo)} PRODUCTOS · {prov_unidades} UNIDADES
             </div>
         </div>
         <div class="grid">{"".join(cards)}</div>
@@ -617,130 +753,199 @@ def main():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catálogo de productos en stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+    :root {{
+        --bg: #0e1014;
+        --bg-soft: #161a21;
+        --surface: #1c222c;
+        --surface-2: #232a36;
+        --border: #2a3140;
+        --text: #e8ebf0;
+        --text-dim: #97a0b0;
+        --accent: #c9a25b;
+        --accent-soft: rgba(201, 162, 91, 0.15);
+    }}
     body {{
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        background: #f5f5f7;
-        color: #2C3E50;
-        text-transform: uppercase;
-        line-height: 1.4;
+        font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
     }}
     .top {{
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px 20px;
+        background:
+            radial-gradient(circle at 20% 0%, rgba(201, 162, 91, 0.18), transparent 50%),
+            radial-gradient(circle at 80% 100%, rgba(201, 162, 91, 0.10), transparent 55%),
+            linear-gradient(180deg, #12161d 0%, #0e1014 100%);
+        color: var(--text);
+        padding: 60px 20px 50px;
         text-align: center;
+        border-bottom: 1px solid var(--border);
     }}
-    .top h1 {{ font-size: 28px; }}
-    .top p {{ margin-top: 6px; opacity: 0.9; font-size: 14px; }}
+    .top h1 {{
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }}
+    .top h1 .accent {{ color: var(--accent); }}
+    .top .subtitle {{
+        margin-top: 10px;
+        color: var(--text-dim);
+        font-size: 13px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }}
     .top .stats {{
-        margin-top: 15px;
+        margin-top: 28px;
         display: flex;
-        gap: 30px;
+        gap: 40px;
         justify-content: center;
         flex-wrap: wrap;
-        font-size: 13px;
     }}
-    .top .stats div {{ font-weight: 600; }}
-    .container {{ max-width: 1400px; margin: 0 auto; padding: 30px 20px; }}
-    .proveedor {{ margin-bottom: 50px; }}
-    .proveedor-header {{
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 3px solid #2E75B6;
-    }}
-    .proveedor-header h2 {{ font-size: 22px; color: #2E75B6; }}
-    .prov-stats {{ font-size: 13px; color: #7f8c8d; margin-top: 4px; }}
-    .prov-link {{
-        display: inline-block;
-        margin-top: 4px;
-        color: #2E75B6;
-        text-decoration: none;
-        font-size: 12px;
-        text-transform: none;
-    }}
-    .prov-link:hover {{ text-decoration: underline; }}
-    .grid {{
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 18px;
-    }}
-    .card {{
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    .top .stats .stat {{
         display: flex;
         flex-direction: column;
-        transition: transform 0.15s, box-shadow 0.15s;
+        align-items: center;
+        gap: 4px;
+    }}
+    .top .stats .num {{ font-size: 24px; font-weight: 700; color: var(--accent); }}
+    .top .stats .lbl {{ font-size: 11px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }}
+    .container {{ max-width: 1400px; margin: 0 auto; padding: 50px 24px; }}
+    .proveedor {{ margin-bottom: 70px; }}
+    .proveedor-header {{
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+        gap: 20px;
+        flex-wrap: wrap;
+    }}
+    .proveedor-header h2 {{
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--text);
+    }}
+    .proveedor-header h2::before {{
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background: var(--accent);
+        margin-right: 14px;
+        transform: rotate(45deg);
+        vertical-align: middle;
+    }}
+    .prov-stats {{
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }}
+    .grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 22px;
+    }}
+    .card {{
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }}
     .card:hover {{
-        transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
     }}
     .img-wrap {{
         aspect-ratio: 1 / 1;
-        background: #ECF0F1;
+        background: var(--surface-2);
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        position: relative;
     }}
     .img-wrap img {{
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
     }}
+    .card:hover .img-wrap img {{ transform: scale(1.04); }}
     .sin-imagen {{
-        color: #BDC3C7;
-        font-size: 12px;
-        font-weight: 600;
-    }}
-    .card-body {{ padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }}
-    .card h3 {{ font-size: 13px; line-height: 1.3; }}
-    .meta {{ display: flex; flex-wrap: wrap; gap: 4px; }}
-    .badge {{
-        background: #ECF0F1;
-        color: #2C3E50;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 6px;
-        border-radius: 4px;
-    }}
-    .precio {{ font-size: 18px; font-weight: 700; color: #27AE60; margin-top: 4px; }}
-    .stock {{ font-size: 11px; font-weight: 600; }}
-    .stock-ok {{ color: #27AE60; }}
-    .stock-bajo {{ color: #E67E22; }}
-    .ver-btn {{
-        margin-top: auto;
-        display: block;
-        text-align: center;
-        background: #2E75B6;
-        color: white;
-        padding: 8px;
-        border-radius: 6px;
-        text-decoration: none;
+        color: var(--text-dim);
         font-size: 11px;
         font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
     }}
-    .ver-btn:hover {{ background: #1c5689; }}
+    .card-body {{
+        padding: 16px 18px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }}
+    .card h3 {{
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        line-height: 1.35;
+        color: var(--text);
+        text-transform: uppercase;
+    }}
+    .meta {{ display: flex; flex-wrap: wrap; gap: 5px; }}
+    .badge {{
+        background: var(--surface-2);
+        color: var(--text-dim);
+        font-size: 10px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 2px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+    }}
+    .precio {{
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-top: auto;
+        padding-top: 6px;
+    }}
     @media print {{
-        body {{ background: white; }}
-        .top {{ background: white !important; color: #2C3E50 !important; -webkit-print-color-adjust: exact; }}
-        .card {{ break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }}
-        .ver-btn {{ display: none; }}
+        body {{ background: white; color: #1a1a1a; }}
+        .top {{ background: white !important; color: #1a1a1a !important; border-bottom: 1px solid #ccc; -webkit-print-color-adjust: exact; }}
+        .top h1 .accent, .top .stats .num, .precio, .proveedor-header h2 {{ color: #8a6a2e !important; }}
+        .top .subtitle, .top .stats .lbl, .prov-stats, .badge {{ color: #555 !important; }}
+        .card {{ background: white !important; border: 1px solid #ddd !important; break-inside: avoid; box-shadow: none !important; }}
+        .img-wrap, .badge {{ background: #f5f5f5 !important; }}
+        .proveedor-header {{ border-color: #ccc !important; }}
     }}
 </style>
 </head>
 <body>
     <div class="top">
-        <h1>📦 Catálogo de productos en stock</h1>
-        <p>Generado el {fecha_hoy}</p>
+        <h1>RIBERA<span class="accent">·</span>SPORT</h1>
+        <p class="subtitle">Catálogo de productos en stock</p>
         <div class="stats">
-            <div>{total_productos} PRODUCTOS</div>
-            <div>{total_unidades} UNIDADES</div>
-            <div>VALOR TOTAL: {format_money(valor_total)}</div>
+            <div class="stat"><span class="num">{total_productos}</span><span class="lbl">Productos</span></div>
+            <div class="stat"><span class="num">{total_unidades}</span><span class="lbl">Unidades</span></div>
+            <div class="stat"><span class="num">{fecha_hoy}</span><span class="lbl">Actualizado</span></div>
         </div>
     </div>
     <div class="container">{"".join(secciones_html)}</div>

@@ -4,130 +4,199 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catálogo de productos en stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+        --bg: #0e1014;
+        --bg-soft: #161a21;
+        --surface: #1c222c;
+        --surface-2: #232a36;
+        --border: #2a3140;
+        --text: #e8ebf0;
+        --text-dim: #97a0b0;
+        --accent: #c9a25b;
+        --accent-soft: rgba(201, 162, 91, 0.15);
+    }
     body {
-        font-family: 'Segoe UI', Tahoma, sans-serif;
-        background: #f5f5f7;
-        color: #2C3E50;
-        text-transform: uppercase;
-        line-height: 1.4;
+        font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
     }
     .top {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px 20px;
+        background:
+            radial-gradient(circle at 20% 0%, rgba(201, 162, 91, 0.18), transparent 50%),
+            radial-gradient(circle at 80% 100%, rgba(201, 162, 91, 0.10), transparent 55%),
+            linear-gradient(180deg, #12161d 0%, #0e1014 100%);
+        color: var(--text);
+        padding: 60px 20px 50px;
         text-align: center;
+        border-bottom: 1px solid var(--border);
     }
-    .top h1 { font-size: 28px; }
-    .top p { margin-top: 6px; opacity: 0.9; font-size: 14px; }
+    .top h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .top h1 .accent { color: var(--accent); }
+    .top .subtitle {
+        margin-top: 10px;
+        color: var(--text-dim);
+        font-size: 13px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
     .top .stats {
-        margin-top: 15px;
+        margin-top: 28px;
         display: flex;
-        gap: 30px;
+        gap: 40px;
         justify-content: center;
         flex-wrap: wrap;
-        font-size: 13px;
     }
-    .top .stats div { font-weight: 600; }
-    .container { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
-    .proveedor { margin-bottom: 50px; }
-    .proveedor-header {
-        margin-bottom: 20px;
-        padding-bottom: 12px;
-        border-bottom: 3px solid #2E75B6;
-    }
-    .proveedor-header h2 { font-size: 22px; color: #2E75B6; }
-    .prov-stats { font-size: 13px; color: #7f8c8d; margin-top: 4px; }
-    .prov-link {
-        display: inline-block;
-        margin-top: 4px;
-        color: #2E75B6;
-        text-decoration: none;
-        font-size: 12px;
-        text-transform: none;
-    }
-    .prov-link:hover { text-decoration: underline; }
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 18px;
-    }
-    .card {
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    .top .stats .stat {
         display: flex;
         flex-direction: column;
-        transition: transform 0.15s, box-shadow 0.15s;
+        align-items: center;
+        gap: 4px;
+    }
+    .top .stats .num { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .top .stats .lbl { font-size: 11px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 50px 24px; }
+    .proveedor { margin-bottom: 70px; }
+    .proveedor-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .proveedor-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--text);
+    }
+    .proveedor-header h2::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background: var(--accent);
+        margin-right: 14px;
+        transform: rotate(45deg);
+        vertical-align: middle;
+    }
+    .prov-stats {
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 22px;
+    }
+    .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
     .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
     }
     .img-wrap {
         aspect-ratio: 1 / 1;
-        background: #ECF0F1;
+        background: var(--surface-2);
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        position: relative;
     }
     .img-wrap img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.4s ease;
     }
+    .card:hover .img-wrap img { transform: scale(1.04); }
     .sin-imagen {
-        color: #BDC3C7;
-        font-size: 12px;
-        font-weight: 600;
-    }
-    .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    .card h3 { font-size: 13px; line-height: 1.3; }
-    .meta { display: flex; flex-wrap: wrap; gap: 4px; }
-    .badge {
-        background: #ECF0F1;
-        color: #2C3E50;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 6px;
-        border-radius: 4px;
-    }
-    .precio { font-size: 18px; font-weight: 700; color: #27AE60; margin-top: 4px; }
-    .stock { font-size: 11px; font-weight: 600; }
-    .stock-ok { color: #27AE60; }
-    .stock-bajo { color: #E67E22; }
-    .ver-btn {
-        margin-top: auto;
-        display: block;
-        text-align: center;
-        background: #2E75B6;
-        color: white;
-        padding: 8px;
-        border-radius: 6px;
-        text-decoration: none;
+        color: var(--text-dim);
         font-size: 11px;
         font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
     }
-    .ver-btn:hover { background: #1c5689; }
+    .card-body {
+        padding: 16px 18px 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .card h3 {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        line-height: 1.35;
+        color: var(--text);
+        text-transform: uppercase;
+    }
+    .meta { display: flex; flex-wrap: wrap; gap: 5px; }
+    .badge {
+        background: var(--surface-2);
+        color: var(--text-dim);
+        font-size: 10px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 2px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+    }
+    .precio {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-top: auto;
+        padding-top: 6px;
+    }
     @media print {
-        body { background: white; }
-        .top { background: white !important; color: #2C3E50 !important; -webkit-print-color-adjust: exact; }
-        .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
-        .ver-btn { display: none; }
+        body { background: white; color: #1a1a1a; }
+        .top { background: white !important; color: #1a1a1a !important; border-bottom: 1px solid #ccc; -webkit-print-color-adjust: exact; }
+        .top h1 .accent, .top .stats .num, .precio, .proveedor-header h2 { color: #8a6a2e !important; }
+        .top .subtitle, .top .stats .lbl, .prov-stats, .badge { color: #555 !important; }
+        .card { background: white !important; border: 1px solid #ddd !important; break-inside: avoid; box-shadow: none !important; }
+        .img-wrap, .badge { background: #f5f5f5 !important; }
+        .proveedor-header { border-color: #ccc !important; }
     }
 </style>
 </head>
 <body>
     <div class="top">
-        <h1>📦 Catálogo de productos en stock</h1>
-        <p>Generado el 03/05/2026</p>
+        <h1>RIBERA<span class="accent">·</span>SPORT</h1>
+        <p class="subtitle">Catálogo de productos en stock</p>
         <div class="stats">
-            <div>90 PRODUCTOS</div>
-            <div>95 UNIDADES</div>
-            <div>VALOR TOTAL: $2.486.000,00</div>
+            <div class="stat"><span class="num">90</span><span class="lbl">Productos</span></div>
+            <div class="stat"><span class="num">95</span><span class="lbl">Unidades</span></div>
+            <div class="stat"><span class="num">04/05/2026</span><span class="lbl">Actualizado</span></div>
         </div>
     </div>
     <div class="container">
@@ -135,7 +204,7 @@
         <div class="proveedor-header">
             <h2>FACTIONSHOP</h2>
             <div class="prov-stats">
-                14 PRODUCTOS · 14 UNIDADES · $271.000,00
+                14 PRODUCTOS · 14 UNIDADES
             </div>
         </div>
         <div class="grid">
@@ -149,7 +218,6 @@
                         <span class="badge">VERDE PETROLEO</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-petroleo" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -162,7 +230,6 @@
                         <span class="badge">MARRON</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-marron" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -175,7 +242,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-lycra-negro" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -188,7 +254,6 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -201,7 +266,6 @@
                         <span class="badge">CELESTE</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -214,7 +278,6 @@
                         <span class="badge">BLANCA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -227,7 +290,6 @@
                         <span class="badge">GRIS TOPO</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -240,7 +302,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -253,7 +314,6 @@
                         <span class="badge">(3) LILA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -266,7 +326,6 @@
                         <span class="badge">BEIGE</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -279,7 +338,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -292,7 +350,6 @@
                         <span class="badge">LILA</span>
                     </div>
                     <div class="precio">$17.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -305,7 +362,6 @@
                         <span class="badge">GRANDE AMARILLO FLUOR</span>
                     </div>
                     <div class="precio">$17.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div>
             <div class="card">
@@ -318,7 +374,6 @@
                         <span class="badge">FUCSIA</span>
                     </div>
                     <div class="precio">$17.000,00</div>
-                    <a href="https://www.factionshop.com.ar/remeras" target="_blank" rel="noopener" class="ver-btn">VER EN FACTIONSHOP</a>
                 </div>
             </div></div>
     </section>
@@ -326,7 +381,7 @@
         <div class="proveedor-header">
             <h2>MAIK STORE</h2>
             <div class="prov-stats">
-                26 PRODUCTOS · 26 UNIDADES · $760.000,00
+                26 PRODUCTOS · 26 UNIDADES
             </div>
         </div>
         <div class="grid">
@@ -340,7 +395,6 @@
                         <span class="badge">GRIS TOPO</span>
                     </div>
                     <div class="precio">$27.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/biker-power-recortes-morley-gris-topo/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -353,7 +407,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -366,7 +419,6 @@
                         <span class="badge">GRIS AERO</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-gris-aero-tww9z/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -379,7 +431,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -392,7 +443,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-larga-lycra-negra-12gq6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -405,7 +455,6 @@
                         <span class="badge">DENIM</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-morley-denim-g319x/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -418,7 +467,6 @@
                         <span class="badge">VERDE MILITAR</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-verde-militar/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -431,7 +479,6 @@
                         <span class="badge">CHOCO</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/calza-power-recortes-morley-choco-adobe1/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -444,7 +491,6 @@
                         <span class="badge">NEGRO VERDE</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/campera-kairo-fresia/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -457,7 +503,6 @@
                         <span class="badge">NEGRO BLANCO</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/campera-kairo-jazmin/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -470,7 +515,6 @@
                         <span class="badge">CHERRY</span>
                     </div>
                     <div class="precio">$40.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-cherry/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -483,7 +527,6 @@
                         <span class="badge">PETROLEO</span>
                     </div>
                     <div class="precio">$40.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-petroleo/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -496,7 +539,6 @@
                         <span class="badge">VISON</span>
                     </div>
                     <div class="precio">$40.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/campera-sigma-vison/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -509,7 +551,6 @@
                         <span class="badge">VERDE OLIVA</span>
                     </div>
                     <div class="precio">$22.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/media-polera-verde-oliva/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -522,7 +563,6 @@
                         <span class="badge">VERDE SECO</span>
                     </div>
                     <div class="precio">$23.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/musculosa-active-verde-seco-hombre-zvgwz/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -535,7 +575,6 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/pescadora-azul1/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -548,7 +587,6 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/pescadora-negra1/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -561,7 +599,6 @@
                         <span class="badge">VERDE MILITAR</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/pescadora-morley-verde-militar-xzij6/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -574,7 +611,6 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-azul/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -587,7 +623,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-negra/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -600,7 +635,6 @@
                         <span class="badge">CELESTE</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-celeste/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -613,7 +647,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-negra/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -626,7 +659,6 @@
                         <span class="badge">GRIS</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/remera-dryfit-gris1/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -639,7 +671,6 @@
                         <span class="badge">VERDE MILITAR</span>
                     </div>
                     <div class="precio">$23.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/short-morley-verde-militar/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -652,7 +683,6 @@
                         <span class="badge">LAVANDA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/top-sienna-lavanda-876bl/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div>
             <div class="card">
@@ -665,7 +695,6 @@
                         <span class="badge">UVA</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                    <a href="https://www.maikmayoristas.com/productos/top-up-uva-pastel/" target="_blank" rel="noopener" class="ver-btn">VER EN MAIK STORE</a>
                 </div>
             </div></div>
     </section>
@@ -673,7 +702,7 @@
         <div class="proveedor-header">
             <h2>NOBRAND</h2>
             <div class="prov-stats">
-                16 PRODUCTOS · 16 UNIDADES · $462.000,00
+                16 PRODUCTOS · 16 UNIDADES
             </div>
         </div>
         <div class="grid">
@@ -687,7 +716,6 @@
                         <span class="badge">BLANCO</span>
                     </div>
                     <div class="precio">$25.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-flow-cuello-redondo-smr-2455e9077d6876530251cfb1fa8fe45917f607ba" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -700,7 +728,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$28.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-inspire-smr-76de8fdaafa07dbc323072a5752f34af781db0e4" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -713,7 +740,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -726,7 +752,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -739,7 +764,6 @@
                         <span class="badge">CREMA</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -752,7 +776,6 @@
                         <span class="badge">AERO GRIS</span>
                     </div>
                     <div class="precio">$38.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-trust-smr-f6b0146b0e64d3d00f313da67e3180674775fcf0" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -765,7 +788,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$38.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/buzo-trust-smr-f6b0146b0e64d3d00f313da67e3180674775fcf0" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -778,7 +800,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -791,7 +812,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -804,7 +824,6 @@
                         <span class="badge">AZUL MARINO</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -817,7 +836,6 @@
                         <span class="badge">CREMA</span>
                     </div>
                     <div class="precio">$28.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/chupin-dama-algodon--florida-smr-4f40705785eebc5cbdd10f59de3cffa1f1e3fd5c" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -830,7 +848,6 @@
                         <span class="badge">PETROLEO</span>
                     </div>
                     <div class="precio">$28.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/chupin-dama-algodon--florida-smr-4f40705785eebc5cbdd10f59de3cffa1f1e3fd5c" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -843,7 +860,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$16.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/remera-termica-dama-s-l-xl-smr-cf0ec4021fbe9e38e9b7843fd363637cce20c981" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -856,7 +872,6 @@
                         <span class="badge">VERDE</span>
                     </div>
                     <div class="precio">$18.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/remera-termica-hombre-s-m-l-xl-smr-2bf1f88bfb6c3ad6849523ec521e9e8b441d6b21" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -869,7 +884,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$15.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/top-maui-s-l-xl-xxl-smr-f3917b143210689934581d82f61680cb49b2f7db" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div>
             <div class="card">
@@ -882,7 +896,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$15.000,00</div>
-                    <a href="https://nobrand-54113928092018s.domun.co/producto/top-pulse-smr-53e46b827131a9e4aada533fd8ba47c9788a85ea" target="_blank" rel="noopener" class="ver-btn">VER EN NOBRAND</a>
                 </div>
             </div></div>
     </section>
@@ -890,12 +903,12 @@
         <div class="proveedor-header">
             <h2>SIXTY</h2>
             <div class="prov-stats">
-                34 PRODUCTOS · 39 UNIDADES · $993.000,00
+                34 PRODUCTOS · 39 UNIDADES
             </div>
         </div>
         <div class="grid">
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-23t105824-567-99ca1e24cfb8507ee517532791157111-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100315-452-copia-e794e9db65c5d6b32417536214678171-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
                 <div class="card-body">
                     <h3>BUZO GAME CIERRE</h3>
                     <div class="meta">
@@ -904,11 +917,10 @@
                         <span class="badge">ROJO</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-23t105824-567-99ca1e24cfb8507ee517532791157111-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-27t100254-247-5d714ff2bd74bd3ede17536214676439-1024-1024.webp" alt="BUZO GAME CIERRE" loading="lazy"></div>
                 <div class="card-body">
                     <h3>BUZO GAME CIERRE</h3>
                     <div class="meta">
@@ -917,7 +929,6 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://sixtypadel.com/productos/buzo-medio-cierre-game-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -930,11 +941,10 @@
                         <span class="badge">BLANCO</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://sixtypadel.com/productos/buzo-training-cuello-redondo-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/task_01ka1v2r8cfrf8bpjm3p9qzk2k_1763146167_img_0-d006d2aecb3b59640e17631475222849-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t093125-928-c37e275f706415d0e517521507887210-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
                     <div class="meta">
@@ -943,11 +953,10 @@
                         <span class="badge">GRIS/BORDO</span>
                     </div>
                     <div class="precio">$5.000,00</div>
-                    <a href="https://sixtypadel.com/productos/medias-padel-cana-alta-tenis-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/task_01ka1v2r8cfrf8bpjm3p9qzk2k_1763146167_img_0-d006d2aecb3b59640e17631475222849-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/assets_task_01jz5pxew0eknat5aqss2cwcwp_1751464837_img_1-572cdffffc81bf427e17521516471521-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
                     <div class="meta">
@@ -956,11 +965,10 @@
                         <span class="badge">NEGRO/ROSA</span>
                     </div>
                     <div class="precio">$5.000,00</div>
-                    <a href="https://sixtypadel.com/productos/medias-padel-cana-alta-tenis-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-10-30t111745-653-164966b50c5d68110917618339124237-1024-1024.webp" alt="MOCHILA PALETERO LUXURY " loading="lazy"></div>
+                <div class="img-wrap"><img src="imagenes/mochila-paletero-luxury.jpg" alt="MOCHILA PALETERO LUXURY " loading="lazy"></div>
                 <div class="card-body">
                     <h3>MOCHILA PALETERO LUXURY </h3>
                     <div class="meta">
@@ -969,11 +977,10 @@
                         <span class="badge">NEGRO/GRIS</span>
                     </div>
                     <div class="precio">$65.000,00</div>
-                    <a href="https://sixtypadel.com/productos/mochila-paletero-sixty-padel-invictus-yh82m/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122329-089-96e214a01856af13ef17547530867696-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
                 <div class="card-body">
                     <h3>OVERGRIPS THIN</h3>
                     <div class="meta">
@@ -982,11 +989,10 @@
                         <span class="badge">AMARILLO</span>
                     </div>
                     <div class="precio">$3.000,00</div>
-                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122311-293-0ae0336c7dbbb76ae117547530873915-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
                 <div class="card-body">
                     <h3>OVERGRIPS THIN</h3>
                     <div class="meta">
@@ -995,11 +1001,10 @@
                         <span class="badge">FUCSIA</span>
                     </div>
                     <div class="precio">$3.000,00</div>
-                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
                 <div class="card-body">
                     <h3>OVERGRIPS THIN</h3>
                     <div class="meta">
@@ -1008,11 +1013,10 @@
                         <span class="badge">NARANJA</span>
                     </div>
                     <div class="precio">$3.000,00</div>
-                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-34-d9e6d326b9cef977ee17261020763290-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
                 <div class="card-body">
                     <h3>OVERGRIPS THIN</h3>
                     <div class="meta">
@@ -1021,7 +1025,6 @@
                         <span class="badge">NARANJA</span>
                     </div>
                     <div class="precio">$3.000,00</div>
-                    <a href="https://sixtypadel.com/productos/cubregrip-thin-liso-overgrip2/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1034,7 +1037,18 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                    <a href="https://sixtypadel.com/productos/pantalon-jogging-padel-game-acetato/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp" alt="POLLERA LUXURY TABLAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA LUXURY TABLAS</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -1047,20 +1061,6 @@
                         <span class="badge">BLANCA</span>
                     </div>
                     <div class="precio">$40.000,00</div>
-                    <a href="https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154900-986-4d6ba9932588e2f92e17550246091238-1024-1024.webp" alt="POLLERA LUXURY TABLAS PROMO" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>POLLERA LUXURY TABLAS PROMO</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: L</span>
-                        <span class="badge">NEGRA</span>
-                    </div>
-                    <div class="precio">$40.000,00</div>
-                    <a href="https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1073,7 +1073,6 @@
                         <span class="badge">GRIS</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://sixtypadel.com/productos/pollera-stellar-c-calza-entrenamientos1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1086,7 +1085,6 @@
                         <span class="badge">NEGRA </span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1099,11 +1097,10 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-35-e3807d5da3963f3c9d17261020996071-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
                 <div class="card-body">
                     <h3>REMERA COSMO</h3>
                     <div class="meta">
@@ -1112,7 +1109,6 @@
                         <span class="badge">BLANCA </span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1125,11 +1121,10 @@
                         <span class="badge">NEGRA</span>
                     </div>
                     <div class="precio">$23.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-12-02t131742-768-6c31826b5ae1cd20d717646923272009-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
                 <div class="card-body">
                     <h3>REMERA COSMO</h3>
                     <div class="meta">
@@ -1138,11 +1133,10 @@
                         <span class="badge">BORDO</span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-09-20t125340-348-eda764a609cfb8121317583836736948-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
                 <div class="card-body">
                     <h3>REMERA COSMO</h3>
                     <div class="meta">
@@ -1151,7 +1145,6 @@
                         <span class="badge">ROJO</span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-cosmo-hombre1/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1164,11 +1157,10 @@
                         <span class="badge">GRIS TOPO</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2026-01-27t150823-463-498a474d1fc2597ef617695373689394-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/bf58f921-adec-4591-97b3-72c1030701a3-1-177ee17ed8fc54feb017702101851404-1024-1024.webp" alt="REMERA DOMINUS" loading="lazy"></div>
                 <div class="card-body">
                     <h3>REMERA DOMINUS</h3>
                     <div class="meta">
@@ -1177,7 +1169,6 @@
                         <span class="badge">VERDE</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1190,7 +1181,6 @@
                         <span class="badge">GRIS TOPO</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://sixtypadel.com/productos/remera-dominus-hombre-sport-18wi3/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
@@ -1203,11 +1193,10 @@
                         <span class="badge">BLANCO</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-army-deportivo-hombre-r56if/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t095539-764-8c58c1cf42c124105d17478321570009-1024-1024.webp" alt="SHORT GAME S CALZA" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/chatgpt-image-28-ene-2026-12_12_44-b215babc3ca420cc0917696134323557-1024-1024.webp" alt="SHORT GAME S CALZA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT GAME S CALZA</h3>
                     <div class="meta">
@@ -1216,24 +1205,22 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$25.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-motion-layer-c-calza/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t092655-421-d3e79219e8eb9fc4c217478306237023-1024-1024.webp" alt="SHORT HOMBRE COSMO PROMO" loading="lazy"></div>
+                <div class="img-wrap"><img src="imagenes/short-hombre-cosmo-rojo.jpg" alt="SHORT HOMBRE COSMO" loading="lazy"></div>
                 <div class="card-body">
-                    <h3>SHORT HOMBRE COSMO PROMO</h3>
+                    <h3>SHORT HOMBRE COSMO</h3>
                     <div class="meta">
                         <span class="badge">HOMBRE</span>
                         <span class="badge">TALLE: M</span>
                         <span class="badge">ROJO</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-cosmo/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT LUXURY</h3>
                     <div class="meta">
@@ -1242,11 +1229,10 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$35.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-06t123020-225-7419c8402c80a6142517624430295057-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT LUXURY</h3>
                     <div class="meta">
@@ -1255,11 +1241,10 @@
                         <span class="badge">VERDE</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t092519-788-411e387228cbe889d417490399309771-1024-1024.webp" alt="SHORT LUXURY " loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp" alt="SHORT LUXURY " loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT LUXURY </h3>
                     <div class="meta">
@@ -1268,11 +1253,10 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$36.000,00</div>
-                    <a href="https://sixtypadel.com/productos/short-luxury-25-hombre/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-18t151854-650-43e96d766463d77b6817502707740614-1024-1024.webp" alt="SHORT MUJER C/CALZA" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp" alt="SHORT MUJER C/CALZA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT MUJER C/CALZA</h3>
                     <div class="meta">
@@ -1281,11 +1265,10 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://sixtypadel.com/productos/calza-larga-stellar-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-18t151854-650-43e96d766463d77b6817502707740614-1024-1024.webp" alt="SHORT MUJER C/CALZA " loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp" alt="SHORT MUJER C/CALZA " loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT MUJER C/CALZA </h3>
                     <div class="meta">
@@ -1294,11 +1277,10 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$30.000,00</div>
-                    <a href="https://sixtypadel.com/productos/calza-larga-stellar-mujer/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TUBO PELOTAS</h3>
                     <div class="meta">
@@ -1307,11 +1289,10 @@
                         <span class="badge">X 2</span>
                     </div>
                     <div class="precio">$10.000,00</div>
-                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TUBO PELOTAS</h3>
                     <div class="meta">
@@ -1320,11 +1301,10 @@
                         <span class="badge">X 2</span>
                     </div>
                     <div class="precio">$10.000,00</div>
-                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TUBO PELOTAS</h3>
                     <div class="meta">
@@ -1333,7 +1313,6 @@
                         <span class="badge">X 2</span>
                     </div>
                     <div class="precio">$10.000,00</div>
-                    <a href="https://sixtypadel.com/productos/tubo-pelotas-premium-x3-balls/" target="_blank" rel="noopener" class="ver-btn">VER EN SIXTY</a>
                 </div>
             </div></div>
     </section></div>
