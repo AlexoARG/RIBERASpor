@@ -37,6 +37,18 @@
         text-align: center;
         border-bottom: 1px solid var(--border);
     }
+    .top .logo {
+        display: inline-block;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 18px;
+        border: 2px solid var(--accent);
+        padding: 4px;
+        background: var(--bg-soft);
+        box-shadow: 0 6px 24px rgba(201, 162, 91, 0.25);
+    }
     .top h1 {
         font-family: 'Playfair Display', serif;
         font-size: 42px;
@@ -64,7 +76,7 @@
         align-items: center;
         gap: 4px;
     }
-    .top .stats .num { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .top .stats .num { font-size: 24px; font-weight: 700; color: #2dd4bf; }
     .top .stats .lbl { font-size: 11px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
     .container { max-width: 1400px; margin: 0 auto; padding: 50px 24px; }
     .proveedor { margin-bottom: 70px; }
@@ -174,13 +186,57 @@
         font-family: 'Playfair Display', serif;
         font-size: 22px;
         font-weight: 700;
-        color: var(--accent);
+        color: #2dd4bf;
         margin-top: auto;
         padding-top: 6px;
     }
+    .contact {
+        margin-top: 40px;
+        padding: 40px 20px 50px;
+        border-top: 1px solid var(--border);
+        text-align: center;
+        background: linear-gradient(180deg, #0e1014 0%, #12161d 100%);
+    }
+    .contact h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--text);
+        margin-bottom: 22px;
+    }
+    .contact-list {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+    }
+    .contact-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .contact-item:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+    .contact-item svg { width: 22px; height: 22px; flex-shrink: 0; }
+    .contact-item.ig svg { color: #e1306c; }
+    .contact-item.wa svg { color: #25d366; }
     @media print {
         body { background: white; color: #1a1a1a; }
         .top { background: white !important; color: #1a1a1a !important; border-bottom: 1px solid #ccc; -webkit-print-color-adjust: exact; }
+        .top .logo { border-color: #8a6a2e !important; background: white !important; box-shadow: none !important; }
         .top h1 .accent, .top .stats .num, .precio, .proveedor-header h2 { color: #8a6a2e !important; }
         .top .subtitle, .top .stats .lbl, .prov-stats, .badge { color: #555 !important; }
         .card { background: white !important; border: 1px solid #ddd !important; break-inside: avoid; box-shadow: none !important; }
@@ -191,8 +247,22 @@
 </head>
 <body>
     <div class="top">
-        <h1>RIBERA<span class="accent">·</span>SPORT</h1>
+        <img src="imagenes/logo.jpeg" alt="Ribera Sport" class="logo">
         <p class="subtitle">Catálogo de productos en stock</p>
+        <div class="contact-list" style="margin-top: 22px;">
+            <a class="contact-item ig" href="https://instagram.com/ribera.sport" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.26.07 1.64.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.26.06-1.64.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.2 15.6 2.2 15.22 2.2 12s0-3.6.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.4 2.2 8.78 2.2 12 2.2M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.13 1.39A5.9 5.9 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.39 2.12.66.66 1.33 1.08 2.12 1.39.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.12-1.39 5.9 5.9 0 0 0 1.39-2.12c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.39-2.12A5.9 5.9 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0Zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.41-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z"/>
+                </svg>
+                <span>ribera.sport</span>
+            </a>
+            <a class="contact-item wa" href="https://wa.me/541134925262" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.47 14.38c-.3-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.94 1.16-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.38-1.46-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.91-2.18-.24-.57-.48-.49-.66-.5l-.56-.01a1.08 1.08 0 0 0-.79.37c-.27.3-1.03 1.01-1.03 2.46 0 1.45 1.06 2.85 1.2 3.05.15.2 2.08 3.18 5.04 4.46.7.3 1.25.48 1.68.62.71.22 1.35.19 1.86.12.57-.09 1.74-.71 1.99-1.4.25-.69.25-1.27.17-1.4-.07-.13-.27-.2-.57-.35Zm-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.87 9.87 0 0 1-1.51-5.26 9.91 9.91 0 0 1 9.9-9.9 9.85 9.85 0 0 1 7 2.9 9.83 9.83 0 0 1 2.9 7c0 5.46-4.45 9.9-9.91 9.9Zm8.42-18.32A11.81 11.81 0 0 0 12.05 0C5.5 0 .17 5.34.17 11.89c0 2.1.55 4.14 1.6 5.94L.05 24l6.31-1.66a11.88 11.88 0 0 0 5.69 1.45h.01c6.56 0 11.89-5.34 11.89-11.89A11.82 11.82 0 0 0 20.47 3.46Z"/>
+                </svg>
+                <span>+54 11 3492 5262</span>
+            </a>
+        </div>
         <div class="stats">
             <div class="stat"><span class="num">89</span><span class="lbl">Productos</span></div>
             <div class="stat"><span class="num">94</span><span class="lbl">Unidades</span></div>
@@ -202,12 +272,36 @@
     <div class="container">
     <section class="proveedor">
         <div class="proveedor-header">
-            <h2>FACTIONSHOP</h2>
+            <h2>RIBERA SPORT</h2>
             <div class="prov-stats">
-                14 PRODUCTOS · 14 UNIDADES
+                39 PRODUCTOS · 39 UNIDADES
             </div>
         </div>
         <div class="grid">
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/25adb0d5-4af4-4a1c-8c9f-b0fb2af91087-ef50d87adb754ae6e717685016568754-1024-1024.webp" alt="MUSCULOSA HOMBRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA HOMBRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">VERDE SECO</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/calza-biker-power-morley-gris-topo.jpg" alt="CALZA BIKER POWER MORLEY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>CALZA BIKER POWER MORLEY</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRIS TOPO</span>
+                    </div>
+                    <div class="precio">$27.000,00</div>
+                </div>
+            </div>
             <div class="card">
                 <div class="img-wrap"><img src="https://d22fxaf9t8d39k.cloudfront.net/5506b9fd8e2daf9614828005450d3742adf20507fc0ff8ed501b7bd6c1217a1d107510.png" alt="CALZA CORTA LYCRA" loading="lazy"></div>
                 <div class="card-body">
@@ -254,147 +348,6 @@
                         <span class="badge">AZUL</span>
                     </div>
                     <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/musculosa-drifit-celeste.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MUSCULOSA DRIFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 2</span>
-                        <span class="badge">CELESTE</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/musculosa-drifit-blanca.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MUSCULOSA DRIFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 3</span>
-                        <span class="badge">BLANCA</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/musculosa-drifit-gris-topo.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MUSCULOSA DRIFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 3</span>
-                        <span class="badge">GRIS TOPO</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/remera-dryfit-negro.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 2</span>
-                        <span class="badge">NEGRA</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/remera-dryfit-lila.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 4</span>
-                        <span class="badge">(3) LILA</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/remera-dryfit-beige.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 4</span>
-                        <span class="badge">BEIGE</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/remera-dryfit-negro.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 4</span>
-                        <span class="badge">NEGRA</span>
-                    </div>
-                    <div class="precio">$20.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-original.png" alt="SUDADERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>SUDADERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 3</span>
-                        <span class="badge">LILA</span>
-                    </div>
-                    <div class="precio">$17.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-amarillo-fluor.jpg" alt="SUDADERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>SUDADERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">GRANDE AMARILLO FLUOR</span>
-                    </div>
-                    <div class="precio">$17.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-fucsia.jpg" alt="SUDADERA DRYFIT" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>SUDADERA DRYFIT</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: S</span>
-                        <span class="badge">FUCSIA</span>
-                    </div>
-                    <div class="precio">$17.000,00</div>
-                </div>
-            </div></div>
-    </section>
-    <section class="proveedor">
-        <div class="proveedor-header">
-            <h2>MAIK STORE</h2>
-            <div class="prov-stats">
-                25 PRODUCTOS · 25 UNIDADES
-            </div>
-        </div>
-        <div class="grid">
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/calza-biker-power-morley-gris-topo.jpg" alt="CALZA BIKER POWER MORLEY" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>CALZA BIKER POWER MORLEY</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">GRIS TOPO</span>
-                    </div>
-                    <div class="precio">$27.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -542,15 +495,39 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/25adb0d5-4af4-4a1c-8c9f-b0fb2af91087-ef50d87adb754ae6e717685016568754-1024-1024.webp" alt="MUSCULOSA HOMBRE" loading="lazy"></div>
+                <div class="img-wrap"><img src="imagenes/musculosa-drifit-celeste.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
                 <div class="card-body">
-                    <h3>MUSCULOSA HOMBRE</h3>
+                    <h3>MUSCULOSA DRIFIT</h3>
                     <div class="meta">
-                        <span class="badge">HOMBRE</span>
-                        <span class="badge">TALLE: XL</span>
-                        <span class="badge">VERDE SECO</span>
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 2</span>
+                        <span class="badge">CELESTE</span>
                     </div>
-                    <div class="precio">$23.000,00</div>
+                    <div class="precio">$20.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/musculosa-drifit-blanca.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA DRIFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">BLANCA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/musculosa-drifit-gris-topo.jpg" alt="MUSCULOSA DRIFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MUSCULOSA DRIFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">GRIS TOPO</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -587,6 +564,54 @@
                         <span class="badge">VERDE MILITAR</span>
                     </div>
                     <div class="precio">$30.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/remera-dryfit-negro.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 2</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/remera-dryfit-lila.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">(3) LILA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/remera-dryfit-beige.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">BEIGE</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/remera-dryfit-negro.jpg" alt="REMERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 4</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$20.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -662,6 +687,42 @@
                 </div>
             </div>
             <div class="card">
+                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-original.png" alt="SUDADERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 3</span>
+                        <span class="badge">LILA</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-amarillo-fluor.jpg" alt="SUDADERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRANDE AMARILLO FLUOR</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/sudadera-dryfit-fucsia.jpg" alt="SUDADERA DRYFIT" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SUDADERA DRYFIT</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">FUCSIA</span>
+                    </div>
+                    <div class="precio">$17.000,00</div>
+                </div>
+            </div>
+            <div class="card">
                 <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/006/462/459/products/c8e767ef-7f77-4fec-84d5-cfeb21298f35-88ccf6b7dee8f2158517659014274949-1024-1024.webp" alt="TOP SIENNA LYCRA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TOP SIENNA LYCRA</h3>
@@ -704,54 +765,6 @@
                         <span class="badge">BLANCO</span>
                     </div>
                     <div class="precio">$25.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image1rvzv1prpqumnsvtp0q.jpg" alt="BUZO INSPIRE" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>BUZO INSPIRE</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: L</span>
-                        <span class="badge">NEGRO</span>
-                    </div>
-                    <div class="precio">$28.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/buzo-manhatan-negro.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>BUZO MANHATAN</h3>
-                    <div class="meta">
-                        <span class="badge">UNISEX</span>
-                        <span class="badge">TALLE: L</span>
-                        <span class="badge">NEGRO</span>
-                    </div>
-                    <div class="precio">$35.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/buzo-manhatan-negro.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>BUZO MANHATAN</h3>
-                    <div class="meta">
-                        <span class="badge">UNISEX</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">NEGRO</span>
-                    </div>
-                    <div class="precio">$35.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/buzo-manhatan-crema.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>BUZO MANHATAN</h3>
-                    <div class="meta">
-                        <span class="badge">UNISEX</span>
-                        <span class="badge">TALLE: XL</span>
-                        <span class="badge">CREMA</span>
-                    </div>
-                    <div class="precio">$35.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -815,6 +828,30 @@
                 </div>
             </div>
             <div class="card">
+                <div class="img-wrap"><img src="imagenes/remera-termica-hombre-verde.jpg" alt="REMERA TERMICA HOMBRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA TERMICA HOMBRE</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">VERDE</span>
+                    </div>
+                    <div class="precio">$18.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image1rvzv1prpqumnsvtp0q.jpg" alt="BUZO INSPIRE" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO INSPIRE</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$28.000,00</div>
+                </div>
+            </div>
+            <div class="card">
                 <div class="img-wrap"><img src="imagenes/jogging-florida-crema.jpg" alt="JOGGING FLORIDA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>JOGGING FLORIDA</h3>
@@ -851,18 +888,6 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="imagenes/remera-termica-hombre-verde.jpg" alt="REMERA TERMICA HOMBRE" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA TERMICA HOMBRE</h3>
-                    <div class="meta">
-                        <span class="badge">HOMBRE</span>
-                        <span class="badge">TALLE: L</span>
-                        <span class="badge">VERDE</span>
-                    </div>
-                    <div class="precio">$18.000,00</div>
-                </div>
-            </div>
-            <div class="card">
                 <div class="img-wrap"><img src="imagenes/top-maui-negro.jpg" alt="TOP MAUI" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TOP MAUI</h3>
@@ -884,6 +909,42 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$15.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/buzo-manhatan-negro.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/buzo-manhatan-negro.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRO</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/buzo-manhatan-crema.jpg" alt="BUZO MANHATAN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO MANHATAN</h3>
+                    <div class="meta">
+                        <span class="badge">UNISEX</span>
+                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">CREMA</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
                 </div>
             </div></div>
     </section>
@@ -920,102 +981,6 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t113620-651-ad92b048aa098d534417521582953641-1024-1024.webp" alt="BUZO TRAINING CUELLO REDONDO" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>BUZO TRAINING CUELLO REDONDO</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">BLANCO</span>
-                    </div>
-                    <div class="precio">$45.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t093125-928-c37e275f706415d0e517521507887210-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 35/40</span>
-                        <span class="badge">GRIS/BORDO</span>
-                    </div>
-                    <div class="precio">$5.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/assets_task_01jz5pxew0eknat5aqss2cwcwp_1751464837_img_1-572cdffffc81bf427e17521516471521-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: 35/40</span>
-                        <span class="badge">NEGRO/ROSA</span>
-                    </div>
-                    <div class="precio">$5.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/mochila-paletero-luxury.jpg" alt="MOCHILA PALETERO LUXURY " loading="lazy"></div>
-                <div class="card-body">
-                    <h3>MOCHILA PALETERO LUXURY </h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        
-                        <span class="badge">NEGRO/GRIS</span>
-                    </div>
-                    <div class="precio">$65.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122329-089-96e214a01856af13ef17547530867696-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>OVERGRIPS THIN</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        
-                        <span class="badge">AMARILLO</span>
-                    </div>
-                    <div class="precio">$3.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122311-293-0ae0336c7dbbb76ae117547530873915-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>OVERGRIPS THIN</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        
-                        <span class="badge">FUCSIA</span>
-                    </div>
-                    <div class="precio">$3.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>OVERGRIPS THIN</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        
-                        <span class="badge">NARANJA</span>
-                    </div>
-                    <div class="precio">$3.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>OVERGRIPS THIN</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        
-                        <span class="badge">NARANJA</span>
-                    </div>
-                    <div class="precio">$3.000,00</div>
-                </div>
-            </div>
-            <div class="card">
                 <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-20-834192bb88f3bd410417327132710938-1024-1024.webp" alt="PANTALON LARGO HOMBRE COSMO ACETATO" loading="lazy"></div>
                 <div class="card-body">
                     <h3>PANTALON LARGO HOMBRE COSMO ACETATO</h3>
@@ -1025,54 +990,6 @@
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$45.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp" alt="POLLERA LUXURY TABLAS" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>POLLERA LUXURY TABLAS</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: L</span>
-                        <span class="badge">NEGRA</span>
-                    </div>
-                    <div class="precio">$40.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154900-986-4d6ba9932588e2f92e17550246091238-1024-1024.webp" alt="POLLERA LUXURY TABLAS" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>POLLERA LUXURY TABLAS</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">BLANCA</span>
-                    </div>
-                    <div class="precio">$40.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t094343-884-11df41d705cc2eb65d17478315749325-1024-1024.webp" alt="POLLERA SIXTY STELLAR" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>POLLERA SIXTY STELLAR</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">GRIS</span>
-                    </div>
-                    <div class="precio">$35.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp" alt="REMERA CLUB 2" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA CLUB 2</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: S</span>
-                        <span class="badge">NEGRA </span>
-                    </div>
-                    <div class="precio">$32.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -1097,18 +1014,6 @@
                         <span class="badge">BLANCA </span>
                     </div>
                     <div class="precio">$32.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>REMERA COSMO</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">NEGRA</span>
-                    </div>
-                    <div class="precio">$23.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -1184,18 +1089,6 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/chatgpt-image-28-ene-2026-12_12_44-b215babc3ca420cc0917696134323557-1024-1024.webp" alt="SHORT GAME S CALZA" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>SHORT GAME S CALZA</h3>
-                    <div class="meta">
-                        <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: M</span>
-                        <span class="badge">AZUL</span>
-                    </div>
-                    <div class="precio">$25.000,00</div>
-                </div>
-            </div>
-            <div class="card">
                 <div class="img-wrap"><img src="imagenes/short-hombre-cosmo-rojo.jpg" alt="SHORT HOMBRE COSMO" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT HOMBRE COSMO</h3>
@@ -1220,18 +1113,6 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-06t123020-225-7419c8402c80a6142517624430295057-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>SHORT LUXURY</h3>
-                    <div class="meta">
-                        <span class="badge">HOMBRE</span>
-                        <span class="badge">TALLE: S</span>
-                        <span class="badge">VERDE</span>
-                    </div>
-                    <div class="precio">$36.000,00</div>
-                </div>
-            </div>
-            <div class="card">
                 <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp" alt="SHORT LUXURY " loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT LUXURY </h3>
@@ -1244,12 +1125,132 @@
                 </div>
             </div>
             <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-06t123020-225-7419c8402c80a6142517624430295057-1024-1024.webp" alt="SHORT LUXURY" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT LUXURY</h3>
+                    <div class="meta">
+                        <span class="badge">HOMBRE</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">VERDE</span>
+                    </div>
+                    <div class="precio">$36.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t113620-651-ad92b048aa098d534417521582953641-1024-1024.webp" alt="BUZO TRAINING CUELLO REDONDO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>BUZO TRAINING CUELLO REDONDO</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">BLANCO</span>
+                    </div>
+                    <div class="precio">$45.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-07-10t093125-928-c37e275f706415d0e517521507887210-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 35/40</span>
+                        <span class="badge">GRIS/BORDO</span>
+                    </div>
+                    <div class="precio">$5.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/assets_task_01jz5pxew0eknat5aqss2cwcwp_1751464837_img_1-572cdffffc81bf427e17521516471521-1024-1024.webp" alt="MEDIAS DAMA 35/40 CAÑA ALTA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MEDIAS DAMA 35/40 CAÑA ALTA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: 35/40</span>
+                        <span class="badge">NEGRO/ROSA</span>
+                    </div>
+                    <div class="precio">$5.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp" alt="POLLERA LUXURY TABLAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA LUXURY TABLAS</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: L</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154900-986-4d6ba9932588e2f92e17550246091238-1024-1024.webp" alt="POLLERA LUXURY TABLAS" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA LUXURY TABLAS</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">BLANCA</span>
+                    </div>
+                    <div class="precio">$40.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-21t094343-884-11df41d705cc2eb65d17478315749325-1024-1024.webp" alt="POLLERA SIXTY STELLAR" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>POLLERA SIXTY STELLAR</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">GRIS</span>
+                    </div>
+                    <div class="precio">$35.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp" alt="REMERA CLUB 2" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA CLUB 2</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: S</span>
+                        <span class="badge">NEGRA </span>
+                    </div>
+                    <div class="precio">$32.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-2024-10-08t094020-385-89c293231ffe3e78c217283913021993-1024-1024.webp" alt="REMERA COSMO" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>REMERA COSMO</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">NEGRA</span>
+                    </div>
+                    <div class="precio">$23.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/chatgpt-image-28-ene-2026-12_12_44-b215babc3ca420cc0917696134323557-1024-1024.webp" alt="SHORT GAME S CALZA" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>SHORT GAME S CALZA</h3>
+                    <div class="meta">
+                        <span class="badge">MUJER</span>
+                        <span class="badge">TALLE: M</span>
+                        <span class="badge">AZUL</span>
+                    </div>
+                    <div class="precio">$25.000,00</div>
+                </div>
+            </div>
+            <div class="card">
                 <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp" alt="SHORT MUJER C/CALZA" loading="lazy"></div>
                 <div class="card-body">
                     <h3>SHORT MUJER C/CALZA</h3>
                     <div class="meta">
                         <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: XL</span>
+                        <span class="badge">TALLE: L</span>
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$30.000,00</div>
@@ -1261,10 +1262,70 @@
                     <h3>SHORT MUJER C/CALZA </h3>
                     <div class="meta">
                         <span class="badge">MUJER</span>
-                        <span class="badge">TALLE: L</span>
+                        <span class="badge">TALLE: XL</span>
                         <span class="badge">NEGRO</span>
                     </div>
                     <div class="precio">$30.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/mochila-paletero-luxury.jpg" alt="MOCHILA PALETERO LUXURY " loading="lazy"></div>
+                <div class="card-body">
+                    <h3>MOCHILA PALETERO LUXURY </h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+
+                        <span class="badge">NEGRO/GRIS</span>
+                    </div>
+                    <div class="precio">$65.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122329-089-96e214a01856af13ef17547530867696-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+
+                        <span class="badge">AMARILLO</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-09t122311-293-0ae0336c7dbbb76ae117547530873915-1024-1024.webp" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+
+                        <span class="badge">FUCSIA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+
+                        <span class="badge">NARANJA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="img-wrap"><img src="imagenes/overgrips-thin-naranja.jpg" alt="OVERGRIPS THIN" loading="lazy"></div>
+                <div class="card-body">
+                    <h3>OVERGRIPS THIN</h3>
+                    <div class="meta">
+                        <span class="badge">ACCESORIOS</span>
+
+                        <span class="badge">NARANJA</span>
+                    </div>
+                    <div class="precio">$3.000,00</div>
                 </div>
             </div>
             <div class="card">
@@ -1304,5 +1365,22 @@
                 </div>
             </div></div>
     </section></div>
+    <footer class="contact">
+        <h3>CONTACTO</h3>
+        <div class="contact-list">
+            <a class="contact-item ig" href="https://instagram.com/ribera.sport" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2.2c3.2 0 3.6 0 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.26.07 1.64.07 4.85s0 3.6-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.26.06-1.64.07-4.85.07s-3.6 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.2 15.6 2.2 15.22 2.2 12s0-3.6.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.4 2.2 8.78 2.2 12 2.2M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.9 5.9 0 0 0-2.13 1.39A5.9 5.9 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.73 1.46 1.39 2.12.66.66 1.33 1.08 2.12 1.39.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.12-1.39 5.9 5.9 0 0 0 1.39-2.12c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.39-2.12A5.9 5.9 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0Zm0 5.84a6.16 6.16 0 1 0 0 12.32 6.16 6.16 0 0 0 0-12.32Zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm6.41-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88Z"/>
+                </svg>
+                <span>ribera.sport</span>
+            </a>
+            <a class="contact-item wa" href="https://wa.me/541134925262" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.47 14.38c-.3-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.94 1.16-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.38-1.46-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.91-2.18-.24-.57-.48-.49-.66-.5l-.56-.01a1.08 1.08 0 0 0-.79.37c-.27.3-1.03 1.01-1.03 2.46 0 1.45 1.06 2.85 1.2 3.05.15.2 2.08 3.18 5.04 4.46.7.3 1.25.48 1.68.62.71.22 1.35.19 1.86.12.57-.09 1.74-.71 1.99-1.4.25-.69.25-1.27.17-1.4-.07-.13-.27-.2-.57-.35Zm-5.42 7.4h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.87 9.87 0 0 1-1.51-5.26 9.91 9.91 0 0 1 9.9-9.9 9.85 9.85 0 0 1 7 2.9 9.83 9.83 0 0 1 2.9 7c0 5.46-4.45 9.9-9.91 9.9Zm8.42-18.32A11.81 11.81 0 0 0 12.05 0C5.5 0 .17 5.34.17 11.89c0 2.1.55 4.14 1.6 5.94L.05 24l6.31-1.66a11.88 11.88 0 0 0 5.69 1.45h.01c6.56 0 11.89-5.34 11.89-11.89A11.82 11.82 0 0 0 20.47 3.46Z"/>
+                </svg>
+                <span>+54 11 3492 5262</span>
+            </a>
+        </div>
+    </footer>
 </body>
 </html>
