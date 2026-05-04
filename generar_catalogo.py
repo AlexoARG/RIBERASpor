@@ -124,10 +124,24 @@ OVERRIDES = {
     # contienen "morley" — el matcher no los encuentra. Override directo a URL.
     ('PESCADORA MORLEY', 'AZUL', 'M', 2): 'https://www.maikmayoristas.com/productos/pescadora-azul1/',
     ('PESCADORA MORLEY', 'NEGRA', 'M', 2): 'https://www.maikmayoristas.com/productos/pescadora-negra1/',
+    # CALZA BIKER POWER MORLEY GRIS TOPO (Maik): foto provista por el cliente.
+    ('CALZA BIKER POWER MORLEY', 'GRIS TOPO', 'M', 2): {
+        'image': 'imagenes/calza-biker-power-morley-gris-topo.jpg',
+        'url': 'https://www.maikmayoristas.com/productos/biker-power-recortes-morley-gris-topo/',
+    },
+    # CALZA LARGA POWER RECORTES MORLEY CHOCO (Maik): la foto 1 (modelo) es flojita,
+    # uso la foto 2 del carrusel `data-store="product-image"` (mejor toma del producto).
+    ('CALZA LARGA POWER RECORTES MORLEY', 'CHOCO', 'S', 2): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/006/462/459/products/8145cdac-9aed-4c89-9c23-11d8367d9aa4-9a797e6c33c7f9ccf817556241731037-1024-1024.webp',
+        'url': 'https://www.maikmayoristas.com/productos/calza-power-recortes-morley-choco-adobe1/',
+    },
     # Slug `remera-dryfit-gris1` (con "1") no matchea con color GRIS exacto.
     ('REMERA DRYFIT', 'GRIS', 'XL', 2): 'https://www.maikmayoristas.com/productos/remera-dryfit-gris1/',
-    # Slug `top-up-uva-pastel` no contiene "morley".
-    ('TOP UP MORLEY', 'UVA', 'L', 2): 'https://www.maikmayoristas.com/productos/top-up-uva-pastel/',
+    # TOP UP MORLEY UVA (Maik): foto provista por el cliente.
+    ('TOP UP MORLEY', 'UVA', 'L', 2): {
+        'image': 'imagenes/top-up-morley-uva.jpg',
+        'url': 'https://www.maikmayoristas.com/productos/top-up-uva-pastel/',
+    },
     # BUZO GAME CIERRE (Sixty): el matcher devuelve la imagen del variant Negro.
     # Las URLs reales por color salen del data-store="product-image" del producto.
     ('BUZO GAME CIERRE', 'ROJO', 'M', 3): {
@@ -195,7 +209,12 @@ OVERRIDES = {
     },
     # REMERA CLUB 2 NEGRA (Sixty): el slug base `remera-club-2-mujer-dry-fitness/` es la version LILA.
     # La variante negra vive en otra URL: `remera-club-2-mujer-dry-fitness2/`.
+    # En DB el color viene como 'NEGRA ' con espacio al final — cubrimos ambos.
     ('REMERA CLUB 2', 'NEGRA', 'S', 3): {
+        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp',
+        'url': 'https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness2/',
+    },
+    ('REMERA CLUB 2', 'NEGRA ', 'S', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness2/',
     },
