@@ -25,9 +25,42 @@ SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
 #       imagen pinned (local o URL remota) + link opcional
 OVERRIDES = {
     ('CALZA CORTA LYCRA', 'AZUL', 'S', 1): 'https://www.factionshop.com.ar/calzas/calzas-cortas/calza-corta-microfibra-marino',
+    ('CAMPERA BRAVE', 'AZUL MARINO', 'XXL', 4): {
+        'image': 'imagenes/campera-brave-azul-marino.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/campera-brave-smr-fa0eb98eb971542d6d4e1e8f676e3a16236d5487',
+    },
     ('BUZO INSPIRE', 'NEGRO', 'L', 4): {
         'image': 'https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image1rvzv1prpqumnsvtp0q.jpg',
         'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-inspire-smr-76de8fdaafa07dbc323072a5752f34af781db0e4',
+    },
+    # BUZO TRUST: la galeria solo tiene fotos en aero gris y marron, no en negro real.
+    # Foto descargada manualmente del sitio del proveedor.
+    ('BUZO TRUST', 'NEGRO', 'XL', 4): {
+        'image': 'imagenes/buzo-trust-negro.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-trust-smr-f6b0146b0e64d3d00f313da67e3180674775fcf0',
+    },
+    # REMERA TERMICA HOMBRE VERDE: foto provista por el cliente.
+    ('REMERA TERMICA HOMBRE', 'VERDE', 'L', 4): {
+        'image': 'imagenes/remera-termica-hombre-verde.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/remera-termica-hombre-s-m-l-xl-smr-2bf1f88bfb6c3ad6849523ec521e9e8b441d6b21',
+    },
+    # JOGGING FLORIDA CREMA: foto provista por el cliente.
+    ('JOGGING FLORIDA', 'CREMA', 'L', 4): {
+        'image': 'imagenes/jogging-florida-crema.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/chupin-dama-algodon--florida-smr-4f40705785eebc5cbdd10f59de3cffa1f1e3fd5c',
+    },
+    # TOP PULSE NEGRO: el matcher elige la foto 1 (modelo de espaldas), pero la
+    # foto 4 muestra mejor el producto.
+    ('TOP PULSE', 'NEGRO', 'S', 4): {
+        'image': 'https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image4eu7w3nu6fjomi7icojt.png',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/top-pulse-smr-53e46b827131a9e4aada533fd8ba47c9788a85ea',
+    },
+    # TOP MAUI NEGRO: el matcher por color elige una foto que no es negra y la
+    # URL directa de la foto 1 (sumer-app-90b8f con token) tira 404. Bajamos la
+    # imagen via el proxy image-tool-lambda de Domun y la pineamos local.
+    ('TOP MAUI', 'NEGRO', 'L', 4): {
+        'image': 'imagenes/top-maui-negro.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/top-maui-s-l-xl-xxl-smr-f3917b143210689934581d82f61680cb49b2f7db',
     },
     # BUZO MANHATAN: la galeria solo tiene foto en rosa/mint (no en negro/crema solos),
     # asi que recoloreamos la rosa con recolorear.py a negro y crema.
@@ -87,6 +120,14 @@ OVERRIDES = {
         'image': 'imagenes/sudadera-dryfit-amarillo-fluor.jpg',
         'url': 'https://www.factionshop.com.ar/remeras',
     },
+    # PESCADORA MORLEY (Maik): los slugs `pescadora-azul1`/`pescadora-negra1` no
+    # contienen "morley" — el matcher no los encuentra. Override directo a URL.
+    ('PESCADORA MORLEY', 'AZUL', 'M', 2): 'https://www.maikmayoristas.com/productos/pescadora-azul1/',
+    ('PESCADORA MORLEY', 'NEGRA', 'M', 2): 'https://www.maikmayoristas.com/productos/pescadora-negra1/',
+    # Slug `remera-dryfit-gris1` (con "1") no matchea con color GRIS exacto.
+    ('REMERA DRYFIT', 'GRIS', 'XL', 2): 'https://www.maikmayoristas.com/productos/remera-dryfit-gris1/',
+    # Slug `top-up-uva-pastel` no contiene "morley".
+    ('TOP UP MORLEY', 'UVA', 'L', 2): 'https://www.maikmayoristas.com/productos/top-up-uva-pastel/',
 }
 
 CTX = ssl.create_default_context()
@@ -456,9 +497,23 @@ def main():
             if url_pagina not in cache_pages:
                 cache_pages[url_pagina] = http_get(url_pagina).decode('utf-8', errors='ignore')
             html = cache_pages[url_pagina]
-            img_urls = list(dict.fromkeys(
-                re.findall(r'https://(?:sumerlabs\.com|assets\.domun\.co)/prod/catalogue/[a-f0-9]+/[\w-]+\.(?:jpg|jpeg|png|webp)', html)
-            ))
+            # Restringir al contenedor `product-detail-gallery`: fuera de ahi la pagina
+            # incluye productos relacionados/recomendados que contaminan el match por color.
+            gal_m = re.search(r'<div class="product-detail-gallery">', html)
+            if gal_m:
+                seg_start = gal_m.end()
+                seg_end = html.find('</section>', seg_start)
+                gallery_html = html[seg_start:seg_end] if seg_end > 0 else html[seg_start:seg_start + 30000]
+            else:
+                gallery_html = html
+            plain_imgs = re.findall(r'https://(?:sumerlabs\.com|assets\.domun\.co)/prod/catalogue/[a-f0-9]+/[\w-]+\.(?:jpg|jpeg|png|webp)', gallery_html)
+            # Las miniaturas vienen wrappeadas en un lambda con `url-image=` (URL-encoded).
+            enc_imgs = [
+                urllib.parse.unquote(e)
+                for e in re.findall(r'url-image=([^"&]+)', gallery_html)
+            ]
+            enc_imgs = [u for u in enc_imgs if 'sumerlabs.com' in u or 'assets.domun.co' in u]
+            img_urls = list(dict.fromkeys(plain_imgs + enc_imgs))
             target = color_target_rgb(color_str)
             chosen = None
             if img_urls and target:
@@ -474,7 +529,10 @@ def main():
             if not chosen:
                 chosen = og_image(html)
             if chosen:
-                p['_match']['image'] = chosen
+                # No mutar `_match` directamente: distintos productos (mismo nombre/URL,
+                # distinto color) comparten la misma referencia desde el sitemap, y
+                # mutarla pisaria la imagen elegida para los demas colores.
+                p['_match'] = {**p['_match'], 'image': chosen}
                 cache_color_pick[cache_key] = chosen
         except Exception as e:
             pass
