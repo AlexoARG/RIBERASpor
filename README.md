@@ -13,29 +13,11 @@ Sistema web simple de control de stock y ventas. Datos en **PostgreSQL (Supabase
 
 > Si ya habías corrido la versión anterior del script (sin la tabla `proveedores`), volvé a correrlo: usa `create table if not exists` y `drop policy if exists`, así que es idempotente.
 
-### 2. (Opcional) Migrar datos del Google Sheet anterior
+### 2. Usar el sistema localmente
 
-Si tenés datos cargados en el Google Sheet viejo:
+Doble click en `sistema_compartido.html` — se abre en el navegador y funciona directo (los datos viven en Supabase, no hace falta server local).
 
-1. Abrí `migrar.html` con doble click (o desde el server local)
-2. Click en **Probar conexión** — debería mostrar todo OK
-3. Click en **Migrar ahora** — espera a que diga "MIGRACIÓN COMPLETA"
-4. Como dice el log al final, ejecutá esto en **Supabase SQL Editor** para que los IDs sigan numerando desde el último:
-
-   ```sql
-   SELECT setval(pg_get_serial_sequence('productos','id'), COALESCE((SELECT MAX(id) FROM productos), 1));
-   SELECT setval(pg_get_serial_sequence('ventas','id'), COALESCE((SELECT MAX(id) FROM ventas), 1));
-   ```
-
-5. Una vez migrado y verificado, podés borrar `migrar.html` (o dejarlo).
-
-### 3. Usar el sistema localmente
-
-Doble click en `iniciar_sistema.bat` → abre `http://localhost:8000/sistema_compartido.html`.
-
-> Como ahora los datos están en Supabase (en la nube), también podés abrir el HTML directo (sin servidor) y funciona igual.
-
-### 4. Subir a GitHub + GitHub Pages (acceso desde cualquier lado)
+### 3. Subir a GitHub + GitHub Pages (acceso desde cualquier lado)
 
 1. Crear repo en GitHub (puede ser público o privado).
 2. Desde la carpeta del proyecto:
@@ -57,8 +39,8 @@ La `anon key` de Supabase está embebida en el HTML (es pública por diseño). L
 
 - `sistema_compartido.html` — la app (frontend completo)
 - `supabase_setup.sql` — schema de las tablas (productos, ventas, proveedores)
-- `migrar.html` — herramienta one-shot para migrar del Google Sheet a Supabase
-- `iniciar_sistema.bat` — server local de Python para uso offline
+- `catalogo.html` + `generar_catalogo.py` — generador de catálogo de productos en stock con imágenes de los proveedores
+- `recolorear.py` + `recolorear_remera_dryfit.py` — scripts para generar variantes de color de imágenes de productos
 
 ## Pestañas
 

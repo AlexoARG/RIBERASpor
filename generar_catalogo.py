@@ -29,6 +29,20 @@ OVERRIDES = {
         'image': 'https://assets.domun.co/prod/catalogue/0705d4eb2880907143a7bf4c14e4f934dd230bad/image1rvzv1prpqumnsvtp0q.jpg',
         'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-inspire-smr-76de8fdaafa07dbc323072a5752f34af781db0e4',
     },
+    # BUZO MANHATAN: la galeria solo tiene foto en rosa/mint (no en negro/crema solos),
+    # asi que recoloreamos la rosa con recolorear.py a negro y crema.
+    ('BUZO MANHATAN', 'NEGRO', 'M', 4): {
+        'image': 'imagenes/buzo-manhatan-negro.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f',
+    },
+    ('BUZO MANHATAN', 'NEGRO', 'L', 4): {
+        'image': 'imagenes/buzo-manhatan-negro.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f',
+    },
+    ('BUZO MANHATAN', 'CREMA', 'XL', 4): {
+        'image': 'imagenes/buzo-manhatan-crema.jpg',
+        'url': 'https://nobrand-54113928092018s.domun.co/producto/buzo-manhatan-frisado-unisex-smr-bc861f50bd233ddfefcf7dc2df2a03afbc9b5b2f',
+    },
     ('MUSCULOSA DRIFIT', 'CELESTE', '2', 1): {
         'image': 'imagenes/musculosa-drifit-celeste.jpg',
         'url': 'https://www.factionshop.com.ar/'
@@ -40,6 +54,24 @@ OVERRIDES = {
     ('MUSCULOSA DRIFIT', 'GRIS TOPO', '3', 1): {
         'image': 'imagenes/musculosa-drifit-gris-topo.jpg',
         'url': 'https://www.factionshop.com.ar/'
+    },
+    # REMERA DRYFIT (FactionShop): no esta en el sitemap, asi que usamos la foto del
+    # cliente recoloreada con recolorear_remera_dryfit.py.
+    ('REMERA DRYFIT', 'NEGRA', '2', 1): {
+        'image': 'imagenes/remera-dryfit-negro.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
+    ('REMERA DRYFIT', 'NEGRA', '4', 1): {
+        'image': 'imagenes/remera-dryfit-negro.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
+    ('REMERA DRYFIT', 'BEIGE', '4', 1): {
+        'image': 'imagenes/remera-dryfit-beige.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
+    },
+    ('REMERA DRYFIT', '(3) LILA', '4', 1): {
+        'image': 'imagenes/remera-dryfit-lila.jpg',
+        'url': 'https://www.factionshop.com.ar/remeras',
     },
 }
 

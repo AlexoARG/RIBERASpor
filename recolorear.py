@@ -26,6 +26,16 @@ PRESETS = {
     'gris-topo': {'target_h': 0.08, 'sat_mult': 0.08, 'sat_min_after': 0.0, 'v_offset': -0.05,
                   'hue_tol_inner': 0.10, 'hue_tol_outer': 0.22,
                   'sat_min_orig': 0.04, 'sat_full_orig': 0.15},
+    # Negro: matar saturacion y escalar V para preservar pliegues/sombras pero llevar todo a oscuro.
+    'negro':    {'target_h': 0.0, 'sat_mult': 0.0, 'sat_min_after': 0.0,
+                 'v_mult': 0.10, 'v_offset': 0.0,
+                 'hue_tol_inner': 0.18, 'hue_tol_outer': 0.32,
+                 'sat_min_orig': 0.06, 'sat_full_orig': 0.18},
+    # Crema: hue cálido apenas, saturacion baja, brillo alto.
+    'crema':    {'target_h': 0.10, 'sat_mult': 0.10, 'sat_min_after': 0.07,
+                 'v_mult': 0.95, 'v_offset': 0.18,
+                 'hue_tol_inner': 0.12, 'hue_tol_outer': 0.25,
+                 'sat_min_orig': 0.08, 'sat_full_orig': 0.20},
 }
 
 
@@ -102,7 +112,8 @@ def recolorear(input_path, target_name, output_path,
     if sat_min_after > 0:
         new_s = np.maximum(new_s, sat_min_after)
     new_hsv[..., 1] = new_s
-    new_hsv[..., 2] = np.clip(v + preset['v_offset'], 0, 1)
+    v_mult = preset.get('v_mult', 1.0)
+    new_hsv[..., 2] = np.clip(v * v_mult + preset['v_offset'], 0, 1)
 
     # Convertir ambos a RGB y blendear según alpha (en RGB para evitar artefactos en hue)
     rgb_orig = hsv_to_rgb_np(hsv)
