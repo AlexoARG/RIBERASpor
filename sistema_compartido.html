@@ -120,6 +120,45 @@
             display: block;
         }
 
+        .subtabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .subtab-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--dark);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .subtab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .subtab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .subtab-content {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .subtab-content.active {
+            display: block;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -566,6 +605,86 @@
 
         <!-- VENTAS -->
         <div id="ventas" class="tab-content">
+            <div class="subtabs">
+                <button class="subtab-btn active" onclick="switchSubtab('subtab-venta-individual', this)">➕ Venta Individual</button>
+                <button class="subtab-btn" onclick="switchSubtab('subtab-venta-multiple', this)">🛒 Venta Múltiple</button>
+                <button class="subtab-btn" onclick="switchSubtab('subtab-venta-historial', this)">📝 Historial</button>
+            </div>
+
+            <div id="subtab-venta-multiple" class="subtab-content">
+            <div class="section">
+                <h2>🛒 Nueva Venta Múltiple</h2>
+                <p style="font-size: 13px; color: #7f8c8d; margin: -5px 0 10px 0;">
+                    Cargá una venta de varios productos al mismo cliente. Cada producto se guarda como una venta independiente en la base de datos.
+                </p>
+                <div class="form-row">
+                    <input type="date" id="vmFecha">
+                    <input type="text" id="vmCliente" placeholder="Cliente">
+                </div>
+                <div class="form-row">
+                    <select id="vmEstadoPago">
+                        <option value="PAGO">PAGO</option>
+                        <option value="IMPAGO">IMPAGO</option>
+                    </select>
+                    <select id="vmFormaPago">
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <textarea id="vmObs" placeholder="Observaciones (se aplica a todas las ventas del carrito)" style="resize: vertical; height: 50px;"></textarea>
+                </div>
+
+                <h3 style="font-size: 15px; margin: 15px 0 10px 0;">Agregar producto</h3>
+                <div class="form-row">
+                    <select id="vmProveedorFiltro" onchange="filtrarProductosVm()" style="flex: 0 1 220px;">
+                        <option value="">Todos los proveedores</option>
+                    </select>
+                    <div style="position: relative; flex: 1;">
+                        <input type="hidden" id="vmProducto">
+                        <input type="text" id="vmProductoBuscar" placeholder="🔍 Buscar producto..." autocomplete="off"
+                            oninput="filtrarProductosVm()" onfocus="filtrarProductosVm()">
+                        <div id="vmProductoDropdown" style="
+                            display: none; position: absolute; top: 100%; left: 0; right: 0;
+                            background: white; border: 1px solid var(--border); border-top: none;
+                            border-radius: 0 0 6px 6px; max-height: 250px; overflow-y: auto;
+                            z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                        "></div>
+                    </div>
+                    <input type="number" id="vmCantidad" placeholder="Cantidad" step="1" onchange="calcularVm()">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="vmPrecio" placeholder="Precio unitario" step="0.01" onchange="calcularVm()">
+                    <input type="number" id="vmValorFinal" placeholder="Valor final" step="0.01">
+                    <button class="btn-primary" onclick="agregarItemCarrito()">+ Agregar al carrito</button>
+                </div>
+
+                <h3 style="font-size: 15px; margin: 20px 0 10px 0;">
+                    🧺 Carrito <span id="vmCarritoContador" style="font-size: 13px; color: #7f8c8d; font-weight: normal;">(0)</span>
+                </h3>
+                <table id="vmCarritoTable">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant</th>
+                            <th>Precio Unit.</th>
+                            <th>Valor Final</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div style="text-align: right; margin: 10px 0; font-size: 16px;">
+                    Total: <strong id="vmCarritoTotal">$0</strong>
+                </div>
+                <div class="form-row">
+                    <button class="btn-primary" onclick="registrarVentaMultiple()">Registrar venta completa</button>
+                    <button class="btn-small btn-danger" onclick="vaciarCarrito()">Vaciar carrito</button>
+                </div>
+            </div>
+            </div>
+
+            <div id="subtab-venta-individual" class="subtab-content active">
             <div class="section">
                 <h2 id="ventaFormTitulo">➕ Nueva Venta</h2>
                 <input type="hidden" id="ventaId">
@@ -612,7 +731,9 @@
                     <button class="btn-small btn-danger" id="ventaBtnCancelar" onclick="cancelarEdicionVenta()" style="display:none;">Cancelar</button>
                 </div>
             </div>
+            </div>
 
+            <div id="subtab-venta-historial" class="subtab-content">
             <div class="section">
                 <h2>📝 Ventas <span id="ventasContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
                 <div class="filtro-row">
@@ -652,6 +773,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
             </div>
         </div>
 
@@ -1001,7 +1123,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('ventaFecha').value = fechaLocalHoy();
+            document.getElementById('vmFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+            actualizarCarrito();
 
             // Forzar mayúsculas en cada tecla. Excepción: notas (puede tener URLs).
             document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => {
@@ -1347,6 +1471,11 @@
             if (buscar && dropdown && !buscar.contains(e.target) && !dropdown.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
+            const buscarVm = document.getElementById('vmProductoBuscar');
+            const dropdownVm = document.getElementById('vmProductoDropdown');
+            if (buscarVm && dropdownVm && !buscarVm.contains(e.target) && !dropdownVm.contains(e.target)) {
+                dropdownVm.style.display = 'none';
+            }
         });
 
         function calcularVenta() {
@@ -1377,9 +1506,204 @@
             limpiarFormVenta();
         }
 
+        // ===== VENTA MÚLTIPLE (CARRITO) =====
+        let carrito = [];
+
+        function filtrarProductosVm() {
+            const buscar = document.getElementById('vmProductoBuscar').value.toLowerCase();
+            const proveedorFiltroRaw = document.getElementById('vmProveedorFiltro').value;
+            const proveedorIdFiltro = proveedorFiltroRaw ? parseInt(proveedorFiltroRaw) : null;
+            const dropdown = document.getElementById('vmProductoDropdown');
+
+            const productosFiltrados = datos.productos.filter(p => {
+                if (p.stock <= 0) return false;
+                if (proveedorIdFiltro != null && p.proveedorId !== proveedorIdFiltro) return false;
+                const txt = `${p.nombre} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada}`.toLowerCase();
+                return txt.includes(buscar);
+            });
+
+            if (productosFiltrados.length === 0) {
+                dropdown.innerHTML = '<div style="padding: 10px; color: #999; font-size: 13px;">Sin resultados</div>';
+                dropdown.style.display = 'block';
+                return;
+            }
+
+            dropdown.innerHTML = '';
+            productosFiltrados.forEach(p => {
+                const label = [p.nombre, p.talle || '-', p.color || '-', p.proveedor || '-', p.fechaEntrada || '-'].join(' · ');
+                const yaEnCarrito = carrito.filter(it => it.productoId === p.id).reduce((s, it) => s + it.cantidad, 0);
+                const stockLibre = p.stock - yaEnCarrito;
+                const item = document.createElement('div');
+                item.textContent = `${label}  (stock: ${stockLibre}${yaEnCarrito ? ` · ${yaEnCarrito} en carrito` : ''})`;
+                item.style.cssText = 'padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f0f0f0;';
+                item.onmouseenter = () => item.style.background = '#f0f6ff';
+                item.onmouseleave = () => item.style.background = 'white';
+                item.onclick = () => seleccionarProductoVm(p);
+                dropdown.appendChild(item);
+            });
+            dropdown.style.display = 'block';
+        }
+
+        function seleccionarProductoVm(p) {
+            document.getElementById('vmProducto').value = p.id;
+            const label = [p.nombre, p.talle || '-', p.color || '-', p.proveedor || '-', p.fechaEntrada || '-'].join(' · ');
+            document.getElementById('vmProductoBuscar').value = label;
+            document.getElementById('vmProductoDropdown').style.display = 'none';
+            document.getElementById('vmPrecio').value = p.precio;
+            document.getElementById('vmCantidad').value = 1;
+            calcularVm();
+        }
+
+        function calcularVm() {
+            const precio = parseFloat(document.getElementById('vmPrecio').value) || 0;
+            const cantidad = parseInt(document.getElementById('vmCantidad').value) || 0;
+            const subtotal = precio * cantidad;
+            document.getElementById('vmValorFinal').value = subtotal.toFixed(2);
+        }
+
+        function agregarItemCarrito() {
+            const productoId = parseInt(document.getElementById('vmProducto').value);
+            const cantidad = parseInt(document.getElementById('vmCantidad').value);
+            const precio = parseFloat(document.getElementById('vmPrecio').value);
+            const valorFinal = parseFloat(document.getElementById('vmValorFinal').value);
+
+            if (!productoId || !cantidad || cantidad <= 0 || isNaN(precio) || isNaN(valorFinal)) {
+                mostrarAlerta('Completá producto, cantidad, precio y valor final', 'danger');
+                return;
+            }
+
+            const prod = datos.productos.find(p => p.id === productoId);
+            if (!prod) { mostrarAlerta('Producto no encontrado', 'danger'); return; }
+
+            const yaEnCarrito = carrito.filter(it => it.productoId === productoId).reduce((s, it) => s + it.cantidad, 0);
+            if (prod.stock < yaEnCarrito + cantidad) {
+                mostrarAlerta(`Stock insuficiente. Disponible: ${prod.stock}, ya en carrito: ${yaEnCarrito}`, 'danger');
+                return;
+            }
+
+            const productoLabel = [prod.nombre, prod.talle || '-', prod.color || '-'].join(' · ');
+            carrito.push({ productoId, productoLabel, cantidad, precio, valorFinal });
+
+            document.getElementById('vmProducto').value = '';
+            document.getElementById('vmProductoBuscar').value = '';
+            document.getElementById('vmCantidad').value = '';
+            document.getElementById('vmPrecio').value = '';
+            document.getElementById('vmValorFinal').value = '';
+            document.getElementById('vmProductoBuscar').focus();
+
+            actualizarCarrito();
+        }
+
+        function quitarItemCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+
+        function vaciarCarrito() {
+            if (carrito.length === 0) return;
+            if (!confirm('¿Vaciar carrito?')) return;
+            carrito = [];
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            const tbody = document.querySelector('#vmCarritoTable tbody');
+            tbody.innerHTML = '';
+            if (carrito.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">Carrito vacío</td></tr>';
+            } else {
+                carrito.forEach((it, i) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${it.productoLabel}</td>
+                            <td>${it.cantidad}</td>
+                            <td>${formatMoney(it.precio)}</td>
+                            <td>${formatMoney(it.valorFinal)}</td>
+                            <td class="acciones-cell">
+                                <button class="btn-small btn-danger" onclick="quitarItemCarrito(${i})">X</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            const total = carrito.reduce((s, it) => s + it.valorFinal, 0);
+            document.getElementById('vmCarritoTotal').textContent = formatMoney(total);
+            document.getElementById('vmCarritoContador').textContent = `(${carrito.length})`;
+        }
+
+        async function registrarVentaMultiple() {
+            const fecha = document.getElementById('vmFecha').value;
+            const cliente = document.getElementById('vmCliente').value.trim();
+            const estadoPago = document.getElementById('vmEstadoPago').value;
+            const formaPago = document.getElementById('vmFormaPago').value;
+            const obs = document.getElementById('vmObs').value.trim();
+
+            if (!fecha || !cliente) { mostrarAlerta('Completá fecha y cliente', 'danger'); return; }
+            if (carrito.length === 0) { mostrarAlerta('El carrito está vacío', 'danger'); return; }
+
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await cargarDatos();
+
+                const totalPorProducto = {};
+                for (const it of carrito) {
+                    totalPorProducto[it.productoId] = (totalPorProducto[it.productoId] || 0) + it.cantidad;
+                }
+                for (const pidStr of Object.keys(totalPorProducto)) {
+                    const pid = parseInt(pidStr);
+                    const prod = datos.productos.find(p => p.id === pid);
+                    if (!prod) { mostrarAlerta(`Producto no encontrado (id ${pid})`, 'danger'); return; }
+                    if (prod.stock < totalPorProducto[pidStr]) {
+                        mostrarAlerta(`Stock insuficiente para ${prod.nombre} (necesita ${totalPorProducto[pidStr]}, hay ${prod.stock})`, 'danger');
+                        return;
+                    }
+                }
+
+                for (const it of carrito) {
+                    const prod = datos.productos.find(p => p.id === it.productoId);
+                    const costoUnitario = prod.costo;
+                    const costoTotal = costoUnitario * it.cantidad;
+                    const ganancia = it.valorFinal - costoTotal;
+
+                    const ventaData = {
+                        fecha: formatearFecha(fecha),
+                        cliente,
+                        productoId: it.productoId,
+                        productoNombre: prod.nombre,
+                        cantidad: it.cantidad,
+                        precio: it.precio,
+                        costoUnitario,
+                        costoTotal,
+                        valorFinal: it.valorFinal,
+                        ganancia,
+                        estadoPago,
+                        formaPago,
+                        obs
+                    };
+                    await sbInsert('ventas', jsToDbVenta(ventaData));
+                    await sbUpdate('productos', prod.id, { stock: prod.stock - it.cantidad });
+                    prod.stock -= it.cantidad;
+                }
+
+                mostrarAlerta(`${carrito.length} venta(s) registradas para ${cliente}`, 'success');
+                carrito = [];
+                document.getElementById('vmFecha').value = fechaLocalHoy();
+                document.getElementById('vmCliente').value = '';
+                document.getElementById('vmEstadoPago').value = 'PAGO';
+                document.getElementById('vmFormaPago').value = 'EFECTIVO';
+                document.getElementById('vmObs').value = '';
+                actualizarCarrito();
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error al guardar: ' + error.message, 'danger');
+            }
+        }
+
         function editarVenta(id) {
             const v = datos.ventas.find(x => x.id === id);
             if (!v) return;
+            activarSubtab('subtab-venta-individual');
             const prod = datos.productos.find(p => p.id === v.productoId);
             document.getElementById('ventaId').value = v.id;
             const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(v.fecha || '');
@@ -1778,6 +2102,25 @@
             cargarDatos();
         }
 
+        function switchSubtab(id, btn) {
+            const container = btn.closest('.tab-content') || document;
+            container.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+            container.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function activarSubtab(id) {
+            const target = document.getElementById(id);
+            if (!target) return;
+            const container = target.closest('.tab-content') || document;
+            container.querySelectorAll('.subtab-content').forEach(t => t.classList.remove('active'));
+            container.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+            const btn = container.querySelector(`.subtab-btn[onclick*="${id}"]`);
+            if (btn) btn.classList.add('active');
+        }
+
         function mostrarAlerta(msg, tipo) {
             const alert = document.getElementById('alert');
             alert.textContent = msg;
@@ -1830,6 +2173,13 @@
             const valorActual2 = sel2.value;
             sel2.innerHTML = '<option value="">Todos los proveedores</option>' + opciones;
             sel2.value = valorActual2;
+
+            const sel3 = document.getElementById('vmProveedorFiltro');
+            if (sel3) {
+                const valorActual3 = sel3.value;
+                sel3.innerHTML = '<option value="">Todos los proveedores</option>' + opciones;
+                sel3.value = valorActual3;
+            }
         }
 
         function limpiarFormProveedor() {

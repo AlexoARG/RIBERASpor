@@ -611,10 +611,22 @@ def main():
         enriquecidos.append({**prod, '_match': match})
     print(f'   matches: {matches}, sin match: {sin_match} (overrides: {overrides_aplicados})')
 
-    # Para matches sin imagen (típico NoBrand): bajar la página, sacar todas las imágenes
-    # del producto, y elegir la que mejor matchee el color (color promedio del centro).
-    print('4b) Eligiendo mejor imagen por color en productos sin imagen en sitemap...')
-    pendientes = [p for p in enriquecidos if p.get('_match') and not p['_match'].get('image')]
+    # Para matches sin imagen (típico NoBrand) o donde varios productos comparten la misma
+    # URL de proveedor (variantes por color, típico de Sixty/Maik): bajar la página, sacar
+    # todas las imágenes del producto, y elegir la que mejor matchee el color.
+    print('4b) Eligiendo mejor imagen por color en productos sin imagen / variantes de color...')
+    url_counts = {}
+    for _p in enriquecidos:
+        _m = _p.get('_match')
+        if _m and _m.get('url'):
+            url_counts[_m['url']] = url_counts.get(_m['url'], 0) + 1
+    pendientes = [
+        p for p in enriquecidos
+        if p.get('_match') and (
+            not p['_match'].get('image')
+            or url_counts.get(p['_match'].get('url') or '', 0) > 1
+        )
+    ]
     cache_pages = {}     # url_pagina → html
     cache_imgs = {}      # url_imagen → (r, g, b) o None
     cache_color_pick = {} # (url_pagina, color_str) → url_imagen elegida
@@ -661,23 +673,42 @@ def main():
             if url_pagina not in cache_pages:
                 cache_pages[url_pagina] = http_get(url_pagina).decode('utf-8', errors='ignore')
             html = cache_pages[url_pagina]
-            # Restringir al contenedor `product-detail-gallery`: fuera de ahi la pagina
+            # Restringir al contenedor de galería del producto. Fuera de ahí la página
             # incluye productos relacionados/recomendados que contaminan el match por color.
+            # Soporta dos templates:
+            #  - `<div class="product-detail-gallery">` (Domun / NoBrand)
+            #  - `data-store="product-image"` (Tienda Nube / Sixty / Maik)
             gal_m = re.search(r'<div class="product-detail-gallery">', html)
             if gal_m:
                 seg_start = gal_m.end()
                 seg_end = html.find('</section>', seg_start)
                 gallery_html = html[seg_start:seg_end] if seg_end > 0 else html[seg_start:seg_start + 30000]
             else:
-                gallery_html = html
-            plain_imgs = re.findall(r'https://(?:sumerlabs\.com|assets\.domun\.co)/prod/catalogue/[a-f0-9]+/[\w-]+\.(?:jpg|jpeg|png|webp)', gallery_html)
+                # Tienda Nube: cada slide del carrusel es un elemento con data-store="product-image".
+                # Concatenamos todas esas slides para limitar el scope al carrusel principal.
+                slides = re.findall(
+                    r'data-store="product-image"[^>]*>.*?(?=data-store="product-image"|</ul>|</section>|</main>)',
+                    html, re.DOTALL
+                )
+                gallery_html = '\n'.join(slides) if slides else html
+            plain_imgs = re.findall(
+                r'https://(?:sumerlabs\.com|assets\.domun\.co|acdn-us\.mitiendanube\.com)/[^"\s\'<>]+?\.(?:jpg|jpeg|png|webp)',
+                gallery_html
+            )
             # Las miniaturas vienen wrappeadas en un lambda con `url-image=` (URL-encoded).
             enc_imgs = [
                 urllib.parse.unquote(e)
                 for e in re.findall(r'url-image=([^"&]+)', gallery_html)
             ]
-            enc_imgs = [u for u in enc_imgs if 'sumerlabs.com' in u or 'assets.domun.co' in u]
-            img_urls = list(dict.fromkeys(plain_imgs + enc_imgs))
+            enc_imgs = [u for u in enc_imgs if any(h in u for h in ('sumerlabs.com', 'assets.domun.co', 'acdn-us.mitiendanube.com'))]
+            # Tienda Nube sirve la misma imagen en varios tamaños (e.g. -480-0.webp, -1024-1024.webp).
+            # Normalizamos a la versión 1024 para máxima calidad y evitar duplicados.
+            def _max_size(u):
+                # acdn-us.mitiendanube.com termina en `-{w}-{h}.webp`; preferir 1024-1024.
+                if 'acdn-us.mitiendanube.com' in u:
+                    return re.sub(r'-\d+-\d+\.(webp|jpg|jpeg|png)$', r'-1024-1024.\1', u)
+                return u
+            img_urls = list(dict.fromkeys(_max_size(u) for u in (plain_imgs + enc_imgs)))
             target = color_target_rgb(color_str)
             chosen = None
             if img_urls and target:
