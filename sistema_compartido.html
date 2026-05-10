@@ -630,6 +630,10 @@
                         <option value="EFECTIVO">EFECTIVO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
+                    <select id="vmEntregado">
+                        <option value="SI">ENTREGADO: SI</option>
+                        <option value="NO">ENTREGADO: NO</option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <textarea id="vmObs" placeholder="Observaciones (se aplica a todas las ventas del carrito)" style="resize: vertical; height: 50px;"></textarea>
@@ -722,6 +726,10 @@
                         <option value="EFECTIVO">EFECTIVO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
+                    <select id="ventaEntregado">
+                        <option value="SI">ENTREGADO: SI</option>
+                        <option value="NO">ENTREGADO: NO</option>
+                    </select>
                 </div>
                 <div class="form-row">
                     <textarea id="ventaObs" placeholder="Observaciones" style="resize: vertical; height: 60px;"></textarea>
@@ -767,6 +775,7 @@
                             <th class="sortable" onclick="ordenarVentas('ganancia')">Ganancia<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('estadoPago')">Estado<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('formaPago')">Forma Pago<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('entregado')">Entregado<span class="sort-arrow">▼</span></th>
                             <th>Obs</th>
                             <th>Acciones</th>
                         </tr>
@@ -918,6 +927,7 @@
                 ganancia: parseFloat(v.ganancia) || 0,
                 estadoPago: v.estado_pago || 'PAGO',
                 formaPago: v.forma_pago || 'EFECTIVO',
+                entregado: v.entregado || 'SI',
                 obs: v.obs || ''
             };
         }
@@ -935,6 +945,7 @@
                 ganancia: v.ganancia,
                 estado_pago: upper(v.estadoPago),
                 forma_pago: upper(v.formaPago),
+                entregado: upper(v.entregado || 'SI'),
                 obs: upper(v.obs)
             };
         }
@@ -1496,6 +1507,7 @@
             document.getElementById('ventaValorFinal').value = '';
             document.getElementById('ventaEstadoPago').value = 'PAGO';
             document.getElementById('ventaFormaPago').value = 'EFECTIVO';
+            document.getElementById('ventaEntregado').value = 'SI';
             document.getElementById('ventaObs').value = '';
             document.getElementById('ventaFormTitulo').textContent = '➕ Nueva Venta';
             document.getElementById('ventaBtnGuardar').textContent = 'Registrar Venta';
@@ -1636,6 +1648,7 @@
             const cliente = document.getElementById('vmCliente').value.trim();
             const estadoPago = document.getElementById('vmEstadoPago').value;
             const formaPago = document.getElementById('vmFormaPago').value;
+            const entregado = document.getElementById('vmEntregado').value;
             const obs = document.getElementById('vmObs').value.trim();
 
             if (!fecha || !cliente) { mostrarAlerta('Completá fecha y cliente', 'danger'); return; }
@@ -1678,6 +1691,7 @@
                         ganancia,
                         estadoPago,
                         formaPago,
+                        entregado,
                         obs
                     };
                     await sbInsert('ventas', jsToDbVenta(ventaData));
@@ -1691,6 +1705,7 @@
                 document.getElementById('vmCliente').value = '';
                 document.getElementById('vmEstadoPago').value = 'PAGO';
                 document.getElementById('vmFormaPago').value = 'EFECTIVO';
+                document.getElementById('vmEntregado').value = 'SI';
                 document.getElementById('vmObs').value = '';
                 actualizarCarrito();
                 await cargarDatos();
@@ -1721,6 +1736,7 @@
             document.getElementById('ventaValorFinal').value = v.valorFinal;
             document.getElementById('ventaEstadoPago').value = v.estadoPago;
             document.getElementById('ventaFormaPago').value = v.formaPago;
+            document.getElementById('ventaEntregado').value = v.entregado || 'SI';
             document.getElementById('ventaObs').value = v.obs;
             document.getElementById('ventaFormTitulo').textContent = '✏️ Editar Venta';
             document.getElementById('ventaBtnGuardar').textContent = 'Guardar cambios';
@@ -1738,6 +1754,7 @@
             const valorFinal = parseFloat(document.getElementById('ventaValorFinal').value);
             const estadoPago = document.getElementById('ventaEstadoPago').value;
             const formaPago = document.getElementById('ventaFormaPago').value;
+            const entregado = document.getElementById('ventaEntregado').value;
             const obs = document.getElementById('ventaObs').value.trim();
 
             if (!fecha || !cliente || !productoId || !cantidad || isNaN(precio) || isNaN(valorFinal)) {
@@ -1772,6 +1789,7 @@
                     ganancia,
                     estadoPago,
                     formaPago,
+                    entregado,
                     obs
                 };
 
@@ -1858,7 +1876,7 @@
             }
 
             if (ventasOrdenadas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center;">Sin ventas</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align: center;">Sin ventas</td></tr>';
                 document.getElementById('ventasPaginaInfo').textContent = 'Página 1 de 1';
                 return;
             }
@@ -1877,6 +1895,8 @@
                 const obsText = v.obs ? v.obs.substring(0, 10) + '...' : '—';
                 const gananciaColor = v.ganancia >= 0 ? '#27AE60' : '#E74C3C';
                 const estadoColor = v.estadoPago === 'PAGO' ? '#27AE60' : '#E74C3C';
+                const entregadoVal = v.entregado || 'SI';
+                const entregadoColor = entregadoVal === 'SI' ? '#27AE60' : '#E74C3C';
 
                 tbody.innerHTML += `
                     <tr>
@@ -1889,6 +1909,7 @@
                         <td style="color: ${gananciaColor}; font-weight: 600;">${formatMoney(v.ganancia)}</td>
                         <td><button class="btn-small" style="background:${estadoColor};color:white;" onclick="toggleEstadoPago(${v.id})">${v.estadoPago || '—'}</button></td>
                         <td><button class="btn-small" style="background:#7f8c8d;color:white;" onclick="toggleFormaPago(${v.id})">${v.formaPago || '—'}</button></td>
+                        <td><button class="btn-small" style="background:${entregadoColor};color:white;" onclick="toggleEntregado(${v.id})">${entregadoVal}</button></td>
                         <td>${obsText}</td>
                         <td class="acciones-cell">
                             <button class="btn-small btn-primary" onclick="editarVenta(${v.id})">✏️</button>
@@ -1920,6 +1941,21 @@
             try {
                 mostrarSync('Guardando...', 'synced');
                 await sbUpdate('ventas', id, { forma_pago: nuevo });
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        async function toggleEntregado(id) {
+            const venta = datos.ventas.find(v => v.id === id);
+            if (!venta) return;
+            const actual = venta.entregado || 'SI';
+            const nuevo = actual === 'SI' ? 'NO' : 'SI';
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbUpdate('ventas', id, { entregado: nuevo });
                 await cargarDatos();
             } catch (error) {
                 mostrarSync('Error al guardar', 'error');
