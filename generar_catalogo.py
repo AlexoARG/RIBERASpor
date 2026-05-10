@@ -172,7 +172,7 @@ OVERRIDES = {
         'url': 'https://sixtypadel.com/productos/medias-termicas-trekking-unisex/',
     },
     # MOCHILA PALETERO LUXURY (Sixty): foto provista por el cliente.
-    ('MOCHILA PALETERO LUXURY ', 'NEGRO/GRIS', '', 3): {
+    ('MOCHILA PALETERO LUXURY', 'NEGRO/GRIS', '', 3): {
         'image': 'imagenes/mochila-paletero-luxury.jpg',
         'url': 'https://sixtypadel.com/productos/mochila-paletero-sixty-padel-invictus-yh82m/',
     },
@@ -198,33 +198,19 @@ OVERRIDES = {
     },
     # POLLERA LUXURY TABLAS NEGRA (Sixty): URL real es pollera-luxury-tenis-padel-tableada-con-short
     # (sin el "1" del slug duplicado). Variante Negro en data-store="product-image".
-    # En DB hay duplicados NEGRO/NEGRA L — cubrimos ambos.
     ('POLLERA LUXURY TABLAS', 'NEGRA', 'L', 3): {
-        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp',
-        'url': 'https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short/',
-    },
-    ('POLLERA LUXURY TABLAS', 'NEGRO', 'L', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-08-12t154911-846-82e20f436de13de79e17550246286723-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/pollera-luxury-tenis-padel-tableada-con-short/',
     },
     # REMERA CLUB 2 NEGRA (Sixty): el slug base `remera-club-2-mujer-dry-fitness/` es la version LILA.
     # La variante negra vive en otra URL: `remera-club-2-mujer-dry-fitness2/`.
-    # En DB el color viene como 'NEGRA ' con espacio al final — cubrimos ambos.
     ('REMERA CLUB 2', 'NEGRA', 'S', 3): {
-        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp',
-        'url': 'https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness2/',
-    },
-    ('REMERA CLUB 2', 'NEGRA ', 'S', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-06-04t093507-564-5b235c5198021f59dd17490408125434-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/remera-club-2-mujer-dry-fitness2/',
     },
     # REMERA COSMO BLANCA (Sixty): el slug `remera-cosmo-hombre1/` es la version negra.
     # La variante blanca vive en `remera-cosmo1/`. Variante única Blanco.
-    ('REMERA COSMO', 'BLANCA ', 'M', 3): {
-        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-35-e3807d5da3963f3c9d17261020996071-1024-1024.webp',
-        'url': 'https://sixtypadel.com/productos/remera-cosmo1/',
-    },
-    ('REMERA COSMO', 'BLANCO', 'L', 3): {
+    ('REMERA COSMO', 'BLANCA', 'M', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/diseno-sin-titulo-35-e3807d5da3963f3c9d17261020996071-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/remera-cosmo1/',
     },
@@ -259,24 +245,18 @@ OVERRIDES = {
     },
     # SHORT MUJER C/CALZA NEGRO (Sixty): el matcher mandaba a calza-larga-stellar-mujer.
     # URL real: short-motion-layer-love-c-calza-q87ve. Variante única Negro/Rosa.
-    # En DB hay duplicados con/sin espacio al final del nombre.
     ('SHORT MUJER C/CALZA', 'NEGRO', 'XL', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/short-motion-layer-love-c-calza-q87ve/',
     },
-    ('SHORT MUJER C/CALZA ', 'NEGRO', 'L', 3): {
+    ('SHORT MUJER C/CALZA', 'NEGRO', 'L', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-25t120004-424-4859076848ae0af8dc17640828770361-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/short-motion-layer-love-c-calza-q87ve/',
     },
     # SHORT LUXURY HOMBRE AZUL (Sixty): el matcher elegía la URL del modelo viejo
     # (`short-luxury-25-hombre/`) cuya foto principal es verde. La versión Azul Marino
     # vive en otro slug: `short-luxury-25-hombre-09rth/`.
-    # En DB hay duplicados de nombre (`SHORT LUXURY` y `SHORT LUXURY ` con espacio).
     ('SHORT LUXURY', 'AZUL', 'L', 3): {
-        'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp',
-        'url': 'https://sixtypadel.com/productos/short-luxury-25-hombre-09rth/',
-    },
-    ('SHORT LUXURY ', 'AZUL', 'L', 3): {
         'image': 'https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-11-14t123448-510-f76b9926471125a5fb17631345037966-1024-1024.webp',
         'url': 'https://sixtypadel.com/productos/short-luxury-25-hombre-09rth/',
     },
@@ -530,10 +510,39 @@ def format_money(n):
 def html_escape(s):
     return (str(s) if s is not None else '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
+def consolidar_duplicados(productos):
+    """Junta filas con mismo (nombre, color, talle, proveedor_id, precio) — case-insensitive,
+    sin espacios al borde — sumando los stocks. Si el precio difiere, NO son duplicados.
+    También avisa por consola sobre filas con espacios al final en nombre/color/talle
+    para que se corrijan en la DB."""
+    # 1) Avisar de espacios al borde (datos a corregir en DB)
+    for p in productos:
+        for campo in ('nombre', 'color', 'talle'):
+            v = p.get(campo)
+            if isinstance(v, str) and v != v.strip() and v.strip():
+                print(f"   [AVISO] id={p.get('id')} `{campo}` con espacio: {v!r} (corregir en DB)")
+    # 2) Consolidar
+    grupos = {}
+    for p in productos:
+        key = (
+            (p.get('nombre') or '').strip().upper(),
+            (p.get('color') or '').strip().upper(),
+            (p.get('talle') or '').strip().upper(),
+            p.get('proveedor_id'),
+            p.get('precio'),
+        )
+        if key in grupos:
+            grupos[key]['stock'] += p['stock']
+        else:
+            grupos[key] = dict(p)
+    return list(grupos.values())
+
 def main():
     print('1) Bajando productos con stock > 0...')
     productos = sb_get('productos', 'select=*&stock=gt.0')
-    print(f'   {len(productos)} productos')
+    print(f'   {len(productos)} filas crudas')
+    productos = consolidar_duplicados(productos)
+    print(f'   {len(productos)} productos únicos tras consolidar duplicados')
 
     print('2) Bajando proveedores...')
     proveedores = sb_get('proveedores', 'select=*')
@@ -999,6 +1008,37 @@ def main():
         </div>
     </div>
     <div class="container">{"".join(secciones_html)}</div>
+    <script>
+    (function() {{
+        var SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh';
+        var TTL_MS = 24 * 60 * 60 * 1000;
+        try {{
+            var raw = localStorage.getItem('rs_visit');
+            var now = Date.now();
+            if (raw) {{
+                var data = JSON.parse(raw);
+                if (data && data.expires_at && data.expires_at > now) return;
+            }}
+            var sid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (now + '-' + Math.random().toString(36).slice(2));
+            localStorage.setItem('rs_visit', JSON.stringify({{ session_id: sid, expires_at: now + TTL_MS }}));
+            fetch(SUPABASE_URL + '/rest/v1/visitas', {{
+                method: 'POST',
+                headers: {{
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_KEY,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                }},
+                body: JSON.stringify({{
+                    session_id: sid,
+                    user_agent: navigator.userAgent,
+                    referrer: document.referrer || null
+                }})
+            }}).catch(function() {{}});
+        }} catch (e) {{}}
+    }})();
+    </script>
 </body>
 </html>'''
 

@@ -1010,7 +1010,7 @@
         <div class="proveedor-header">
             <h2>SIXTY</h2>
             <div class="prov-stats">
-                26 PRODUCTOS · 30 UNIDADES
+                24 PRODUCTOS · 30 UNIDADES
             </div>
         </div>
         <div class="grid">
@@ -1291,30 +1291,6 @@
                 </div>
             </div>
             <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>TUBO PELOTAS</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        <span class="badge">TALLE: X 2</span>
-                        <span class="badge">X 2</span>
-                    </div>
-                    <div class="precio">$10.000,00</div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155623-992-7f8d230c6a9534f08517477674233756-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
-                <div class="card-body">
-                    <h3>TUBO PELOTAS</h3>
-                    <div class="meta">
-                        <span class="badge">ACCESORIOS</span>
-                        <span class="badge">TALLE: X 2</span>
-                        <span class="badge">X 2</span>
-                    </div>
-                    <div class="precio">$10.000,00</div>
-                </div>
-            </div>
-            <div class="card">
                 <div class="img-wrap"><img src="https://acdn-us.mitiendanube.com/stores/004/275/016/products/web-sixty-2025-05-20t155347-104-b692bf18e02aa3a8a217477672394837-1024-1024.webp" alt="TUBO PELOTAS" loading="lazy"></div>
                 <div class="card-body">
                     <h3>TUBO PELOTAS</h3>
@@ -1328,7 +1304,7 @@
     </section></div>
     <footer class="contact">
         <div class="stats" style="margin-bottom: 32px;">
-            <div class="stat"><span class="num">81</span><span class="lbl">Productos</span></div>
+            <div class="stat"><span class="num">79</span><span class="lbl">Productos</span></div>
             <div class="stat"><span class="num">85</span><span class="lbl">Unidades</span></div>
             <div class="stat"><span class="num">09/05/2026</span><span class="lbl">Actualizado</span></div>
         </div>
@@ -1348,5 +1324,36 @@
             </a>
         </div>
     </footer>
+    <script>
+    (function() {
+        var SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co';
+        var SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh';
+        var TTL_MS = 24 * 60 * 60 * 1000; // 1 visita única por dispositivo cada 24 h
+        try {
+            var raw = localStorage.getItem('rs_visit');
+            var now = Date.now();
+            if (raw) {
+                var data = JSON.parse(raw);
+                if (data && data.expires_at && data.expires_at > now) return;
+            }
+            var sid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (now + '-' + Math.random().toString(36).slice(2));
+            localStorage.setItem('rs_visit', JSON.stringify({ session_id: sid, expires_at: now + TTL_MS }));
+            fetch(SUPABASE_URL + '/rest/v1/visitas', {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + SUPABASE_KEY,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    session_id: sid,
+                    user_agent: navigator.userAgent,
+                    referrer: document.referrer || null
+                })
+            }).catch(function() {});
+        } catch (e) {}
+    })();
+    </script>
 </body>
 </html>
