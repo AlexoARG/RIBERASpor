@@ -1314,7 +1314,10 @@
             const stock = parseInt(stockRaw);
             const stockMin = parseInt(document.getElementById('productStockMin').value);
             const fechaEntrada = document.getElementById('productFechaEntrada').value;
-            const imagenUrl = document.getElementById('productImagenUrl').value.trim();
+            let imagenUrl = document.getElementById('productImagenUrl').value.trim();
+            // Si es URL externa (http/https), forzar lowercase: algunos CDNs son case-sensitive
+            // y devuelven respuestas vacias cuando el host/path viene en mayusculas.
+            if (/^https?:\/\//i.test(imagenUrl)) imagenUrl = imagenUrl.toLowerCase();
 
             if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
                 mostrarAlerta('Completa los campos obligatorios', 'danger');
