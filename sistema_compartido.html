@@ -584,6 +584,7 @@
                         <option value="EFECTIVO">EFECTIVO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
+                    <input type="text" id="productImagenUrl" placeholder="URL de imagen (opcional)" title="URL completa (https://...) o ruta relativa (imagenes/foo.jpg)" style="grid-column: 1 / -1;">
                     <button class="btn-primary" id="productBtnGuardar" onclick="guardarProducto()">Agregar</button>
                     <button class="btn-small btn-danger" id="productBtnCancelar" onclick="cancelarEdicionProducto()" style="display:none;">Cancelar</button>
                 </div>
@@ -924,7 +925,8 @@
                 fechaEntrada: p.fecha_entrada || '',
                 proveedorId: p.proveedor_id != null ? parseInt(p.proveedor_id) : null,
                 proveedor: '', // se completa en cargarDatos via lookup
-                formaPagoCompra: p.forma_pago_compra || 'EFECTIVO'
+                formaPagoCompra: p.forma_pago_compra || 'EFECTIVO',
+                imagenUrl: p.imagen_url || ''
             };
         }
         function jsToDbProducto(p) {
@@ -940,7 +942,8 @@
                 stock_min: p.stockMin,
                 fecha_entrada: p.fechaEntrada,
                 proveedor_id: p.proveedorId || null,
-                forma_pago_compra: upper(p.formaPagoCompra)
+                forma_pago_compra: upper(p.formaPagoCompra),
+                imagen_url: p.imagenUrl || null
             };
         }
         function dbToJsVenta(v) {
@@ -1261,6 +1264,7 @@
             document.getElementById('productStock').value = '';
             document.getElementById('productStockMin').value = '';
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+            document.getElementById('productImagenUrl').value = '';
             document.getElementById('productFormTitulo').textContent = '➕ Agregar Nuevo Producto';
             document.getElementById('productBtnGuardar').textContent = 'Agregar';
             document.getElementById('productBtnCancelar').style.display = 'none';
@@ -1287,6 +1291,7 @@
             document.getElementById('productStockMin').value = p.stockMin;
             const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(p.fechaEntrada || '');
             document.getElementById('productFechaEntrada').value = m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+            document.getElementById('productImagenUrl').value = p.imagenUrl || '';
             document.getElementById('productFormTitulo').textContent = '✏️ Editar Producto';
             document.getElementById('productBtnGuardar').textContent = 'Guardar cambios';
             document.getElementById('productBtnCancelar').style.display = 'inline-block';
@@ -1309,6 +1314,7 @@
             const stock = parseInt(stockRaw);
             const stockMin = parseInt(document.getElementById('productStockMin').value);
             const fechaEntrada = document.getElementById('productFechaEntrada').value;
+            const imagenUrl = document.getElementById('productImagenUrl').value.trim();
 
             if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
                 mostrarAlerta('Completa los campos obligatorios', 'danger');
@@ -1330,7 +1336,8 @@
                     costo, precio, stock,
                     stockMin: stockMin || 0,
                     fechaEntrada: formatearFecha(fechaEntrada),
-                    proveedorId, formaPagoCompra
+                    proveedorId, formaPagoCompra,
+                    imagenUrl: imagenUrl || null
                 };
 
                 if (id) {

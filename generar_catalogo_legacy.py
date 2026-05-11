@@ -1,18 +1,32 @@
 """
-Genera catalogo.html con todos los productos en stock, agrupados por proveedor,
-matcheando cada producto contra el sitemap del sitio del proveedor para obtener
-imagen y URL directa.
+[LEGACY] Genera catalogo.html estatico desde Supabase + crawl de sitemaps.
 
-Uso: python generar_catalogo.py
+ATENCION: Este script esta DEPRECADO. El catalogo ahora es dinamico
+(catalogo.html lee productos directo de Supabase al cargar). Correr este
+script PISA el catalogo dinamico con uno estatico y se pierden las
+customizaciones del JS.
+
+Solo usarlo si necesitas repoblar masivamente la columna `imagen_url`
+crawleando sitemaps. Para eso pasale --force.
+
+Uso (solo si sabes lo que haces):
+    python generar_catalogo_legacy.py --force
 """
 import json
 import re
 import ssl
+import sys
 import urllib.request
 import urllib.parse
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 from datetime import datetime
+
+if '--force' not in sys.argv:
+    print('[!] Script DEPRECADO. El catalogo es dinamico ahora.')
+    print('    Pasale --force si realmente queres regenerar catalogo.html estatico.')
+    print('    (esto PISARA el catalogo dinamico actual)')
+    sys.exit(1)
 
 SUPABASE_URL = 'https://bovuhrcqrhhrbmktmnkj.supabase.co'
 SUPABASE_KEY = 'sb_publishable_Imhg703t018wXcJw6uNxKQ_o_UxUQsh'
