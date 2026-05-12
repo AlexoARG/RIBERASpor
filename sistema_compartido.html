@@ -31,8 +31,8 @@
             color: var(--dark);
             text-transform: uppercase;
         }
-        /* Excepción: notas del proveedor pueden contener URLs (sensibles a mayúsculas) */
-        #proveedorNotas, .notas-cell {
+        /* Excepción: notas del proveedor y URLs de imagen pueden contener URLs (sensibles a mayúsculas) */
+        #proveedorNotas, .notas-cell, #productImagenUrl {
             text-transform: none;
         }
 
@@ -943,7 +943,9 @@
                 fecha_entrada: p.fechaEntrada,
                 proveedor_id: p.proveedorId || null,
                 forma_pago_compra: upper(p.formaPagoCompra),
-                imagen_url: p.imagenUrl || null
+                imagen_url: (p.imagenUrl && /^https?:\/\//i.test(p.imagenUrl))
+                    ? p.imagenUrl.toLowerCase()
+                    : (p.imagenUrl || null)
             };
         }
         function dbToJsVenta(v) {
@@ -1170,6 +1172,21 @@
             document.getElementById('ventaFecha').value = fechaLocalHoy();
             document.getElementById('vmFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+
+            // Normalizar imagen_url en vivo: URLs externas a lowercase (CDNs case-sensitive)
+            const imgUrlInput = document.getElementById('productImagenUrl');
+            if (imgUrlInput) {
+                imgUrlInput.addEventListener('input', () => {
+                    if (/^https?:\/\//i.test(imgUrlInput.value)) {
+                        const lower = imgUrlInput.value.toLowerCase();
+                        if (lower !== imgUrlInput.value) {
+                            const pos = imgUrlInput.selectionStart;
+                            imgUrlInput.value = lower;
+                            try { imgUrlInput.setSelectionRange(pos, pos); } catch (e) {}
+                        }
+                    }
+                });
+            }
             actualizarCarrito();
 
             // Forzar mayúsculas en cada tecla. Excepción: notas (puede tener URLs).
