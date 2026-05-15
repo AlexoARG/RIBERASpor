@@ -1189,9 +1189,9 @@
             }
             actualizarCarrito();
 
-            // Forzar mayúsculas en cada tecla. Excepción: notas (puede tener URLs).
+            // Forzar mayúsculas en cada tecla. Excepción: notas y URL de imagen (pueden tener URLs).
             document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(el => {
-                if (el.id === 'proveedorNotas') return;
+                if (el.id === 'proveedorNotas' || el.id === 'productImagenUrl') return;
                 el.addEventListener('input', () => {
                     const start = el.selectionStart;
                     const end = el.selectionEnd;
