@@ -199,6 +199,78 @@
         transition: transform 0.4s ease;
     }
     .card:hover .img-wrap img { transform: scale(1.04); }
+    /* Carrusel para productos con 2+ fotos */
+    .carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    .carousel-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .carousel-track img {
+        width: 100%;
+        height: 100%;
+        flex-shrink: 0;
+        scroll-snap-align: center;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .card:hover .carousel-track img { transform: scale(1.04); }
+    .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 0.2s, background 0.2s;
+        padding: 0;
+    }
+    .carousel-btn:hover { background: rgba(0, 0, 0, 0.8); }
+    .card:hover .carousel-btn { opacity: 1; }
+    .carousel-btn.prev { left: 6px; }
+    .carousel-btn.next { right: 6px; }
+    .carousel-dots {
+        position: absolute;
+        bottom: 8px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        z-index: 2;
+        pointer-events: none;
+    }
+    .carousel-dots span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.45);
+        transition: background 0.2s, transform 0.2s;
+    }
+    .carousel-dots span.active {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.2);
+    }
     .sin-imagen {
         color: var(--text-dim);
         font-size: 11px;
@@ -397,10 +469,33 @@
             return r.json();
         }
 
+        function parseUrls(raw){
+            if (!raw) return [];
+            return String(raw).split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
+        }
+
         function renderCard(g){
-            var imgHtml = g.imagen_url
-                ? '<img src="' + escapeHtml(g.imagen_url) + '" alt="' + escapeHtml(g.nombre) + '" loading="lazy">'
-                : '<div class="sin-imagen">Sin imagen</div>';
+            var urls = parseUrls(g.imagen_url);
+            var imgHtml;
+            if (urls.length === 0) {
+                imgHtml = '<div class="sin-imagen">Sin imagen</div>';
+            } else if (urls.length === 1) {
+                imgHtml = '<img src="' + escapeHtml(urls[0]) + '" alt="' + escapeHtml(g.nombre) + '" loading="lazy">';
+            } else {
+                var alt = escapeHtml(g.nombre);
+                var imgs = urls.map(function(u){
+                    return '<img src="' + escapeHtml(u) + '" alt="' + alt + '" loading="lazy">';
+                }).join('');
+                var dots = urls.map(function(_, i){
+                    return '<span' + (i === 0 ? ' class="active"' : '') + '></span>';
+                }).join('');
+                imgHtml = '<div class="carousel">' +
+                            '<div class="carousel-track">' + imgs + '</div>' +
+                            '<button class="carousel-btn prev" type="button" aria-label="Anterior">&lsaquo;</button>' +
+                            '<button class="carousel-btn next" type="button" aria-label="Siguiente">&rsaquo;</button>' +
+                            '<div class="carousel-dots">' + dots + '</div>' +
+                          '</div>';
+            }
             var badges = [];
             if (g.genero) badges.push('<span class="badge">' + escapeHtml(g.genero) + '</span>');
             if (g.talle)  badges.push('<span class="badge">TALLE: ' + escapeHtml(g.talle) + '</span>');
@@ -413,6 +508,33 @@
                     '<div class="precio">' + formatMoney(g.precio) + '</div>' +
                   '</div>' +
                 '</div>';
+        }
+
+        function attachCarousels(root){
+            root.querySelectorAll('.carousel').forEach(function(carousel){
+                var track = carousel.querySelector('.carousel-track');
+                var dots = carousel.querySelectorAll('.carousel-dots span');
+                var n = track.children.length;
+                function idx(){
+                    return Math.round(track.scrollLeft / track.clientWidth);
+                }
+                function goto(i){
+                    i = Math.max(0, Math.min(n - 1, i));
+                    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+                }
+                carousel.querySelector('.prev').addEventListener('click', function(e){
+                    e.stopPropagation();
+                    goto(idx() - 1);
+                });
+                carousel.querySelector('.next').addEventListener('click', function(e){
+                    e.stopPropagation();
+                    goto(idx() + 1);
+                });
+                track.addEventListener('scroll', function(){
+                    var i = idx();
+                    dots.forEach(function(d, j){ d.classList.toggle('active', j === i); });
+                });
+            });
         }
 
         function sortGrupos(a, b){
@@ -475,7 +597,9 @@
                     '</section>';
                 });
 
-                document.getElementById('catalogo').innerHTML = html || '<div class="estado">Sin productos en stock</div>';
+                var root = document.getElementById('catalogo');
+                root.innerHTML = html || '<div class="estado">Sin productos en stock</div>';
+                attachCarousels(root);
             } catch (e) {
                 console.error('Error cargando catalogo:', e);
                 document.getElementById('catalogo').innerHTML = '<div class="estado">Error cargando catalogo. Recarga la pagina.</div>';

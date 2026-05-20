@@ -584,7 +584,7 @@
                         <option value="EFECTIVO">EFECTIVO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
-                    <input type="text" id="productImagenUrl" placeholder="URL de imagen (opcional)" title="URL completa (https://...) o ruta relativa (imagenes/foo.jpg)" style="grid-column: 1 / -1;">
+                    <textarea id="productImagenUrl" rows="3" placeholder="URLs de imagen (opcional, una por linea — si hay 2+ se muestra como carrusel en el catalogo)" title="Una URL por linea. URL completa (https://...) o ruta relativa (imagenes/foo.jpg)" style="grid-column: 1 / -1; resize: vertical; font-family: monospace; font-size: 12px;"></textarea>
                     <button class="btn-primary" id="productBtnGuardar" onclick="guardarProducto()">Agregar</button>
                     <button class="btn-small btn-danger" id="productBtnCancelar" onclick="cancelarEdicionProducto()" style="display:none;">Cancelar</button>
                 </div>
@@ -593,7 +593,30 @@
             <div class="section">
                 <h2>📋 Productos <span id="productosContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
                 <div class="filtro-row">
-                    <input type="text" id="productosFiltro" placeholder="🔍 Buscar por nombre, talle, color, proveedor..." oninput="aplicarFiltroProductos()">
+                    <input type="text" id="productosFiltro" placeholder="🔍 Buscar (varias palabras: ej. JOGGINS AZUL)" oninput="aplicarFiltroProductos()">
+                    <select id="productosFiltroStock" onchange="aplicarFiltroProductos()" style="width: auto; padding: 8px 10px;">
+                        <option value="">Stock: todos</option>
+                        <option value="con">Con stock</option>
+                        <option value="sin">Sin stock</option>
+                        <option value="bajo">Stock bajo (≤ mínimo)</option>
+                    </select>
+                    <select id="productosFiltroGenero" onchange="aplicarFiltroProductos()" style="width: auto; padding: 8px 10px;">
+                        <option value="">Género: todos</option>
+                        <option value="ACCESORIOS">ACCESORIOS</option>
+                        <option value="HOMBRE">HOMBRE</option>
+                        <option value="MUJER">MUJER</option>
+                        <option value="UNISEX">UNISEX</option>
+                        <option value="NIÑO">NIÑO</option>
+                        <option value="NIÑA">NIÑA</option>
+                    </select>
+                    <select id="productosFiltroProveedor" onchange="aplicarFiltroProductos()" style="width: auto; padding: 8px 10px;">
+                        <option value="">Proveedor: todos</option>
+                    </select>
+                    <select id="productosFiltroFormaPago" onchange="aplicarFiltroProductos()" style="width: auto; padding: 8px 10px;">
+                        <option value="">Forma pago: todas</option>
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
                     <button class="btn-small btn-danger" onclick="limpiarFiltroProductos()">Limpiar</button>
                     <button class="btn-primary btn-small" style="margin-left: auto;" onclick="exportarProductos()">📥 Exportar a Excel</button>
                 </div>
@@ -943,9 +966,13 @@
                 fecha_entrada: p.fechaEntrada,
                 proveedor_id: p.proveedorId || null,
                 forma_pago_compra: upper(p.formaPagoCompra),
-                imagen_url: (p.imagenUrl && /^https?:\/\//i.test(p.imagenUrl))
-                    ? p.imagenUrl.toLowerCase()
-                    : (p.imagenUrl || null)
+                imagen_url: p.imagenUrl
+                    ? p.imagenUrl.split(/\r?\n/)
+                        .map(s => s.trim())
+                        .filter(Boolean)
+                        .map(u => /^https?:\/\//i.test(u) ? u.toLowerCase() : u)
+                        .join('\n') || null
+                    : null
             };
         }
         function dbToJsVenta(v) {
@@ -1007,6 +1034,10 @@
         let productosPaginaActual = 1;
         let productosPorPagina = 10;
         let productosFiltroTexto = '';
+        let productosFiltroStock = '';
+        let productosFiltroGenero = '';
+        let productosFiltroProveedor = '';
+        let productosFiltroFormaPago = '';
         let productosOrdenCol = null;
         let productosOrdenDir = 'asc';
         let ventasPaginaActual = 1;
@@ -1017,13 +1048,25 @@
 
         function aplicarFiltroProductos() {
             productosFiltroTexto = document.getElementById('productosFiltro').value.toLowerCase();
+            productosFiltroStock = document.getElementById('productosFiltroStock').value;
+            productosFiltroGenero = document.getElementById('productosFiltroGenero').value;
+            productosFiltroProveedor = document.getElementById('productosFiltroProveedor').value;
+            productosFiltroFormaPago = document.getElementById('productosFiltroFormaPago').value;
             productosPaginaActual = 1;
             actualizarProductosTable();
         }
 
         function limpiarFiltroProductos() {
             document.getElementById('productosFiltro').value = '';
+            document.getElementById('productosFiltroStock').value = '';
+            document.getElementById('productosFiltroGenero').value = '';
+            document.getElementById('productosFiltroProveedor').value = '';
+            document.getElementById('productosFiltroFormaPago').value = '';
             productosFiltroTexto = '';
+            productosFiltroStock = '';
+            productosFiltroGenero = '';
+            productosFiltroProveedor = '';
+            productosFiltroFormaPago = '';
             productosPaginaActual = 1;
             actualizarProductosTable();
         }
@@ -1173,17 +1216,18 @@
             document.getElementById('vmFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
 
-            // Normalizar imagen_url en vivo: URLs externas a lowercase (CDNs case-sensitive)
+            // Normalizar imagen_url en vivo: cada linea, si empieza con http(s):// → lowercase.
+            // (CDNs como mitiendanube/Domun son case-sensitive)
             const imgUrlInput = document.getElementById('productImagenUrl');
             if (imgUrlInput) {
                 imgUrlInput.addEventListener('input', () => {
-                    if (/^https?:\/\//i.test(imgUrlInput.value)) {
-                        const lower = imgUrlInput.value.toLowerCase();
-                        if (lower !== imgUrlInput.value) {
-                            const pos = imgUrlInput.selectionStart;
-                            imgUrlInput.value = lower;
-                            try { imgUrlInput.setSelectionRange(pos, pos); } catch (e) {}
-                        }
+                    const lines = imgUrlInput.value.split('\n');
+                    const newLines = lines.map(line => /^https?:\/\//i.test(line) ? line.toLowerCase() : line);
+                    const newVal = newLines.join('\n');
+                    if (newVal !== imgUrlInput.value) {
+                        const pos = imgUrlInput.selectionStart;
+                        imgUrlInput.value = newVal;
+                        try { imgUrlInput.setSelectionRange(pos, pos); } catch (e) {}
                     }
                 });
             }
@@ -1331,10 +1375,14 @@
             const stock = parseInt(stockRaw);
             const stockMin = parseInt(document.getElementById('productStockMin').value);
             const fechaEntrada = document.getElementById('productFechaEntrada').value;
-            let imagenUrl = document.getElementById('productImagenUrl').value.trim();
-            // Si es URL externa (http/https), forzar lowercase: algunos CDNs son case-sensitive
-            // y devuelven respuestas vacias cuando el host/path viene en mayusculas.
-            if (/^https?:\/\//i.test(imagenUrl)) imagenUrl = imagenUrl.toLowerCase();
+            // imagen_url: lista de URLs separadas por linea (una por linea).
+            // Trim cada linea, lowercase para http(s), filtrar vacias, joinear con \n.
+            let imagenUrl = document.getElementById('productImagenUrl').value
+                .split(/\r?\n/)
+                .map(s => s.trim())
+                .filter(Boolean)
+                .map(u => /^https?:\/\//i.test(u) ? u.toLowerCase() : u)
+                .join('\n');
 
             if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
                 mostrarAlerta('Completa los campos obligatorios', 'danger');
@@ -1380,20 +1428,50 @@
             const tbody = document.querySelector('#productosTable tbody');
             tbody.innerHTML = '';
 
-            const totalUnidades = datos.productos.reduce((s, p) => s + p.stock, 0);
-            document.getElementById('productosContador').textContent =
-                `(${datos.productos.length} productos · ${totalUnidades} unidades)`;
-
             actualizarIndicadoresOrden('productosTable', productosOrdenCol, productosOrdenDir);
 
-            // Filtrar
+            // Filtrar (todos los filtros activos se combinan con AND)
             let listaProductos = datos.productos;
+
+            // Búsqueda multi-palabra: cada palabra separada por espacio debe aparecer en algún campo
             if (productosFiltroTexto) {
-                listaProductos = listaProductos.filter(p => {
-                    const txt = `${p.nombre} ${p.descripcion} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada} ${p.formaPagoCompra}`.toLowerCase();
-                    return txt.includes(productosFiltroTexto);
-                });
+                const palabras = productosFiltroTexto.split(/\s+/).filter(w => w.length > 0);
+                if (palabras.length > 0) {
+                    listaProductos = listaProductos.filter(p => {
+                        const txt = `${p.nombre} ${p.descripcion} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada} ${p.formaPagoCompra}`.toLowerCase();
+                        return palabras.every(w => txt.includes(w));
+                    });
+                }
             }
+
+            if (productosFiltroStock === 'con') {
+                listaProductos = listaProductos.filter(p => p.stock > 0);
+            } else if (productosFiltroStock === 'sin') {
+                listaProductos = listaProductos.filter(p => p.stock <= 0);
+            } else if (productosFiltroStock === 'bajo') {
+                listaProductos = listaProductos.filter(p => p.stock <= p.stockMin);
+            }
+
+            if (productosFiltroGenero) {
+                listaProductos = listaProductos.filter(p => p.genero === productosFiltroGenero);
+            }
+
+            if (productosFiltroProveedor) {
+                const provId = parseInt(productosFiltroProveedor);
+                listaProductos = listaProductos.filter(p => p.proveedorId === provId);
+            }
+
+            if (productosFiltroFormaPago) {
+                listaProductos = listaProductos.filter(p => p.formaPagoCompra === productosFiltroFormaPago);
+            }
+
+            // Contador (refleja filtros aplicados)
+            const totalProductos = datos.productos.length;
+            const unidadesFiltradas = listaProductos.reduce((s, p) => s + p.stock, 0);
+            const hayFiltro = productosFiltroTexto || productosFiltroStock || productosFiltroGenero || productosFiltroProveedor || productosFiltroFormaPago;
+            document.getElementById('productosContador').textContent = hayFiltro
+                ? `(${listaProductos.length} de ${totalProductos} productos · ${unidadesFiltradas} unidades)`
+                : `(${totalProductos} productos · ${unidadesFiltradas} unidades)`;
 
             // Ordenar
             if (productosOrdenCol) {
@@ -1474,9 +1552,13 @@
                 return s;
             };
 
+            // Formato numérico para Excel-AR: separador decimal coma, sin separador de miles
+            // (Excel interpreta "1234,56" como número en locale es-AR).
+            const numAR = (n, dec = 2) => (Number(n) || 0).toFixed(dec).replace('.', ',');
+
             const filas = datos.productos.map(p => {
-                const margen = p.precio > 0 ? ((p.precio - p.costo) / p.precio * 100).toFixed(1) : '0';
-                const inversion = (p.costo * p.stock).toFixed(2);
+                const margen = p.precio > 0 ? ((p.precio - p.costo) / p.precio * 100) : 0;
+                const inversion = p.costo * p.stock;
                 return [
                     p.id,
                     p.nombre,
@@ -1484,14 +1566,14 @@
                     p.talle,
                     p.color,
                     p.genero,
-                    p.costo.toFixed(2),
-                    p.precio.toFixed(2),
-                    margen,
+                    numAR(p.costo),
+                    numAR(p.precio),
+                    numAR(margen, 1),
                     p.stock,
                     p.stockMin,
                     p.fechaEntrada,
                     p.proveedor,
-                    inversion
+                    numAR(inversion)
                 ].map(escapar).join(';');
             });
 
@@ -2308,6 +2390,13 @@
                 const valorActual3 = sel3.value;
                 sel3.innerHTML = '<option value="">Todos los proveedores</option>' + opciones;
                 sel3.value = valorActual3;
+            }
+
+            const sel4 = document.getElementById('productosFiltroProveedor');
+            if (sel4) {
+                const valorActual4 = sel4.value;
+                sel4.innerHTML = '<option value="">Proveedor: todos</option>' + opciones;
+                sel4.value = valorActual4;
             }
         }
 
