@@ -566,7 +566,8 @@
                     return Math.round(track.scrollLeft / track.clientWidth);
                 }
                 function goto(i){
-                    i = Math.max(0, Math.min(n - 1, i));
+                    // Loop circular: si pasa del ultimo vuelve al primero (y viceversa)
+                    i = ((i % n) + n) % n;
                     track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
                 }
                 carousel.querySelector('.prev').addEventListener('click', function(e){
