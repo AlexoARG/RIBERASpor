@@ -624,7 +624,15 @@
                         <option value="EFECTIVO">EFECTIVO</option>
                         <option value="TRANSFERENCIA">TRANSFERENCIA</option>
                     </select>
-                    <textarea id="productImagenUrl" rows="3" placeholder="URLs de imagen (opcional, una por linea — si hay 2+ se muestra como carrusel en el catalogo)" title="Una URL por linea. URL completa (https://...) o ruta relativa (imagenes/foo.jpg)" style="grid-column: 1 / -1; resize: vertical; font-family: monospace; font-size: 12px;"></textarea>
+                    <div style="grid-column: 1 / -1;">
+                        <textarea id="productImagenUrl" rows="3" placeholder="URLs de imagen (opcional, una por linea — si hay 2+ se muestra como carrusel en el catalogo)" title="Una URL por linea. URL completa (https://...) o ruta relativa (imagenes/foo.jpg)" style="width: 100%; resize: vertical; font-family: monospace; font-size: 12px;"></textarea>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 6px; flex-wrap: wrap;">
+                            <input type="file" id="productImagenUpload" accept="image/*" multiple style="display: none;" onchange="subirFotosProducto(event)">
+                            <button type="button" class="btn-small btn-primary" onclick="document.getElementById('productImagenUpload').click()">📤 Subir fotos al repo</button>
+                            <button type="button" class="btn-small" onclick="olvidarTokenGithub()" title="Eliminar el token de GitHub guardado en este navegador" style="background: #ecf0f1; color: var(--dark); padding: 4px 10px;">🔑 Cambiar token</button>
+                            <span id="productImagenUploadStatus" style="font-size: 12px; color: #7f8c8d;"></span>
+                        </div>
+                    </div>
                     <button class="btn-primary" id="productBtnGuardar" onclick="guardarProducto()">Agregar</button>
                     <button class="btn-small btn-danger" id="productBtnCancelar" onclick="cancelarEdicionProducto()" style="display:none;">Cancelar</button>
                 </div>
@@ -1456,6 +1464,149 @@
             });
         }
 
+        // Sube archivos a la carpeta imagenes/ del repo de GitHub usando la Contents API.
+        // Cada archivo = un commit. La rama destino es GITHUB_BRANCH.
+        // El PAT se guarda en localStorage del navegador (no se sube a ningún lado).
+        const GITHUB_REPO = 'AlexoARG/RIBERASpor';
+        const GITHUB_BRANCH = 'main';
+        const GITHUB_FOLDER = 'imagenes';
+
+        function obtenerTokenGithub() {
+            let token = localStorage.getItem('gh_token');
+            if (!token) {
+                const msg =
+                    'Pegá tu GitHub Personal Access Token para subir fotos al repo.\n\n' +
+                    'Cómo conseguirlo (1 vez):\n' +
+                    '1. github.com → Settings → Developer settings → Personal access tokens → Fine-grained\n' +
+                    '2. Repository access: Only select repositories → ' + GITHUB_REPO + '\n' +
+                    '3. Permissions → Repository permissions → Contents: Read and write\n' +
+                    '4. Generate token → copialo y pegalo acá\n\n' +
+                    'Se guarda solo en este navegador (localStorage).';
+                token = prompt(msg);
+                if (token) {
+                    token = token.trim();
+                    localStorage.setItem('gh_token', token);
+                }
+            }
+            return token;
+        }
+
+        function olvidarTokenGithub() {
+            localStorage.removeItem('gh_token');
+            const statusEl = document.getElementById('productImagenUploadStatus');
+            if (statusEl) {
+                statusEl.textContent = '🔑 Token de GitHub eliminado. La próxima subida lo va a pedir de nuevo.';
+                statusEl.style.color = '#7f8c8d';
+            }
+        }
+
+        function archivoABase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function slugificarNombreArchivo(name) {
+            const idx = name.lastIndexOf('.');
+            const base = idx > 0 ? name.slice(0, idx) : name;
+            const ext = idx > 0 ? name.slice(idx).toLowerCase() : '';
+            const limpio = base
+                .toLowerCase()
+                .normalize('NFD').replace(/[̀-ͯ]/g, '') // sacar tildes
+                .replace(/[^a-z0-9-]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60) || 'foto';
+            const rand = Math.random().toString(36).slice(2, 8);
+            return `${limpio}-${rand}${ext}`;
+        }
+
+        async function subirFotosProducto(event) {
+            const input = event.target;
+            const files = Array.from(input.files || []);
+            if (files.length === 0) return;
+
+            const statusEl = document.getElementById('productImagenUploadStatus');
+            const textarea = document.getElementById('productImagenUrl');
+
+            const token = obtenerTokenGithub();
+            if (!token) {
+                statusEl.textContent = '❌ Sin token, no se puede subir';
+                statusEl.style.color = 'var(--danger)';
+                input.value = '';
+                return;
+            }
+
+            const urlsSubidas = [];
+            const erroresMsgs = [];
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                statusEl.textContent = `Subiendo a GitHub ${i + 1}/${files.length}: ${file.name}...`;
+                statusEl.style.color = '#7f8c8d';
+
+                const filename = slugificarNombreArchivo(file.name);
+                const path = `${GITHUB_FOLDER}/${filename}`;
+
+                try {
+                    const content = await archivoABase64(file);
+                    const r = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/vnd.github+json',
+                            'Authorization': `Bearer ${token}`,
+                            'X-GitHub-Api-Version': '2022-11-28'
+                        },
+                        body: JSON.stringify({
+                            message: `agregar foto ${filename}`,
+                            content: content,
+                            branch: GITHUB_BRANCH
+                        })
+                    });
+                    if (!r.ok) {
+                        const txt = await r.text();
+                        if (r.status === 401) {
+                            localStorage.removeItem('gh_token');
+                            throw new Error(`401 Token invalido — eliminado del navegador. Recargá y volvé a intentar.`);
+                        }
+                        throw new Error(`${r.status} ${r.statusText} — ${txt.slice(0, 200)}`);
+                    }
+                    urlsSubidas.push(`${GITHUB_FOLDER}/${filename}`);
+                } catch (e) {
+                    erroresMsgs.push(`${file.name}: ${e.message}`);
+                    console.error(`Error subiendo ${file.name}:`, e);
+                }
+            }
+            const errores = erroresMsgs.length;
+
+            // Agregar URLs al textarea (una por línea, sin duplicar)
+            if (urlsSubidas.length > 0) {
+                const actuales = textarea.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                const nuevas = urlsSubidas.filter(u => !actuales.includes(u));
+                const combinadas = [...actuales, ...nuevas];
+                textarea.value = combinadas.join('\n');
+            }
+
+            if (errores === 0) {
+                statusEl.textContent = `✅ ${urlsSubidas.length} foto${urlsSubidas.length === 1 ? '' : 's'} subida${urlsSubidas.length === 1 ? '' : 's'}`;
+                statusEl.style.color = 'var(--success)';
+                statusEl.title = '';
+            } else if (urlsSubidas.length > 0) {
+                statusEl.textContent = `⚠️ ${urlsSubidas.length} ok, ${errores} con error — ${erroresMsgs[0]}`;
+                statusEl.style.color = 'var(--warning)';
+                statusEl.title = erroresMsgs.join('\n');
+            } else {
+                statusEl.textContent = `❌ ${erroresMsgs[0]}`;
+                statusEl.style.color = 'var(--danger)';
+                statusEl.title = erroresMsgs.join('\n');
+            }
+
+            // Limpiar el input para permitir re-seleccionar el mismo archivo
+            input.value = '';
+        }
+
         function limpiarFormProducto() {
             document.getElementById('productId').value = '';
             document.getElementById('productNombre').value = '';
@@ -1471,6 +1622,8 @@
             document.getElementById('productStockMin').value = '';
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
             document.getElementById('productImagenUrl').value = '';
+            const upStatus = document.getElementById('productImagenUploadStatus');
+            if (upStatus) upStatus.textContent = '';
             document.getElementById('productFormTitulo').textContent = '➕ Agregar Nuevo Producto';
             document.getElementById('productBtnGuardar').textContent = 'Agregar';
             document.getElementById('productBtnCancelar').style.display = 'none';
