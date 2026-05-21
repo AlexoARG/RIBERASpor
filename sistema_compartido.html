@@ -466,7 +466,47 @@
                         <div class="value" id="visitasMes">0</div>
                     </div>
                 </div>
-                <table id="ultimasVisitas" style="margin-top: 18px;">
+                <div class="filtro-row" style="margin-top: 18px;">
+                    <label style="font-size: 13px;">Desde:
+                        <input type="date" id="visitasFiltroDesde" onchange="aplicarFiltroVisitas()" style="width: auto; display: inline-block; padding: 6px 8px;">
+                    </label>
+                    <label style="font-size: 13px;">Hasta:
+                        <input type="date" id="visitasFiltroHasta" onchange="aplicarFiltroVisitas()" style="width: auto; display: inline-block; padding: 6px 8px;">
+                    </label>
+                    <button class="btn-small btn-danger" onclick="limpiarFiltroVisitas()">Limpiar</button>
+                    <span id="visitasFiltroResumen" style="font-size: 13px; color: #7f8c8d; margin-left: auto;"></span>
+                </div>
+
+                <h3 style="font-size: 15px; margin: 18px 0 8px 0;">📅 Totales por día</h3>
+                <div style="max-height: 260px; overflow-y: auto;">
+                    <table id="visitasPorDia">
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Visitas</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <h3 style="font-size: 15px; margin: 18px 0 8px 0;">🕒 Detalle de visitas</h3>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                    <label style="font-size: 13px;">Filas por página:
+                        <select id="visitasPorPagina" onchange="cambiarVisitasPorPagina()" style="width: auto; display: inline-block; padding: 4px 8px;">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </label>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-small btn-primary" onclick="cambiarVisitasPagina(-1)">◀ Ant</button>
+                        <span id="visitasPaginaInfo" style="font-size: 13px;">Página 1 de 1</span>
+                        <button class="btn-small btn-primary" onclick="cambiarVisitasPagina(1)">Sig ▶</button>
+                    </div>
+                </div>
+                <table id="ultimasVisitas">
                     <thead>
                         <tr>
                             <th>Fecha</th>
@@ -1277,17 +1317,25 @@
             }
         }
 
+        let visitasAll = [];
+        let visitasPaginaActual = 1;
+        let visitasPorPagina = 10;
+        let visitasFiltroDesde = '';
+        let visitasFiltroHasta = '';
+
         async function cargarVisitas() {
             try {
-                // Pedimos count exacto en el header + las últimas 200 filas para los breakdowns/tabla
+                // count exacto en header + hasta 5000 filas para totales por día / filtros locales
                 const r = await fetch(
-                    `${SUPABASE_URL}/rest/v1/visitas?select=created_at,user_agent,referrer&order=created_at.desc&limit=200`,
+                    `${SUPABASE_URL}/rest/v1/visitas?select=created_at,user_agent,referrer&order=created_at.desc&limit=5000`,
                     { headers: { ...SB_HEADERS, 'Prefer': 'count=exact' } }
                 );
                 if (!r.ok) throw new Error(`GET visitas: ${r.status}`);
                 const range = r.headers.get('content-range') || '0-0/0';
                 const total = parseInt(range.split('/')[1]) || 0;
                 const rows = await r.json();
+                visitasAll = rows;
+
                 const now = Date.now();
                 const D7 = 7 * 24 * 60 * 60 * 1000;
                 const D30 = 30 * 24 * 60 * 60 * 1000;
@@ -1297,18 +1345,115 @@
                 document.getElementById('visitasSemana').textContent = semana;
                 document.getElementById('visitasMes').textContent = mes;
 
-                const tbody = document.querySelector('#ultimasVisitas tbody');
-                tbody.innerHTML = '';
-                rows.slice(0, 10).forEach(v => {
-                    const d = new Date(v.created_at);
-                    const fecha = d.toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                    const ref = v.referrer ? new URL(v.referrer).hostname : 'Directo';
-                    const ua = (v.user_agent || '').replace(/\(.*?\)/g, '').slice(0, 40);
-                    tbody.innerHTML += `<tr><td>${fecha}</td><td>${ref}</td><td title="${(v.user_agent||'').replace(/"/g,'&quot;')}">${ua}</td></tr>`;
-                });
+                renderVisitas();
             } catch (e) {
                 console.warn('No se pudieron cargar visitas:', e.message);
             }
+        }
+
+        function filtrarVisitas() {
+            let lista = visitasAll;
+            if (visitasFiltroDesde) {
+                const desde = new Date(visitasFiltroDesde + 'T00:00:00').getTime();
+                lista = lista.filter(v => new Date(v.created_at).getTime() >= desde);
+            }
+            if (visitasFiltroHasta) {
+                const hasta = new Date(visitasFiltroHasta + 'T23:59:59.999').getTime();
+                lista = lista.filter(v => new Date(v.created_at).getTime() <= hasta);
+            }
+            return lista;
+        }
+
+        function aplicarFiltroVisitas() {
+            visitasFiltroDesde = document.getElementById('visitasFiltroDesde').value;
+            visitasFiltroHasta = document.getElementById('visitasFiltroHasta').value;
+            visitasPaginaActual = 1;
+            renderVisitas();
+        }
+
+        function limpiarFiltroVisitas() {
+            document.getElementById('visitasFiltroDesde').value = '';
+            document.getElementById('visitasFiltroHasta').value = '';
+            visitasFiltroDesde = '';
+            visitasFiltroHasta = '';
+            visitasPaginaActual = 1;
+            renderVisitas();
+        }
+
+        function cambiarVisitasPorPagina() {
+            visitasPorPagina = parseInt(document.getElementById('visitasPorPagina').value);
+            visitasPaginaActual = 1;
+            renderVisitas();
+        }
+
+        function cambiarVisitasPagina(delta) {
+            const lista = filtrarVisitas();
+            const totalPaginas = Math.max(1, Math.ceil(lista.length / visitasPorPagina));
+            const nueva = visitasPaginaActual + delta;
+            if (nueva < 1 || nueva > totalPaginas) return;
+            visitasPaginaActual = nueva;
+            renderVisitas();
+        }
+
+        function renderVisitas() {
+            const lista = filtrarVisitas();
+
+            // Resumen de filtro
+            const resumenEl = document.getElementById('visitasFiltroResumen');
+            if (visitasFiltroDesde || visitasFiltroHasta) {
+                resumenEl.textContent = `${lista.length} visita${lista.length === 1 ? '' : 's'} en el rango`;
+            } else {
+                resumenEl.textContent = '';
+            }
+
+            // Totales por día (dd/mm/yyyy → count)
+            const porDia = new Map();
+            lista.forEach(v => {
+                const d = new Date(v.created_at);
+                const key = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                porDia.set(key, (porDia.get(key) || 0) + 1);
+            });
+
+            const tbodyDia = document.querySelector('#visitasPorDia tbody');
+            tbodyDia.innerHTML = '';
+            if (porDia.size === 0) {
+                tbodyDia.innerHTML = '<tr><td colspan="2" style="text-align: center;">Sin visitas</td></tr>';
+            } else {
+                const entries = [...porDia.entries()].sort((a, b) => {
+                    const [da, ma, ya] = a[0].split('/').map(Number);
+                    const [db, mb, yb] = b[0].split('/').map(Number);
+                    return new Date(yb, mb - 1, db) - new Date(ya, ma - 1, da);
+                });
+                entries.forEach(([dia, count]) => {
+                    tbodyDia.innerHTML += `<tr><td>${dia}</td><td><strong>${count}</strong></td></tr>`;
+                });
+            }
+
+            // Tabla detalle paginada
+            const tbody = document.querySelector('#ultimasVisitas tbody');
+            tbody.innerHTML = '';
+
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">Sin visitas</td></tr>';
+                document.getElementById('visitasPaginaInfo').textContent = 'Página 1 de 1';
+                return;
+            }
+
+            const totalPaginas = Math.max(1, Math.ceil(lista.length / visitasPorPagina));
+            if (visitasPaginaActual > totalPaginas) visitasPaginaActual = totalPaginas;
+            const inicio = (visitasPaginaActual - 1) * visitasPorPagina;
+            const fin = inicio + visitasPorPagina;
+            const pagina = lista.slice(inicio, fin);
+
+            document.getElementById('visitasPaginaInfo').textContent = `Página ${visitasPaginaActual} de ${totalPaginas}`;
+
+            pagina.forEach(v => {
+                const d = new Date(v.created_at);
+                const fecha = d.toLocaleString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                const ref = v.referrer ? new URL(v.referrer).hostname : 'Directo';
+                const ua = (v.user_agent || '').replace(/\(.*?\)/g, '').slice(0, 40);
+                tbody.innerHTML += `<tr><td>${fecha}</td><td>${ref}</td><td title="${(v.user_agent||'').replace(/"/g,'&quot;')}">${ua}</td></tr>`;
+            });
         }
 
         function limpiarFormProducto() {
