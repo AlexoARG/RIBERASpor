@@ -519,7 +519,9 @@
             </div>
 
             <div class="section">
-                <h2>📈 Últimas Ventas</h2>
+                <h2>📈 Últimas Ventas
+                    <span id="totalDiaVentas" style="font-size: 14px; color: #27AE60; font-weight: 600; margin-left: 8px;"></span>
+                </h2>
                 <table id="ultimasVentas">
                     <thead>
                         <tr>
@@ -531,6 +533,21 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+                    <label style="font-size: 13px;">Filas por página:
+                        <select id="ultimasVentasPorPagina" onchange="cambiarUltimasVentasPorPagina()" style="width: auto; display: inline-block; padding: 4px 8px;">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </label>
+                    <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-small btn-primary" onclick="cambiarUltimasVentasPagina(-1)">◀ Ant</button>
+                        <span id="ultimasVentasPaginaInfo" style="font-size: 13px;">Página 1 de 1</span>
+                        <button class="btn-small btn-primary" onclick="cambiarUltimasVentasPagina(1)">Sig ▶</button>
+                    </div>
+                </div>
             </div>
 
             <div class="card-grid">
@@ -1089,6 +1106,8 @@
         let productosOrdenDir = 'asc';
         let ventasPaginaActual = 1;
         let ventasPorPagina = 10;
+        let ultimasVentasPaginaActual = 1;
+        let ultimasVentasPorPagina = 10;
         let ventasFiltroTexto = '';
         let ventasOrdenCol = null;
         let ventasOrdenDir = 'asc';
@@ -2456,6 +2475,54 @@
             }
         }
 
+        function cambiarUltimasVentasPagina(delta) {
+            const total = datos.ventas.length;
+            const totalPaginas = Math.max(1, Math.ceil(total / ultimasVentasPorPagina));
+            const nueva = ultimasVentasPaginaActual + delta;
+            if (nueva < 1 || nueva > totalPaginas) return;
+            ultimasVentasPaginaActual = nueva;
+            renderUltimasVentas();
+        }
+
+        function cambiarUltimasVentasPorPagina() {
+            ultimasVentasPorPagina = parseInt(document.getElementById('ultimasVentasPorPagina').value, 10) || 10;
+            ultimasVentasPaginaActual = 1;
+            renderUltimasVentas();
+        }
+
+        function renderUltimasVentas() {
+            // Total del día (fecha de hoy en formato dd/MM/yyyy)
+            const hoy = fechaLocalHoy().split('-').reverse().join('/');
+            const totalDia = datos.ventas
+                .filter(v => v.fecha === hoy)
+                .reduce((s, v) => s + v.valorFinal, 0);
+            const totalDiaEl = document.getElementById('totalDiaVentas');
+            if (totalDiaEl) totalDiaEl.textContent = `· Total del día: ${formatMoney(totalDia)}`;
+
+            const ordenadas = [...datos.ventas].reverse();
+            const totalPaginas = Math.max(1, Math.ceil(ordenadas.length / ultimasVentasPorPagina));
+            if (ultimasVentasPaginaActual > totalPaginas) ultimasVentasPaginaActual = totalPaginas;
+
+            const inicio = (ultimasVentasPaginaActual - 1) * ultimasVentasPorPagina;
+            const pagina = ordenadas.slice(inicio, inicio + ultimasVentasPorPagina);
+
+            const ultimasBody = document.querySelector('#ultimasVentas tbody');
+            ultimasBody.innerHTML = '';
+            pagina.forEach(v => {
+                ultimasBody.innerHTML += `
+                    <tr>
+                        <td>${v.fecha}</td>
+                        <td>${v.cliente}</td>
+                        <td>${v.productoNombre}</td>
+                        <td>${formatMoney(v.valorFinal)}</td>
+                    </tr>
+                `;
+            });
+
+            const infoEl = document.getElementById('ultimasVentasPaginaInfo');
+            if (infoEl) infoEl.textContent = `Página ${ultimasVentasPaginaActual} de ${totalPaginas}`;
+        }
+
         function actualizarDashboard() {
             const ingresos = datos.ventas.reduce((s, v) => s + v.valorFinal, 0);
             const ganancia = datos.ventas.reduce((s, v) => s + v.ganancia, 0);
@@ -2482,20 +2549,7 @@
             document.getElementById('inversionTotalReal').textContent = formatMoney(inversionActual);
             document.getElementById('inversionHistorica').textContent = formatMoney(inversionHistorica);
 
-            const ultimasBody = document.querySelector('#ultimasVentas tbody');
-            ultimasBody.innerHTML = '';
-            const ultimas = [...datos.ventas].reverse().slice(0, 5);
-
-            ultimas.forEach(v => {
-                ultimasBody.innerHTML += `
-                    <tr>
-                        <td>${v.fecha}</td>
-                        <td>${v.cliente}</td>
-                        <td>${v.productoNombre}</td>
-                        <td>${formatMoney(v.valorFinal)}</td>
-                    </tr>
-                `;
-            });
+            renderUltimasVentas();
 
             // Detalle por estado de pago
             const ventasPagas = datos.ventas.filter(v => v.estadoPago === 'PAGO');
