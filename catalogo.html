@@ -582,6 +582,20 @@
                     var i = idx();
                     dots.forEach(function(d, j){ d.classList.toggle('active', j === i); });
                 });
+
+                // Swipe tactil: si ya estabas en el borde y haces swipe hacia
+                // afuera, loop circular al otro extremo (igual que los botones).
+                var startX = 0, startIdx = 0;
+                track.addEventListener('touchstart', function(e){
+                    startX = e.touches[0].clientX;
+                    startIdx = idx();
+                }, { passive: true });
+                track.addEventListener('touchend', function(e){
+                    var dx = e.changedTouches[0].clientX - startX;
+                    if (Math.abs(dx) < 40) return;
+                    if (dx < 0 && startIdx === n - 1) goto(0);        // swipe izq en la ultima -> primera
+                    else if (dx > 0 && startIdx === 0) goto(n - 1);   // swipe der en la primera -> ultima
+                }, { passive: true });
             });
         }
 
