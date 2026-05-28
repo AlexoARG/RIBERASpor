@@ -1850,9 +1850,13 @@
                 return s;
             };
 
-            // Formato numérico para Excel-AR: separador decimal coma, sin separador de miles
-            // (Excel interpreta "1234,56" como número en locale es-AR).
-            const numAR = (n, dec = 2) => (Number(n) || 0).toFixed(dec).replace('.', ',');
+            // Formato numérico para Excel-AR: punto como separador de miles y coma decimal
+            // (ej: 1.234,56 / 1.234.567,89) para identificar fácil los miles.
+            const numAR = (n, dec = 2) => {
+                const parts = (Number(n) || 0).toFixed(dec).split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return parts.join(',');
+            };
 
             const filas = datos.productos.map(p => {
                 const margen = p.precio > 0 ? ((p.precio - p.costo) / p.precio * 100) : 0;
