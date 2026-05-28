@@ -691,8 +691,8 @@
                             <th class="sortable" onclick="ordenarProductos('talle')">Talle<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarProductos('color')">Color<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarProductos('genero')">Género<span class="sort-arrow">▼</span></th>
-                            <th class="sortable" onclick="ordenarProductos('costo')">Costo<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarProductos('precio')">Precio<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarProductos('costo')">Costo<span class="sort-arrow">▼</span></th>
                             <th>Margen</th>
                             <th class="sortable" onclick="ordenarProductos('stock')">Stock<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarProductos('fechaEntrada')">Fecha Entrada<span class="sort-arrow">▼</span></th>
@@ -873,8 +873,8 @@
                             <th class="sortable" onclick="ordenarVentas('cliente')">Cliente<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('productoNombre')">Producto<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('cantidad')">Cant<span class="sort-arrow">▼</span></th>
-                            <th class="sortable" onclick="ordenarVentas('costoTotal')">Costo Total<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('valorFinal')">Valor Final<span class="sort-arrow">▼</span></th>
+                            <th class="sortable" onclick="ordenarVentas('costoTotal')">Costo Total<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('ganancia')">Ganancia<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('estadoPago')">Estado<span class="sort-arrow">▼</span></th>
                             <th class="sortable" onclick="ordenarVentas('formaPago')">Forma Pago<span class="sort-arrow">▼</span></th>
@@ -1804,8 +1804,8 @@
                         <td>${prod.talle || '—'}</td>
                         <td>${prod.color || '—'}</td>
                         <td>${prod.genero || '—'}</td>
-                        <td>${formatMoney(prod.costo)}</td>
                         <td>${formatMoney(prod.precio)}</td>
+                        <td>${formatMoney(prod.costo)}</td>
                         <td>${margen}%</td>
                         <td><span class="stock-badge ${stockClass}">${prod.stock}</span></td>
                         <td>${prod.fechaEntrada || '—'}</td>
@@ -2381,8 +2381,8 @@
                         <td>${v.cliente}</td>
                         <td>${v.productoNombre}</td>
                         <td>${v.cantidad}</td>
-                        <td>${formatMoney(v.costoTotal)}</td>
                         <td>${formatMoney(v.valorFinal)}</td>
+                        <td>${formatMoney(v.costoTotal)}</td>
                         <td style="color: ${gananciaColor}; font-weight: 600;">${formatMoney(v.ganancia)}</td>
                         <td><button class="btn-small" style="background:${estadoColor};color:white;" onclick="toggleEstadoPago(${v.id})">${v.estadoPago || '—'}</button></td>
                         <td><button class="btn-small" style="background:#7f8c8d;color:white;" onclick="toggleFormaPago(${v.id})">${v.formaPago || '—'}</button></td>
