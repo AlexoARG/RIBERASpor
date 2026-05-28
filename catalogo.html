@@ -630,6 +630,14 @@
                     .map(function(p){ return { titulo: p.nombre, proveedor_ids: [p.id] }; });
                 var todas = SECCIONES.concat(extras);
 
+                // Forzar que COLECCION ARGENTINA aparezca primero (sin importar acentos)
+                function sinAcentos(s){ return norm(s).normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+                todas.sort(function(a, b){
+                    var aArg = sinAcentos(a.titulo) === 'COLECCION ARGENTINA' ? 0 : 1;
+                    var bArg = sinAcentos(b.titulo) === 'COLECCION ARGENTINA' ? 0 : 1;
+                    return aArg - bArg;
+                });
+
                 var html = '';
                 todas.forEach(function(sec){
                     var items = grupos.filter(function(g){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
