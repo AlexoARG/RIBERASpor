@@ -1034,7 +1034,6 @@
                     ? p.imagenUrl.split(/\r?\n/)
                         .map(s => s.trim())
                         .filter(Boolean)
-                        .map(u => /^https?:\/\//i.test(u) ? u.toLowerCase() : u)
                         .join('\n') || null
                     : null
             };
@@ -1282,21 +1281,6 @@
             document.getElementById('vmFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
 
-            // Normalizar imagen_url en vivo: cada linea, si empieza con http(s):// → lowercase.
-            // (CDNs como mitiendanube/Domun son case-sensitive)
-            const imgUrlInput = document.getElementById('productImagenUrl');
-            if (imgUrlInput) {
-                imgUrlInput.addEventListener('input', () => {
-                    const lines = imgUrlInput.value.split('\n');
-                    const newLines = lines.map(line => /^https?:\/\//i.test(line) ? line.toLowerCase() : line);
-                    const newVal = newLines.join('\n');
-                    if (newVal !== imgUrlInput.value) {
-                        const pos = imgUrlInput.selectionStart;
-                        imgUrlInput.value = newVal;
-                        try { imgUrlInput.setSelectionRange(pos, pos); } catch (e) {}
-                    }
-                });
-            }
             actualizarCarrito();
 
             // Forzar mayúsculas en cada tecla. Excepción: notas y URL de imagen (pueden tener URLs).
@@ -1692,12 +1676,11 @@
             const stockMin = parseInt(document.getElementById('productStockMin').value);
             const fechaEntrada = document.getElementById('productFechaEntrada').value;
             // imagen_url: lista de URLs separadas por linea (una por linea).
-            // Trim cada linea, lowercase para http(s), filtrar vacias, joinear con \n.
+            // Trim cada linea, filtrar vacias, joinear con \n. Se respeta mayus/minus tal cual.
             let imagenUrl = document.getElementById('productImagenUrl').value
                 .split(/\r?\n/)
                 .map(s => s.trim())
                 .filter(Boolean)
-                .map(u => /^https?:\/\//i.test(u) ? u.toLowerCase() : u)
                 .join('\n');
 
             if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
