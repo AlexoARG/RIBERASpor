@@ -821,8 +821,8 @@
                     </select>
                     <div style="position: relative; flex: 1;">
                         <input type="hidden" id="ventaProducto">
-                        <input type="text" id="ventaProductoBuscar" placeholder="🔍 Buscar producto..." autocomplete="off"
-                            oninput="filtrarProductosVenta()" onfocus="filtrarProductosVenta()">
+                        <input type="text" id="ventaProductoBuscar" placeholder="🔍 Buscar o escribir producto (opcional)..." autocomplete="off"
+                            oninput="document.getElementById('ventaProducto').value=''; filtrarProductosVenta()" onfocus="filtrarProductosVenta()">
                         <div id="ventaProductoDropdown" style="
                             display: none; position: absolute; top: 100%; left: 0; right: 0;
                             background: white; border: 1px solid var(--border); border-top: none;
@@ -2226,7 +2226,8 @@
             const id = document.getElementById('ventaId').value;
             const fecha = document.getElementById('ventaFecha').value;
             const cliente = document.getElementById('ventaCliente').value.trim();
-            const productoId = parseInt(document.getElementById('ventaProducto').value);
+            const productoId = parseInt(document.getElementById('ventaProducto').value) || 0;
+            const productoTexto = document.getElementById('ventaProductoBuscar').value.trim();
             const cantidad = parseInt(document.getElementById('ventaCantidad').value);
             const precio = parseFloat(document.getElementById('ventaPrecio').value);
             const valorFinal = parseFloat(document.getElementById('ventaValorFinal').value);
@@ -2235,7 +2236,8 @@
             const entregado = document.getElementById('ventaEntregado').value;
             const obs = document.getElementById('ventaObs').value.trim();
 
-            if (!fecha || !cliente || !productoId || !cantidad || isNaN(precio) || isNaN(valorFinal)) {
+            // El producto es opcional (ej: reserva de algo que no está en stock).
+            if (!fecha || !cliente || !cantidad || isNaN(precio) || isNaN(valorFinal)) {
                 mostrarAlerta('Completa todos los campos', 'danger');
                 return;
             }
@@ -2244,21 +2246,22 @@
                 mostrarSync('Guardando...', 'synced');
                 await cargarDatos();
 
-                const prod = datos.productos.find(p => p.id === productoId);
-                if (!prod) {
+                // prod queda null si la venta no tiene producto asociado (texto libre)
+                const prod = productoId ? datos.productos.find(p => p.id === productoId) : null;
+                if (productoId && !prod) {
                     mostrarAlerta('Producto no encontrado', 'danger');
                     return;
                 }
 
-                const costoUnitario = prod.costo;
+                const costoUnitario = prod ? prod.costo : 0;
                 const costoTotal = costoUnitario * cantidad;
                 const ganancia = valorFinal - costoTotal;
 
                 const ventaData = {
                     fecha: formatearFecha(fecha),
                     cliente,
-                    productoId,
-                    productoNombre: prod.nombre,
+                    productoId: prod ? prod.id : 0,
+                    productoNombre: prod ? prod.nombre : (productoTexto || 'SIN PRODUCTO'),
                     cantidad,
                     precio,
                     costoUnitario,
@@ -2279,40 +2282,51 @@
                         return;
                     }
 
-                    if (ventaOrig.productoId === productoId) {
-                        // Mismo producto: chequear stock con la cantidad original "devuelta"
-                        const stockDisp = prod.stock + ventaOrig.cantidad;
-                        if (stockDisp < cantidad) {
+                    const prodOrig = ventaOrig.productoId
+                        ? datos.productos.find(p => p.id === ventaOrig.productoId)
+                        : null;
+                    const mismoProducto = prod && prodOrig && prod.id === prodOrig.id;
+
+                    // Validar stock disponible para el producto nuevo (si lo hay)
+                    if (prod) {
+                        const yaDescontado = mismoProducto ? ventaOrig.cantidad : 0;
+                        if (prod.stock + yaDescontado < cantidad) {
                             mostrarAlerta('Stock insuficiente', 'danger');
                             return;
                         }
-                        const delta = cantidad - ventaOrig.cantidad;
-                        if (delta !== 0) {
-                            await sbUpdate('productos', prod.id, { stock: prod.stock - delta });
+                    }
+
+                    // Devolver stock al producto original si se quitó o cambió
+                    if (prodOrig && !mismoProducto) {
+                        await sbUpdate('productos', prodOrig.id, { stock: prodOrig.stock + ventaOrig.cantidad });
+                    }
+
+                    // Aplicar al producto nuevo
+                    if (prod) {
+                        if (mismoProducto) {
+                            const delta = cantidad - ventaOrig.cantidad;
+                            if (delta !== 0) {
+                                await sbUpdate('productos', prod.id, { stock: prod.stock - delta });
+                            }
+                        } else {
+                            await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
                         }
-                    } else {
-                        // Producto cambió: devolver al original y descontar al nuevo
-                        if (prod.stock < cantidad) {
-                            mostrarAlerta('Stock insuficiente en el producto nuevo', 'danger');
-                            return;
-                        }
-                        const prodOrig = datos.productos.find(p => p.id === ventaOrig.productoId);
-                        if (prodOrig) {
-                            await sbUpdate('productos', prodOrig.id, { stock: prodOrig.stock + ventaOrig.cantidad });
-                        }
-                        await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
                     }
 
                     await sbUpdate('ventas', parseInt(id), jsToDbVenta(ventaData));
                     mostrarAlerta('Venta actualizada', 'success');
                 } else {
                     // INSERT nuevo
-                    if (prod.stock < cantidad) {
-                        mostrarAlerta('Stock insuficiente', 'danger');
-                        return;
+                    if (prod) {
+                        if (prod.stock < cantidad) {
+                            mostrarAlerta('Stock insuficiente', 'danger');
+                            return;
+                        }
+                        await sbInsert('ventas', jsToDbVenta(ventaData));
+                        await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
+                    } else {
+                        await sbInsert('ventas', jsToDbVenta(ventaData));
                     }
-                    await sbInsert('ventas', jsToDbVenta(ventaData));
-                    await sbUpdate('productos', prod.id, { stock: prod.stock - cantidad });
                     mostrarAlerta('Venta registrada', 'success');
                 }
 
