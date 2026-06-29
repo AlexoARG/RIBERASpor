@@ -866,6 +866,7 @@
                 <div class="filtro-row">
                     <input type="text" id="ventasFiltro" placeholder="🔍 Buscar por cliente, producto, observaciones..." oninput="aplicarFiltroVentas()">
                     <button class="btn-small btn-danger" onclick="limpiarFiltroVentas()">Limpiar</button>
+                    <button class="btn-primary btn-small" style="margin-left: auto;" onclick="exportarVentas()">📥 Exportar a Excel</button>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
                     <label style="font-size: 13px;">Filas por página:
@@ -1683,7 +1684,7 @@
                 .filter(Boolean)
                 .join('\n');
 
-            if (!nombre || isNaN(costo) || isNaN(precio) || costo <= 0 || precio <= 0 || isNaN(stock)) {
+            if (!nombre || isNaN(costo) || isNaN(precio) || costo < 0 || precio <= 0 || isNaN(stock)) {
                 mostrarAlerta('Completa los campos obligatorios', 'danger');
                 return;
             }
@@ -1896,6 +1897,67 @@
             URL.revokeObjectURL(link.href);
 
             mostrarAlerta('Stock exportado correctamente', 'success');
+        }
+
+        function exportarVentas() {
+            if (datos.ventas.length === 0) {
+                mostrarAlerta('No hay ventas para exportar', 'danger');
+                return;
+            }
+
+            const headers = ['ID', 'Fecha', 'Cliente', 'Producto', 'Cantidad', 'Precio Unit.', 'Costo Unit.', 'Costo Total', 'Valor Final', 'Ganancia', 'Estado Pago', 'Forma Pago', 'Entregado', 'Observaciones'];
+
+            const escapar = (v) => {
+                const s = String(v == null ? '' : v);
+                if (s.includes(';') || s.includes('"') || s.includes('\n')) {
+                    return '"' + s.replace(/"/g, '""') + '"';
+                }
+                return s;
+            };
+
+            // Formato numérico para Excel-AR: punto como separador de miles y coma decimal
+            // (ej: 1.234,56 / 1.234.567,89) para identificar fácil los miles.
+            const numAR = (n, dec = 2) => {
+                const parts = (Number(n) || 0).toFixed(dec).split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return parts.join(',');
+            };
+
+            const filas = datos.ventas.map(v => {
+                return [
+                    v.id,
+                    v.fecha,
+                    v.cliente,
+                    v.productoNombre,
+                    v.cantidad,
+                    numAR(v.precio),
+                    numAR(v.costoUnitario),
+                    numAR(v.costoTotal),
+                    numAR(v.valorFinal),
+                    numAR(v.ganancia),
+                    v.estadoPago,
+                    v.formaPago,
+                    v.entregado,
+                    v.obs
+                ].map(escapar).join(';');
+            });
+
+            // BOM para que Excel detecte UTF-8 correctamente
+            const csv = '﻿' + headers.join(';') + '\n' + filas.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+            const hoy = new Date();
+            const fechaArchivo = `${String(hoy.getDate()).padStart(2, '0')}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${hoy.getFullYear()}`;
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `ventas_${fechaArchivo}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            mostrarAlerta('Ventas exportadas correctamente', 'success');
         }
 
         async function eliminarProducto(id) {
@@ -2614,6 +2676,14 @@
 
             const balanceReal = saldoTotal - deudaTotal;
 
+            // Costo de productos que se llevaron los DUEÑOS ("ropa al costo por prestar plata")
+            const costoDuenos = datos.ventas
+                .filter(v => (v.cliente || '').trim().toUpperCase() === 'DUEÑOS')
+                .reduce((s, v) => s + v.costoTotal, 0);
+
+            // Lo que los dueños retiraron en ropa al costo descuenta el préstamo inicial
+            const deudaRestante = deudaTotal - costoDuenos;
+
             const colorVal = (v) => v >= 0 ? '#27AE60' : '#E74C3C';
 
             const tbodyBalance = document.getElementById('reporteBalanceCaja');
@@ -2641,6 +2711,16 @@
                         <td style="color: #E74C3C; font-weight: 700;">Deuda inicial (préstamo pendiente)</td>
                         <td colspan="2" style="font-size: 12px; color: #7f8c8d;">Préstamo: ${formatMoney(deudaTotal)} de ${formatMoney(totalCompras)} en compras</td>
                         <td style="color: #E74C3C; font-weight: 700;">-${formatMoney(deudaTotal)}</td>
+                    </tr>
+                    <tr style="background: #fffaf0;">
+                        <td style="color: #8E44AD; font-weight: 700;">Ropa al costo retirada por DUEÑOS</td>
+                        <td colspan="2" style="font-size: 12px; color: #7f8c8d;">Costo de productos que los dueños se llevaron a cuenta del préstamo</td>
+                        <td style="color: #8E44AD; font-weight: 700;">-${formatMoney(costoDuenos)}</td>
+                    </tr>
+                    <tr style="background: #fff5f5; border-top: 2px solid var(--border);">
+                        <td style="color: #C0392B; font-weight: 700;">Deuda inicial restante (préstamo − dueños)</td>
+                        <td colspan="2" style="font-size: 12px; color: #7f8c8d;">${formatMoney(deudaTotal)} − ${formatMoney(costoDuenos)}</td>
+                        <td style="color: #C0392B; font-weight: 700;">-${formatMoney(deudaRestante)}</td>
                     </tr>
                     <tr style="border-top: 3px solid var(--dark); font-size: 16px;">
                         <td style="font-weight: 700;">Balance real (si pagás la deuda)</td>
