@@ -135,8 +135,7 @@
         top: 0;
         z-index: 10;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: column;
         gap: 10px;
         margin: -50px -24px 40px;
         padding: 16px 24px;
@@ -145,7 +144,13 @@
         -webkit-backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--border);
     }
-    .filtros:empty { display: none; }
+    .filtros-fila {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .filtros-fila:empty { display: none; }
     .filtro-btn {
         font-family: inherit;
         display: inline-flex;
@@ -163,11 +168,18 @@
         cursor: pointer;
         transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    .filtro-btn:hover { color: var(--text); border-color: var(--accent); }
+    .filtro-btn:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
     .filtro-btn.active {
         background: var(--accent-soft);
         border-color: var(--accent);
         color: var(--accent);
+    }
+    .filtro-btn:disabled { opacity: 0.3; cursor: default; }
+    /* Segunda fila (marcas): mismo componente, un escalon mas chico */
+    .filtros-fila.marcas .filtro-btn {
+        padding: 7px 14px;
+        font-size: 10px;
+        letter-spacing: 1.2px;
     }
     .filtro-btn .cnt {
         font-size: 10px;
@@ -180,8 +192,22 @@
     }
     .filtro-btn.active .cnt { color: var(--accent); background: rgba(201, 162, 91, 0.18); }
     @media (max-width: 600px) {
-        .filtros { gap: 8px; padding: 12px 16px; }
-        .filtro-btn { padding: 8px 14px; font-size: 10px; letter-spacing: 1px; }
+        .filtros { gap: 8px; padding: 12px 0; }
+        /* Cada fila en una sola linea deslizable, para que la barra fija
+           no se coma media pantalla */
+        .filtros-fila {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 0 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filtros-fila::-webkit-scrollbar { display: none; }
+        .filtro-btn { flex-shrink: 0; padding: 8px 14px; font-size: 10px; letter-spacing: 1px; }
+        .filtros-fila.marcas .filtro-btn { padding: 7px 12px; font-size: 9px; }
     }
     @media print { .filtros { display: none !important; } }
     .proveedor { margin-bottom: 70px; }
@@ -493,7 +519,10 @@
       </div>
     </div>
     <div class="container">
-      <div class="filtros" id="filtros"></div>
+      <div class="filtros" id="filtros">
+        <div class="filtros-fila" id="filtrosGenero"></div>
+        <div class="filtros-fila marcas" id="filtrosMarca"></div>
+      </div>
       <div id="catalogo">
         <div class="estado">Cargando catálogo…</div>
       </div>
@@ -667,19 +696,28 @@
             return (a.color||'').localeCompare(b.color||'');
         }
 
-        // ---- Filtro por genero ----
-        var GRUPOS = [];        // todos los productos agrupados
-        var SECCIONES_TODAS = []; // secciones ya ordenadas
-        var filtroActual = 'TODOS';
+        // ---- Filtros por genero y por marca ----
+        var GRUPOS = [];          // todos los productos agrupados
+        var SECCIONES_TODAS = []; // secciones (marcas) ya ordenadas
+        var filtroGenero = 'TODOS';
+        var filtroMarca = 'TODAS';
+
+        // Titulo de la seccion/marca a la que pertenece un producto (null si su
+        // proveedor no cae en ninguna, ej. productos sin proveedor cargado)
+        function seccionDe(g, secciones){
+            for (var i = 0; i < secciones.length; i++) {
+                if (secciones[i].proveedor_ids.indexOf(g.proveedor_id) >= 0) return secciones[i].titulo;
+            }
+            return null;
+        }
+        function pasaGenero(g){ return filtroGenero === 'TODOS' || norm(g.genero) === filtroGenero; }
+        function pasaMarca(g){ return filtroMarca === 'TODAS' || g.seccion === filtroMarca; }
 
         function renderCatalogo(){
-            var visibles = filtroActual === 'TODOS'
-                ? GRUPOS
-                : GRUPOS.filter(function(g){ return norm(g.genero) === filtroActual; });
-
             var html = '';
             SECCIONES_TODAS.forEach(function(sec){
-                var items = visibles.filter(function(g){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
+                if (filtroMarca !== 'TODAS' && sec.titulo !== filtroMarca) return;
+                var items = GRUPOS.filter(function(g){ return g.seccion === sec.titulo && pasaGenero(g); });
                 if (items.length === 0) return;
                 items.sort(sortGrupos);
                 var unidades = items.reduce(function(s,g){ return s+g.stock; }, 0);
@@ -697,20 +735,72 @@
             attachCarousels(root);
         }
 
-        function renderFiltros(){
-            // Contar solo lo que realmente se renderiza (un producto sin proveedor
-            // valido no cae en ninguna seccion, asi que no debe sumar al badge)
-            var visibles = GRUPOS.filter(function(g){
-                return SECCIONES_TODAS.some(function(sec){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
-            });
-            var conteo = { TODOS: visibles.length };
-            visibles.forEach(function(g){
+        // Los productos que realmente se renderizan (uno sin proveedor valido no
+        // cae en ninguna seccion, asi que tampoco debe sumar en los contadores)
+        function grupitosVisibles(){
+            return GRUPOS.filter(function(g){ return g.seccion; });
+        }
+
+        // Recalcula contadores y estados de los botones sin rehacer el DOM.
+        // Cada barra se cuenta aplicando el filtro de la otra, asi los numeros
+        // siempre reflejan lo que vas a ver al hacer click.
+        function actualizarBarras(){
+            var vis = grupitosVisibles();
+            var porMarca = vis.filter(pasaMarca);
+            var porGenero = vis.filter(pasaGenero);
+
+            var cg = { TODOS: porMarca.length };
+            porMarca.forEach(function(g){
                 var k = norm(g.genero);
-                if (!k) return; // sin genero: solo aparece en TODOS
-                conteo[k] = (conteo[k] || 0) + 1;
+                if (k) cg[k] = (cg[k] || 0) + 1; // sin genero: solo cuenta en TODOS
             });
-            var presentes = Object.keys(conteo).filter(function(k){ return k !== 'TODOS'; });
-            presentes.sort(function(a, b){
+            var cm = { TODAS: porGenero.length };
+            porGenero.forEach(function(g){ cm[g.seccion] = (cm[g.seccion] || 0) + 1; });
+
+            aplicarConteos(document.getElementById('filtrosGenero'), cg, filtroGenero);
+            aplicarConteos(document.getElementById('filtrosMarca'), cm, filtroMarca);
+        }
+
+        function aplicarConteos(cont, conteo, activo){
+            cont.querySelectorAll('.filtro-btn').forEach(function(b){
+                var k = b.getAttribute('data-key');
+                var n = conteo[k] || 0;
+                b.querySelector('.cnt').textContent = n;
+                b.classList.toggle('active', k === activo);
+                b.disabled = (n === 0 && k !== activo); // combinacion sin resultados
+            });
+        }
+
+        function construirBarra(cont, claves, tipo){
+            cont.innerHTML = claves.map(function(k){
+                return '<button type="button" class="filtro-btn" data-key="' + escapeHtml(k) + '">' +
+                    escapeHtml(k) + '<span class="cnt">0</span>' +
+                '</button>';
+            }).join('');
+            cont.querySelectorAll('.filtro-btn').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    var k = btn.getAttribute('data-key');
+                    if (tipo === 'genero') filtroGenero = k; else filtroMarca = k;
+                    actualizarBarras();
+                    renderCatalogo();
+                    // Si estabas scrolleado abajo, volver al inicio de los productos
+                    var caja = document.getElementById('filtros').parentElement;
+                    if (caja.getBoundingClientRect().top < 0) {
+                        window.scrollTo({ top: caja.offsetTop, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
+        function renderFiltros(){
+            var vis = grupitosVisibles();
+
+            var generos = [];
+            vis.forEach(function(g){
+                var k = norm(g.genero);
+                if (k && generos.indexOf(k) < 0) generos.push(k);
+            });
+            generos.sort(function(a, b){
                 var ia = FILTRO_ORDEN.indexOf(a), ib = FILTRO_ORDEN.indexOf(b);
                 if (ia < 0) ia = 99;
                 if (ib < 0) ib = 99;
@@ -718,30 +808,21 @@
                 return a.localeCompare(b);
             });
 
-            var cont = document.getElementById('filtros');
-            // Con una sola categoria el filtro no aporta nada
-            if (presentes.length < 2) { cont.innerHTML = ''; return; }
+            var marcas = SECCIONES_TODAS.filter(function(sec){
+                return vis.some(function(g){ return g.seccion === sec.titulo; });
+            }).map(function(sec){ return sec.titulo; });
 
-            cont.innerHTML = ['TODOS'].concat(presentes).map(function(k){
-                return '<button type="button" class="filtro-btn' + (k === filtroActual ? ' active' : '') + '" data-genero="' + escapeHtml(k) + '">' +
-                    escapeHtml(k) + '<span class="cnt">' + conteo[k] + '</span>' +
-                '</button>';
-            }).join('');
+            // Con una sola opcion la barra no aporta nada
+            var barG = document.getElementById('filtrosGenero');
+            var barM = document.getElementById('filtrosMarca');
+            if (generos.length > 1) construirBarra(barG, ['TODOS'].concat(generos), 'genero');
+            else barG.innerHTML = '';
+            if (marcas.length > 1) construirBarra(barM, ['TODAS'].concat(marcas), 'marca');
+            else barM.innerHTML = '';
 
-            cont.querySelectorAll('.filtro-btn').forEach(function(btn){
-                btn.addEventListener('click', function(){
-                    filtroActual = btn.getAttribute('data-genero');
-                    cont.querySelectorAll('.filtro-btn').forEach(function(b){
-                        b.classList.toggle('active', b === btn);
-                    });
-                    renderCatalogo();
-                    // Si estabas scrolleado abajo, volver al inicio de los productos
-                    var caja = cont.parentElement;
-                    if (caja.getBoundingClientRect().top < 0) {
-                        window.scrollTo({ top: caja.offsetTop, behavior: 'smooth' });
-                    }
-                });
-            });
+            var wrap = document.getElementById('filtros');
+            wrap.style.display = (barG.children.length || barM.children.length) ? '' : 'none';
+            actualizarBarras();
         }
 
         async function init(){
@@ -788,6 +869,7 @@
                     return aArg - bArg;
                 });
 
+                grupos.forEach(function(g){ g.seccion = seccionDe(g, todas); });
                 GRUPOS = grupos;
                 SECCIONES_TODAS = todas;
                 if (grupos.length === 0) {
