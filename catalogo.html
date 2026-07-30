@@ -130,6 +130,60 @@
     .top .stats .num { font-size: 24px; font-weight: 700; color: #2dd4bf; }
     .top .stats .lbl { font-size: 11px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
     .container { max-width: 1400px; margin: 0 auto; padding: 50px 24px; }
+    .filtros {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: -50px -24px 40px;
+        padding: 16px 24px;
+        background: rgba(14, 16, 20, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+    }
+    .filtros:empty { display: none; }
+    .filtro-btn {
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        background: var(--surface);
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .filtro-btn:hover { color: var(--text); border-color: var(--accent); }
+    .filtro-btn.active {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .filtro-btn .cnt {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        color: var(--text-dim);
+        background: var(--surface-2);
+        border-radius: 999px;
+        padding: 1px 7px;
+    }
+    .filtro-btn.active .cnt { color: var(--accent); background: rgba(201, 162, 91, 0.18); }
+    @media (max-width: 600px) {
+        .filtros { gap: 8px; padding: 12px 16px; }
+        .filtro-btn { padding: 8px 14px; font-size: 10px; letter-spacing: 1px; }
+    }
+    @media print { .filtros { display: none !important; } }
     .proveedor { margin-bottom: 70px; }
     .proveedor-header {
         display: flex;
@@ -438,8 +492,11 @@
         </div>
       </div>
     </div>
-    <div class="container" id="catalogo">
-      <div class="estado">Cargando catálogo…</div>
+    <div class="container">
+      <div class="filtros" id="filtros"></div>
+      <div id="catalogo">
+        <div class="estado">Cargando catálogo…</div>
+      </div>
     </div>
     <footer class="contact">
         <div class="stats" style="margin-bottom: 32px;">
@@ -478,6 +535,8 @@
             { titulo: 'SIXTY',        proveedor_ids: [3] }
         ];
         var GENERO_ORDEN = { MUJER: 0, HOMBRE: 1, UNISEX: 2, ACCESORIOS: 3 };
+        // Orden de los botones del filtro (los generos que no esten aca se agregan al final)
+        var FILTRO_ORDEN = ['HOMBRE', 'MUJER', 'UNISEX', 'ACCESORIOS'];
 
         function norm(s){ return (s||'').toString().trim().toUpperCase(); }
         function formatMoney(n){
@@ -608,6 +667,83 @@
             return (a.color||'').localeCompare(b.color||'');
         }
 
+        // ---- Filtro por genero ----
+        var GRUPOS = [];        // todos los productos agrupados
+        var SECCIONES_TODAS = []; // secciones ya ordenadas
+        var filtroActual = 'TODOS';
+
+        function renderCatalogo(){
+            var visibles = filtroActual === 'TODOS'
+                ? GRUPOS
+                : GRUPOS.filter(function(g){ return norm(g.genero) === filtroActual; });
+
+            var html = '';
+            SECCIONES_TODAS.forEach(function(sec){
+                var items = visibles.filter(function(g){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
+                if (items.length === 0) return;
+                items.sort(sortGrupos);
+                var unidades = items.reduce(function(s,g){ return s+g.stock; }, 0);
+                html += '<section class="proveedor">' +
+                    '<div class="proveedor-header">' +
+                        '<h2>' + escapeHtml(sec.titulo) + '</h2>' +
+                        '<div class="prov-stats">' + items.length + ' PRODUCTOS &middot; ' + unidades + ' UNIDADES</div>' +
+                    '</div>' +
+                    '<div class="grid">' + items.map(renderCard).join('') + '</div>' +
+                '</section>';
+            });
+
+            var root = document.getElementById('catalogo');
+            root.innerHTML = html || '<div class="estado">Sin productos en esta categoria</div>';
+            attachCarousels(root);
+        }
+
+        function renderFiltros(){
+            // Contar solo lo que realmente se renderiza (un producto sin proveedor
+            // valido no cae en ninguna seccion, asi que no debe sumar al badge)
+            var visibles = GRUPOS.filter(function(g){
+                return SECCIONES_TODAS.some(function(sec){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
+            });
+            var conteo = { TODOS: visibles.length };
+            visibles.forEach(function(g){
+                var k = norm(g.genero);
+                if (!k) return; // sin genero: solo aparece en TODOS
+                conteo[k] = (conteo[k] || 0) + 1;
+            });
+            var presentes = Object.keys(conteo).filter(function(k){ return k !== 'TODOS'; });
+            presentes.sort(function(a, b){
+                var ia = FILTRO_ORDEN.indexOf(a), ib = FILTRO_ORDEN.indexOf(b);
+                if (ia < 0) ia = 99;
+                if (ib < 0) ib = 99;
+                if (ia !== ib) return ia - ib;
+                return a.localeCompare(b);
+            });
+
+            var cont = document.getElementById('filtros');
+            // Con una sola categoria el filtro no aporta nada
+            if (presentes.length < 2) { cont.innerHTML = ''; return; }
+
+            cont.innerHTML = ['TODOS'].concat(presentes).map(function(k){
+                return '<button type="button" class="filtro-btn' + (k === filtroActual ? ' active' : '') + '" data-genero="' + escapeHtml(k) + '">' +
+                    escapeHtml(k) + '<span class="cnt">' + conteo[k] + '</span>' +
+                '</button>';
+            }).join('');
+
+            cont.querySelectorAll('.filtro-btn').forEach(function(btn){
+                btn.addEventListener('click', function(){
+                    filtroActual = btn.getAttribute('data-genero');
+                    cont.querySelectorAll('.filtro-btn').forEach(function(b){
+                        b.classList.toggle('active', b === btn);
+                    });
+                    renderCatalogo();
+                    // Si estabas scrolleado abajo, volver al inicio de los productos
+                    var caja = cont.parentElement;
+                    if (caja.getBoundingClientRect().top < 0) {
+                        window.scrollTo({ top: caja.offsetTop, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+
         async function init(){
             try {
                 var [productos, proveedores] = await Promise.all([
@@ -644,32 +780,22 @@
                     .map(function(p){ return { titulo: p.nombre, proveedor_ids: [p.id] }; });
                 var todas = SECCIONES.concat(extras);
 
-                // Forzar que COLECCION ARGENTINA aparezca primero (sin importar acentos)
+                // Forzar que COLECCION ARGENTINA aparezca ultima (sin importar acentos)
                 function sinAcentos(s){ return norm(s).normalize('NFD').replace(/[̀-ͯ]/g, ''); }
                 todas.sort(function(a, b){
-                    var aArg = sinAcentos(a.titulo) === 'COLECCION ARGENTINA' ? 0 : 1;
-                    var bArg = sinAcentos(b.titulo) === 'COLECCION ARGENTINA' ? 0 : 1;
+                    var aArg = sinAcentos(a.titulo) === 'COLECCION ARGENTINA' ? 1 : 0;
+                    var bArg = sinAcentos(b.titulo) === 'COLECCION ARGENTINA' ? 1 : 0;
                     return aArg - bArg;
                 });
 
-                var html = '';
-                todas.forEach(function(sec){
-                    var items = grupos.filter(function(g){ return sec.proveedor_ids.indexOf(g.proveedor_id) >= 0; });
-                    if (items.length === 0) return;
-                    items.sort(sortGrupos);
-                    var unidades = items.reduce(function(s,g){ return s+g.stock; }, 0);
-                    html += '<section class="proveedor">' +
-                        '<div class="proveedor-header">' +
-                            '<h2>' + escapeHtml(sec.titulo) + '</h2>' +
-                            '<div class="prov-stats">' + items.length + ' PRODUCTOS &middot; ' + unidades + ' UNIDADES</div>' +
-                        '</div>' +
-                        '<div class="grid">' + items.map(renderCard).join('') + '</div>' +
-                    '</section>';
-                });
-
-                var root = document.getElementById('catalogo');
-                root.innerHTML = html || '<div class="estado">Sin productos en stock</div>';
-                attachCarousels(root);
+                GRUPOS = grupos;
+                SECCIONES_TODAS = todas;
+                if (grupos.length === 0) {
+                    document.getElementById('catalogo').innerHTML = '<div class="estado">Sin productos en stock</div>';
+                    return;
+                }
+                renderFiltros();
+                renderCatalogo();
             } catch (e) {
                 console.error('Error cargando catalogo:', e);
                 document.getElementById('catalogo').innerHTML = '<div class="estado">Error cargando catalogo. Recarga la pagina.</div>';
