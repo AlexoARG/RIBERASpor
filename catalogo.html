@@ -151,6 +151,19 @@
         gap: 10px;
     }
     .filtros-fila:empty { display: none; }
+    .filtro-label {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        padding-right: 12px;
+        border-right: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
     .filtro-btn {
         font-family: inherit;
         display: inline-flex;
@@ -208,6 +221,7 @@
         .filtros-fila::-webkit-scrollbar { display: none; }
         .filtro-btn { flex-shrink: 0; padding: 8px 14px; font-size: 10px; letter-spacing: 1px; }
         .filtros-fila.marcas .filtro-btn { padding: 7px 12px; font-size: 9px; }
+        .filtro-label { font-size: 9px; letter-spacing: 1.2px; padding-right: 10px; }
     }
     @media print { .filtros { display: none !important; } }
     .proveedor { margin-bottom: 70px; }
@@ -771,8 +785,9 @@
             });
         }
 
-        function construirBarra(cont, claves, tipo){
-            cont.innerHTML = claves.map(function(k){
+        function construirBarra(cont, claves, tipo, etiqueta){
+            cont.innerHTML = '<span class="filtro-label">' + escapeHtml(etiqueta) + '</span>' +
+              claves.map(function(k){
                 return '<button type="button" class="filtro-btn" data-key="' + escapeHtml(k) + '">' +
                     escapeHtml(k) + '<span class="cnt">0</span>' +
                 '</button>';
@@ -815,9 +830,9 @@
             // Con una sola opcion la barra no aporta nada
             var barG = document.getElementById('filtrosGenero');
             var barM = document.getElementById('filtrosMarca');
-            if (generos.length > 1) construirBarra(barG, ['TODOS'].concat(generos), 'genero');
+            if (generos.length > 1) construirBarra(barG, ['TODOS'].concat(generos), 'genero', 'Por categoría');
             else barG.innerHTML = '';
-            if (marcas.length > 1) construirBarra(barM, ['TODAS'].concat(marcas), 'marca');
+            if (marcas.length > 1) construirBarra(barM, ['TODAS'].concat(marcas), 'marca', 'Por marca');
             else barM.innerHTML = '';
 
             var wrap = document.getElementById('filtros');
