@@ -847,10 +847,10 @@
                     fetchJSON(SUPABASE_URL + '/rest/v1/proveedores?select=id,nombre')
                 ]);
 
-                // Dedupe por (nombre, color, talle, precio) - sumar stocks
+                // Dedupe por (nombre, color, talle, genero, precio) - sumar stocks
                 var mapa = new Map();
                 productos.forEach(function(p){
-                    var key = [norm(p.nombre), norm(p.color), norm(p.talle), Number(p.precio)].join('||');
+                    var key = [norm(p.nombre), norm(p.color), norm(p.talle), norm(p.genero), Number(p.precio)].join('||');
                     if (!mapa.has(key)) {
                         mapa.set(key, {
                             nombre: p.nombre, color: p.color, talle: p.talle,
