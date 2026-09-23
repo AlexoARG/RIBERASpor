@@ -407,14 +407,93 @@
         <div class="alert" id="alert"></div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard', this)">Dashboard</button>
+            <button class="tab-btn active" onclick="switchTab('dashboardGeneral', this)">Dashboard General</button>
+            <button class="tab-btn" onclick="switchTab('dashboard', this)">Dashboard Ropa</button>
             <button class="tab-btn" onclick="switchTab('productos', this)">Productos</button>
             <button class="tab-btn" onclick="switchTab('ventas', this)">Ventas</button>
+            <button class="tab-btn" onclick="switchTab('gastos', this)">Gastos</button>
             <button class="tab-btn" onclick="switchTab('proveedores', this)">Proveedores</button>
         </div>
 
-        <!-- DASHBOARD -->
-        <div id="dashboard" class="tab-content active">
+        <!-- DASHBOARD GENERAL -->
+        <div id="dashboardGeneral" class="tab-content active">
+            <div class="card-grid">
+                <div class="card secondary">
+                    <h3>Ganancia Ropa</h3>
+                    <div class="value" id="dgGananciaRopa">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        Ventas − costo de la mercadería
+                    </div>
+                </div>
+                <div class="card danger">
+                    <h3>Gastos Generales</h3>
+                    <div class="value" id="dgGastos">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        <div>💵 Efectivo: <span id="dgGastosEfectivo">$0</span></div>
+                        <div>🏦 Transferencia: <span id="dgGastosTransferencia">$0</span></div>
+                    </div>
+                </div>
+                <div class="card" id="dgResultadoCard">
+                    <h3>Resultado Neto</h3>
+                    <div class="value" id="dgResultado">$0</div>
+                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
+                        Ganancia ropa − gastos generales
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📅 Resumen mensual</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Ventas</th>
+                            <th>Ganancia ropa</th>
+                            <th>Gastos</th>
+                            <th>Resultado neto</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dgResumenMensual"></tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>🧾 Gastos por categoría</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Cantidad</th>
+                            <th>Monto</th>
+                            <th>% del total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dgGastosPorCategoria"></tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>💼 Balance de Caja (Dinero que deberías tener)</h2>
+                <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
+                    Préstamo inicial: <strong id="textoPrestamoInicial"></strong> — El sistema calcula automáticamente cuánto reinvertiste con las ventas, cuánto se fue en gastos y cuánto deberías tener en mano.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Efectivo</th>
+                            <th>Transferencia</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reporteBalanceCaja"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DASHBOARD ROPA -->
+        <div id="dashboard" class="tab-content">
             <div class="card-grid">
                 <div class="card">
                     <h3>Total de Ventas</h3>
@@ -584,24 +663,6 @@
                     <tbody id="reporteEstadoPago"></tbody>
                 </table>
             </div>
-
-            <div class="section">
-                <h2>💼 Balance de Caja (Dinero que deberías tener)</h2>
-                <p style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">
-                    Préstamo inicial: <strong id="textoPrestamoInicial"></strong> — El sistema calcula automáticamente cuánto reinvertiste con las ventas y cuánto deberías tener en mano.
-                </p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Concepto</th>
-                            <th>Efectivo</th>
-                            <th>Transferencia</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reporteBalanceCaja"></tbody>
-                </table>
-            </div>
         </div>
 
         <!-- PRODUCTOS -->
@@ -658,7 +719,7 @@
             <div class="section">
                 <h2>📋 Productos <span id="productosContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
                 <div class="filtro-row">
-                    <input type="text" id="productosFiltro" placeholder="🔍 Buscar (varias palabras: ej. JOGGINS AZUL)" oninput="aplicarFiltroProductos()">
+                    <input type="text" id="productosFiltro" placeholder="🔍 Buscar (varias palabras o montos: ej. JOGGINS AZUL, 20.000)" oninput="aplicarFiltroProductos()">
                     <select id="productosFiltroStock" onchange="aplicarFiltroProductos()" style="width: auto; padding: 8px 10px;">
                         <option value="">Stock: todos</option>
                         <option value="con">Con stock</option>
@@ -864,7 +925,7 @@
             <div class="section">
                 <h2>📝 Ventas <span id="ventasContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
                 <div class="filtro-row">
-                    <input type="text" id="ventasFiltro" placeholder="🔍 Buscar por cliente, producto, observaciones..." oninput="aplicarFiltroVentas()">
+                    <input type="text" id="ventasFiltro" placeholder="🔍 Buscar por cliente, producto, observaciones, monto..." oninput="aplicarFiltroVentas()">
                     <button class="btn-small btn-danger" onclick="limpiarFiltroVentas()">Limpiar</button>
                     <button class="btn-primary btn-small" style="margin-left: auto;" onclick="exportarVentas()">📥 Exportar a Excel</button>
                 </div>
@@ -903,6 +964,73 @@
                     <tbody></tbody>
                 </table>
             </div>
+            </div>
+        </div>
+
+        <!-- GASTOS -->
+        <div id="gastos" class="tab-content">
+            <div class="section">
+                <h2 id="gastoFormTitulo">➕ Nuevo Gasto</h2>
+                <p style="font-size: 13px; color: #7f8c8d; margin: -5px 0 10px 0;">
+                    Gastos generales que no son compra/venta de ropa: ferias, publicidad, insumos, etc. No afectan el Dashboard Ropa.
+                </p>
+                <input type="hidden" id="gastoId">
+                <div class="form-row">
+                    <input type="date" id="gastoFecha">
+                    <select id="gastoCategoria">
+                        <option value="FERIA">FERIA</option>
+                        <option value="PUBLICIDAD">PUBLICIDAD</option>
+                        <option value="INSUMOS">INSUMOS</option>
+                        <option value="ENVÍOS">ENVÍOS</option>
+                        <option value="OTROS">OTROS</option>
+                    </select>
+                    <input type="text" id="gastoConcepto" placeholder="Concepto (ej: FERIA HOPE 14-11)">
+                </div>
+                <div class="form-row">
+                    <input type="number" id="gastoMonto" placeholder="Monto" step="0.01">
+                    <select id="gastoFormaPago">
+                        <option value="EFECTIVO">EFECTIVO</option>
+                        <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <textarea id="gastoObs" placeholder="Observaciones" style="resize: vertical; height: 50px;"></textarea>
+                </div>
+                <div class="form-row">
+                    <button class="btn-primary" id="gastoBtnGuardar" onclick="guardarGasto()">Registrar Gasto</button>
+                    <button class="btn-small btn-danger" id="gastoBtnCancelar" onclick="limpiarFormGasto()" style="display:none;">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🧾 Gastos <span id="gastosContador" style="font-size: 14px; color: #7f8c8d; font-weight: normal;">(0)</span></h2>
+                <div class="filtro-row">
+                    <input type="text" id="gastosFiltro" placeholder="🔍 Buscar por concepto, observaciones, monto..." oninput="actualizarGastosTable()">
+                    <select id="gastosFiltroCategoria" onchange="actualizarGastosTable()" style="width: auto; padding: 8px 10px;">
+                        <option value="">Categoría: todas</option>
+                        <option value="FERIA">FERIA</option>
+                        <option value="PUBLICIDAD">PUBLICIDAD</option>
+                        <option value="INSUMOS">INSUMOS</option>
+                        <option value="ENVÍOS">ENVÍOS</option>
+                        <option value="OTROS">OTROS</option>
+                    </select>
+                    <button class="btn-small btn-danger" onclick="limpiarFiltroGastos()">Limpiar</button>
+                    <button class="btn-primary btn-small" style="margin-left: auto;" onclick="exportarGastos()">📥 Exportar a Excel</button>
+                </div>
+                <table id="gastosTable">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Concepto</th>
+                            <th>Monto</th>
+                            <th>Forma Pago</th>
+                            <th>Obs</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
@@ -961,7 +1089,8 @@
         let datos = {
             productos: [],
             ventas: [],
-            proveedores: []
+            proveedores: [],
+            gastos: []
         };
         let sincronizando = false;
 
@@ -1093,6 +1222,27 @@
                 telefono: upper(p.telefono),
                 email: upper(p.email),
                 notas: p.notas // exento de upper: puede contener URLs
+            };
+        }
+        function dbToJsGasto(g) {
+            return {
+                id: g.id,
+                fecha: g.fecha || '',
+                categoria: g.categoria || 'OTROS',
+                concepto: g.concepto || '',
+                monto: parseFloat(g.monto) || 0,
+                formaPago: g.forma_pago || 'EFECTIVO',
+                obs: g.obs || ''
+            };
+        }
+        function jsToDbGasto(g) {
+            return {
+                fecha: g.fecha,
+                categoria: upper(g.categoria),
+                concepto: upper(g.concepto),
+                monto: g.monto,
+                forma_pago: upper(g.formaPago),
+                obs: upper(g.obs)
             };
         }
         let productosPaginaActual = 1;
@@ -1256,6 +1406,11 @@
             return '$' + parts.join(',');
         }
 
+        // Texto de búsqueda para montos: matchea "100000", "100.000" y "100.000,00"
+        function montosBuscables(...nums) {
+            return nums.map(n => `${Number(n) || 0} ${formatMoney(n).slice(1)}`).join(' ');
+        }
+
         // Convierte yyyy-MM-dd (input type=date) a dd/MM/yyyy
         function formatearFecha(fechaStr) {
             if (!fechaStr) return '';
@@ -1281,6 +1436,7 @@
             document.getElementById('ventaFecha').value = fechaLocalHoy();
             document.getElementById('vmFecha').value = fechaLocalHoy();
             document.getElementById('productFechaEntrada').value = fechaLocalHoy();
+            document.getElementById('gastoFecha').value = fechaLocalHoy();
 
             actualizarCarrito();
 
@@ -1306,10 +1462,15 @@
             sincronizando = true;
             mostrarSync('Cargando...', 'synced');
             try {
-                const [prods, vents, provs] = await Promise.all([sbGet('productos'), sbGet('ventas'), sbGet('proveedores')]);
+                // gastos es best-effort: si la tabla todavía no se creó (supabase_gastos.sql), sigue funcionando
+                const [prods, vents, provs, gasts] = await Promise.all([
+                    sbGet('productos'), sbGet('ventas'), sbGet('proveedores'),
+                    sbGet('gastos').catch(e => { console.warn('No se pudieron cargar gastos:', e.message); return []; })
+                ]);
                 datos.productos = prods.map(dbToJsProducto);
                 datos.ventas = vents.map(dbToJsVenta);
                 datos.proveedores = provs.map(dbToJsProveedor);
+                datos.gastos = gasts.map(dbToJsGasto);
 
                 // Enriquecer productos con el nombre del proveedor (lookup por id)
                 const provMap = new Map(datos.proveedores.map(p => [p.id, p.nombre]));
@@ -1738,7 +1899,7 @@
                 const palabras = productosFiltroTexto.split(/\s+/).filter(w => w.length > 0);
                 if (palabras.length > 0) {
                     listaProductos = listaProductos.filter(p => {
-                        const txt = `${p.nombre} ${p.descripcion} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada} ${p.formaPagoCompra}`.toLowerCase();
+                        const txt = `${p.nombre} ${p.descripcion} ${p.talle} ${p.color} ${p.genero} ${p.proveedor} ${p.fechaEntrada} ${p.formaPagoCompra} ${montosBuscables(p.precio, p.costo)}`.toLowerCase();
                         return palabras.every(w => txt.includes(w));
                     });
                 }
@@ -2315,6 +2476,12 @@
                     return;
                 }
 
+                if (!prod && valorFinal < 0 && cliente.toUpperCase() !== 'DUEÑOS' &&
+                    !confirm('Una venta sin producto con monto negativo parece un gasto (feria, publicidad, insumos...).\n\nLos gastos se cargan en la solapa GASTOS para no afectar el Dashboard Ropa.\n\n¿Registrarla igual como venta?')) {
+                    mostrarSync('Sincronizado', 'synced');
+                    return;
+                }
+
                 const costoUnitario = prod ? prod.costo : 0;
                 const costoTotal = costoUnitario * cantidad;
                 const ganancia = valorFinal - costoTotal;
@@ -2415,7 +2582,7 @@
             let listaVentas = datos.ventas;
             if (ventasFiltroTexto) {
                 listaVentas = listaVentas.filter(v => {
-                    const txt = `${v.cliente} ${v.productoNombre} ${v.obs} ${v.estadoPago} ${v.formaPago} ${v.fecha}`.toLowerCase();
+                    const txt = `${v.cliente} ${v.productoNombre} ${v.obs} ${v.estadoPago} ${v.formaPago} ${v.fecha} ${montosBuscables(v.valorFinal, v.precio, v.costoTotal, v.ganancia)}`.toLowerCase();
                     return txt.includes(ventasFiltroTexto);
                 });
             }
@@ -2669,9 +2836,18 @@
                 .reduce((s, v) => s + v.valorFinal, 0);
             const ingresosPagos = ingresoPagoEfectivo + ingresoPagoTransferencia;
 
+            // Gastos generales (solapa Gastos) también salen de la caja
+            const gastosEfectivo = datos.gastos
+                .filter(g => g.formaPago !== 'TRANSFERENCIA')
+                .reduce((s, g) => s + g.monto, 0);
+            const gastosTransferencia = datos.gastos
+                .filter(g => g.formaPago === 'TRANSFERENCIA')
+                .reduce((s, g) => s + g.monto, 0);
+            const gastosTotal = gastosEfectivo + gastosTransferencia;
+
             // Saldo por forma de pago
-            const saldoEfectivo = ingresoPagoEfectivo - reinversionEfectivo;
-            const saldoTransferencia = ingresoPagoTransferencia - reinversionTransferencia;
+            const saldoEfectivo = ingresoPagoEfectivo - reinversionEfectivo - gastosEfectivo;
+            const saldoTransferencia = ingresoPagoTransferencia - reinversionTransferencia - gastosTransferencia;
             const saldoTotal = saldoEfectivo + saldoTransferencia;
 
             const balanceReal = saldoTotal - deudaTotal;
@@ -2700,6 +2876,12 @@
                         <td>-${formatMoney(reinversionEfectivo)}</td>
                         <td>-${formatMoney(reinversionTransferencia)}</td>
                         <td>-${formatMoney(reinversionTotal)}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: #E74C3C; font-weight: 600;">Gastos generales (ferias, publicidad, insumos...)</td>
+                        <td>-${formatMoney(gastosEfectivo)}</td>
+                        <td>-${formatMoney(gastosTransferencia)}</td>
+                        <td>-${formatMoney(gastosTotal)}</td>
                     </tr>
                     <tr style="border-top: 2px solid var(--border);">
                         <td style="font-weight: 700;">Saldo disponible (en mano)</td>
@@ -2964,6 +3146,267 @@
             });
         }
 
+        // ===== GASTOS =====
+        // Clave ordenable yyyy-MM-dd a partir de dd/MM/yyyy
+        function claveFecha(fecha) {
+            const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(fecha || '');
+            return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
+        }
+
+        function limpiarFormGasto() {
+            document.getElementById('gastoId').value = '';
+            document.getElementById('gastoFecha').value = fechaLocalHoy();
+            document.getElementById('gastoCategoria').value = 'FERIA';
+            document.getElementById('gastoConcepto').value = '';
+            document.getElementById('gastoMonto').value = '';
+            document.getElementById('gastoFormaPago').value = 'EFECTIVO';
+            document.getElementById('gastoObs').value = '';
+            document.getElementById('gastoFormTitulo').textContent = '➕ Nuevo Gasto';
+            document.getElementById('gastoBtnGuardar').textContent = 'Registrar Gasto';
+            document.getElementById('gastoBtnCancelar').style.display = 'none';
+        }
+
+        function editarGasto(id) {
+            const g = datos.gastos.find(x => x.id === id);
+            if (!g) return;
+            document.getElementById('gastoId').value = g.id;
+            document.getElementById('gastoFecha').value = claveFecha(g.fecha) || fechaLocalHoy();
+            document.getElementById('gastoCategoria').value = g.categoria;
+            document.getElementById('gastoConcepto').value = g.concepto;
+            document.getElementById('gastoMonto').value = g.monto;
+            document.getElementById('gastoFormaPago').value = g.formaPago;
+            document.getElementById('gastoObs').value = g.obs;
+            document.getElementById('gastoFormTitulo').textContent = '✏️ Editar Gasto';
+            document.getElementById('gastoBtnGuardar').textContent = 'Guardar cambios';
+            document.getElementById('gastoBtnCancelar').style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function guardarGasto() {
+            const id = document.getElementById('gastoId').value;
+            const fecha = document.getElementById('gastoFecha').value;
+            const categoria = document.getElementById('gastoCategoria').value;
+            const concepto = document.getElementById('gastoConcepto').value.trim();
+            const monto = parseFloat(document.getElementById('gastoMonto').value);
+            const formaPago = document.getElementById('gastoFormaPago').value;
+            const obs = document.getElementById('gastoObs').value.trim();
+
+            if (!fecha || !concepto || isNaN(monto) || monto <= 0) {
+                mostrarAlerta('Completá fecha, concepto y un monto mayor a 0', 'danger');
+                return;
+            }
+
+            try {
+                mostrarSync('Guardando...', 'synced');
+                const data = jsToDbGasto({ fecha: formatearFecha(fecha), categoria, concepto, monto, formaPago, obs });
+                if (id) {
+                    await sbUpdate('gastos', parseInt(id), data);
+                    mostrarAlerta('Gasto actualizado', 'success');
+                } else {
+                    await sbInsert('gastos', data);
+                    mostrarAlerta('Gasto registrado', 'success');
+                }
+                limpiarFormGasto();
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                const sinTabla = /gastos/.test(error.message) && /404|PGRST205|does not exist/.test(error.message);
+                mostrarAlerta(sinTabla
+                    ? 'La tabla de gastos no existe todavía: corré supabase_gastos.sql en Supabase'
+                    : 'Error al guardar: ' + error.message, 'danger');
+            }
+        }
+
+        async function eliminarGasto(id) {
+            if (!confirm('¿Eliminar gasto?')) return;
+            try {
+                mostrarSync('Guardando...', 'synced');
+                await sbDelete('gastos', id);
+                await cargarDatos();
+            } catch (error) {
+                mostrarSync('Error al guardar', 'error');
+                mostrarAlerta('Error: ' + error.message, 'danger');
+            }
+        }
+
+        function filtrarGastos() {
+            const texto = document.getElementById('gastosFiltro').value.toLowerCase();
+            const categoria = document.getElementById('gastosFiltroCategoria').value;
+            return datos.gastos.filter(g => {
+                if (categoria && g.categoria !== categoria) return false;
+                if (!texto) return true;
+                return `${g.concepto} ${g.obs} ${g.categoria} ${g.formaPago} ${g.fecha} ${montosBuscables(g.monto)}`.toLowerCase().includes(texto);
+            });
+        }
+
+        function limpiarFiltroGastos() {
+            document.getElementById('gastosFiltro').value = '';
+            document.getElementById('gastosFiltroCategoria').value = '';
+            actualizarGastosTable();
+        }
+
+        function actualizarGastosTable() {
+            const tbody = document.querySelector('#gastosTable tbody');
+            const lista = filtrarGastos()
+                .sort((a, b) => claveFecha(b.fecha).localeCompare(claveFecha(a.fecha)) || b.id - a.id);
+
+            const total = lista.reduce((s, g) => s + g.monto, 0);
+            const hayFiltro = lista.length !== datos.gastos.length;
+            document.getElementById('gastosContador').textContent = hayFiltro
+                ? `(${lista.length} de ${datos.gastos.length} gastos · ${formatMoney(total)})`
+                : `(${lista.length} gastos · ${formatMoney(total)})`;
+
+            if (lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Sin gastos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = lista.map(g => `
+                <tr>
+                    <td>${g.fecha}</td>
+                    <td>${g.categoria}</td>
+                    <td>${g.concepto}</td>
+                    <td style="color: #E74C3C; font-weight: 600;">${formatMoney(g.monto)}</td>
+                    <td>${g.formaPago}</td>
+                    <td>${g.obs || '—'}</td>
+                    <td class="acciones-cell">
+                        <button class="btn-small btn-primary" onclick="editarGasto(${g.id})">✏️</button>
+                        <button class="btn-small btn-danger" onclick="eliminarGasto(${g.id})">X</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function exportarGastos() {
+            if (datos.gastos.length === 0) {
+                mostrarAlerta('No hay gastos para exportar', 'danger');
+                return;
+            }
+
+            const headers = ['ID', 'Fecha', 'Categoría', 'Concepto', 'Monto', 'Forma Pago', 'Observaciones'];
+
+            const escapar = (v) => {
+                const s = String(v == null ? '' : v);
+                if (s.includes(';') || s.includes('"') || s.includes('\n')) {
+                    return '"' + s.replace(/"/g, '""') + '"';
+                }
+                return s;
+            };
+
+            const numAR = (n, dec = 2) => {
+                const parts = (Number(n) || 0).toFixed(dec).split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                return parts.join(',');
+            };
+
+            const filas = datos.gastos.map(g =>
+                [g.id, g.fecha, g.categoria, g.concepto, numAR(g.monto), g.formaPago, g.obs].map(escapar).join(';'));
+
+            // BOM para que Excel detecte UTF-8 correctamente
+            const csv = '﻿' + headers.join(';') + '\n' + filas.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+            const hoy = new Date();
+            const fechaArchivo = `${String(hoy.getDate()).padStart(2, '0')}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${hoy.getFullYear()}`;
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `gastos_${fechaArchivo}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            mostrarAlerta('Gastos exportados correctamente', 'success');
+        }
+
+        // ===== DASHBOARD GENERAL =====
+        function actualizarDashboardGeneral() {
+            const gananciaRopa = datos.ventas.reduce((s, v) => s + v.ganancia, 0);
+            const gastosEfectivo = datos.gastos
+                .filter(g => g.formaPago !== 'TRANSFERENCIA')
+                .reduce((s, g) => s + g.monto, 0);
+            const gastosTransferencia = datos.gastos
+                .filter(g => g.formaPago === 'TRANSFERENCIA')
+                .reduce((s, g) => s + g.monto, 0);
+            const gastosTotal = gastosEfectivo + gastosTransferencia;
+            const resultado = gananciaRopa - gastosTotal;
+
+            document.getElementById('dgGananciaRopa').textContent = formatMoney(gananciaRopa);
+            document.getElementById('dgGastos').textContent = formatMoney(gastosTotal);
+            document.getElementById('dgGastosEfectivo').textContent = formatMoney(gastosEfectivo);
+            document.getElementById('dgGastosTransferencia').textContent = formatMoney(gastosTransferencia);
+            document.getElementById('dgResultado').textContent = formatMoney(resultado);
+            document.getElementById('dgResultadoCard').className = resultado >= 0 ? 'card' : 'card danger';
+
+            const colorVal = (v) => v >= 0 ? '#27AE60' : '#E74C3C';
+
+            // Resumen mensual (clave yyyy-MM)
+            const meses = new Map();
+            const mes = key => {
+                if (!meses.has(key)) meses.set(key, { ventas: 0, ganancia: 0, gastos: 0 });
+                return meses.get(key);
+            };
+            datos.ventas.forEach(v => {
+                const k = claveFecha(v.fecha).slice(0, 7);
+                if (!k) return;
+                mes(k).ventas += v.valorFinal;
+                mes(k).ganancia += v.ganancia;
+            });
+            datos.gastos.forEach(g => {
+                const k = claveFecha(g.fecha).slice(0, 7);
+                if (!k) return;
+                mes(k).gastos += g.monto;
+            });
+
+            const nombresMes = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+            const tbodyMes = document.getElementById('dgResumenMensual');
+            const filasMes = [...meses.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+            tbodyMes.innerHTML = filasMes.length === 0
+                ? '<tr><td colspan="5" style="text-align: center;">Sin movimientos</td></tr>'
+                : filasMes.map(([k, m]) => {
+                    const [y, mm] = k.split('-');
+                    const neto = m.ganancia - m.gastos;
+                    return `
+                        <tr>
+                            <td>${nombresMes[parseInt(mm) - 1]} ${y}</td>
+                            <td>${formatMoney(m.ventas)}</td>
+                            <td>${formatMoney(m.ganancia)}</td>
+                            <td style="color: #E74C3C;">-${formatMoney(m.gastos)}</td>
+                            <td style="color: ${colorVal(neto)}; font-weight: 700;">${formatMoney(neto)}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+            // Gastos por categoría
+            const porCategoria = new Map();
+            datos.gastos.forEach(g => {
+                const c = porCategoria.get(g.categoria) || { cantidad: 0, monto: 0 };
+                c.cantidad += 1;
+                c.monto += g.monto;
+                porCategoria.set(g.categoria, c);
+            });
+            const tbodyCat = document.getElementById('dgGastosPorCategoria');
+            const filasCat = [...porCategoria.entries()].sort((a, b) => b[1].monto - a[1].monto);
+            tbodyCat.innerHTML = filasCat.length === 0
+                ? '<tr><td colspan="4" style="text-align: center;">Sin gastos</td></tr>'
+                : filasCat.map(([cat, c]) => `
+                    <tr>
+                        <td>${cat}</td>
+                        <td>${c.cantidad}</td>
+                        <td>${formatMoney(c.monto)}</td>
+                        <td>${(c.monto / gastosTotal * 100).toFixed(1)}%</td>
+                    </tr>
+                `).join('') + `
+                    <tr style="border-top: 2px solid var(--border); font-weight: 700;">
+                        <td>Total</td>
+                        <td>${datos.gastos.length}</td>
+                        <td>${formatMoney(gastosTotal)}</td>
+                        <td>100%</td>
+                    </tr>
+                `;
+        }
+
         let ventasSemanalesChart = null;
 
         function inicioSemanaLunes(d) {
@@ -3062,8 +3505,10 @@
             actualizarProductosTable();
             actualizarVentasTable();
             actualizarProveedoresTable();
+            actualizarGastosTable();
             poblarSelectsProveedor();
             actualizarDashboard();
+            actualizarDashboardGeneral();
             restaurarEstadoFormVenta(estado);
         }
     </script>

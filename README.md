@@ -39,12 +39,16 @@ La `anon key` de Supabase está embebida en el HTML (es pública por diseño). L
 
 - `sistema_compartido.html` — la app (frontend completo)
 - `supabase_setup.sql` — schema de las tablas (productos, ventas, proveedores)
+- `supabase_gastos.sql` — tabla de gastos generales + migración desde ventas
+- `supabase_gastos_limpieza.sql` — limpieza posterior a la migración de gastos
 - `catalogo.html` + `generar_catalogo.py` — generador de catálogo de productos en stock con imágenes de los proveedores
 - `recolorear.py` + `recolorear_remera_dryfit.py` — scripts para generar variantes de color de imágenes de productos
 
 ## Pestañas
 
-- **Dashboard** — resumen de ventas, stock, ganancia y balance de caja.
+- **Dashboard General** — ganancia de ropa menos gastos generales (resultado neto), resumen mensual, gastos por categoría y balance de caja.
+- **Dashboard Ropa** — solo compra/venta de ropa: ventas, stock, ganancia, inversión y visitas al catálogo.
 - **Productos** — alta y baja de productos. El proveedor se elige de un dropdown poblado con la tabla de proveedores.
 - **Ventas** — alta y baja de ventas. Hay un filtro por proveedor que limita los productos del buscador.
+- **Gastos** — gastos que no son compra/venta de ropa (ferias, publicidad, insumos, envíos). Requiere correr en Supabase, en orden: `supabase_gastos.sql` (crea la tabla, copia ahí las ventas "SIN PRODUCTO" negativas que en realidad eran gastos y las marca inactivas; los movimientos de DUEÑOS quedan como ventas) y, una vez verificado, `supabase_gastos_limpieza.sql` (borra esas ventas inactivas y la columna `activa`).
 - **Proveedores** — alta, modificación y baja. Si renombrás un proveedor, los productos asociados se actualizan automáticamente.
