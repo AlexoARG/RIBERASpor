@@ -504,11 +504,8 @@
                     </div>
                 </div>
                 <div class="card secondary">
-                    <h3>Stock Total</h3>
-                    <div class="value" id="stockTotal">0</div>
-                    <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
-                        💼 Inversión actual: <span id="inversionActual">$0</span>
-                    </div>
+                    <h3>Costo Total (Vendido)</h3>
+                    <div class="value" id="costoTotal">$0</div>
                 </div>
                 <div class="card danger">
                     <h3>Ganancia Neta</h3>
@@ -631,14 +628,12 @@
 
             <div class="card-grid">
                 <div class="card secondary">
-                    <h3>Costo Total (Vendido)</h3>
-                    <div class="value" id="costoTotal">$0</div>
-                </div>
-                <div class="card secondary">
                     <h3>Inversión Total Real</h3>
                     <div class="value" id="inversionTotalReal">$0</div>
                     <div style="font-size: 13px; margin-top: 8px; opacity: 0.9;">
                         Costo de todo el stock actual
+                        <div>📦 Items en stock: <span id="stockTotal">0</span></div>
+                        <div>💼 Inversión actual: <span id="inversionActual">$0</span></div>
                     </div>
                 </div>
                 <div class="card">
@@ -982,6 +977,7 @@
                         <option value="PUBLICIDAD">PUBLICIDAD</option>
                         <option value="INSUMOS">INSUMOS</option>
                         <option value="ENVÍOS">ENVÍOS</option>
+                        <option value="RETIRO">RETIRO</option>
                         <option value="OTROS">OTROS</option>
                     </select>
                     <input type="text" id="gastoConcepto" placeholder="Concepto (ej: FERIA HOPE 14-11)">
@@ -1012,6 +1008,7 @@
                         <option value="PUBLICIDAD">PUBLICIDAD</option>
                         <option value="INSUMOS">INSUMOS</option>
                         <option value="ENVÍOS">ENVÍOS</option>
+                        <option value="RETIRO">RETIRO</option>
                         <option value="OTROS">OTROS</option>
                     </select>
                     <button class="btn-small btn-danger" onclick="limpiarFiltroGastos()">Limpiar</button>
@@ -2753,7 +2750,6 @@
             const ingresos = datos.ventas.reduce((s, v) => s + v.valorFinal, 0);
             const ganancia = datos.ventas.reduce((s, v) => s + v.ganancia, 0);
             const costo = datos.ventas.reduce((s, v) => s + v.costoTotal, 0);
-            const stock = datos.productos.reduce((s, p) => s + p.stock, 0);
 
             const efectivo = datos.ventas
                 .filter(v => v.formaPago === 'EFECTIVO')
@@ -2762,6 +2758,7 @@
                 .filter(v => v.formaPago === 'TRANSFERENCIA')
                 .reduce((s, v) => s + v.valorFinal, 0);
 
+            const stock = datos.productos.reduce((s, p) => s + p.stock, 0);
             const inversionActual = datos.productos.reduce((s, p) => s + (p.costo * p.stock), 0);
             const inversionHistorica = inversionActual + costo;
 
@@ -2769,10 +2766,10 @@
             document.getElementById('totalEfectivo').textContent = formatMoney(efectivo);
             document.getElementById('totalTransferencia').textContent = formatMoney(transferencia);
             document.getElementById('gananciaNeta').textContent = formatMoney(ganancia);
-            document.getElementById('stockTotal').textContent = stock;
-            document.getElementById('inversionActual').textContent = formatMoney(inversionActual);
             document.getElementById('costoTotal').textContent = formatMoney(costo);
             document.getElementById('inversionTotalReal').textContent = formatMoney(inversionActual);
+            document.getElementById('stockTotal').textContent = stock;
+            document.getElementById('inversionActual').textContent = formatMoney(inversionActual);
             document.getElementById('inversionHistorica').textContent = formatMoney(inversionHistorica);
 
             renderUltimasVentas();
