@@ -843,7 +843,7 @@
         async function init(){
             try {
                 var [productos, proveedores] = await Promise.all([
-                    fetchJSON(SUPABASE_URL + '/rest/v1/productos?select=*&stock=gt.0'),
+                    fetchJSON(SUPABASE_URL + '/rest/v1/productos?select=nombre,color,talle,genero,precio,stock,imagen_url,proveedor_id&stock=gt.0'),
                     fetchJSON(SUPABASE_URL + '/rest/v1/proveedores?select=id,nombre')
                 ]);
 

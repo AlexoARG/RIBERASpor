@@ -15,7 +15,7 @@ Sistema web simple de control de stock y ventas. Datos en **PostgreSQL (Supabase
 
 ### 2. Usar el sistema localmente
 
-Doble click en `sistema_compartido.html` — se abre en el navegador y funciona directo (los datos viven en Supabase, no hace falta server local).
+Con el login con Google activado (ver "Acceso con Google"), el sistema se usa desde la URL de GitHub Pages. Abrirlo con doble click ya no sirve porque Google no puede volver a un archivo local.
 
 ### 3. Subir a GitHub + GitHub Pages (acceso desde cualquier lado)
 
@@ -31,9 +31,34 @@ Doble click en `sistema_compartido.html` — se abre en el navegador y funciona 
 
 Listo, accedés desde cualquier dispositivo.
 
-## Sobre la seguridad
+## Acceso con Google (seguridad)
 
-La `anon key` de Supabase está embebida en el HTML (es pública por diseño). Las **policies de RLS** definidas en `supabase_setup.sql` actualmente permiten lectura y escritura a cualquiera con la key. Para un sistema interno chico esto está bien, pero significa que **cualquiera con la URL del HTML puede leer y modificar los datos**. Si más adelante querés restringirlo, hay que agregar autenticación (Supabase Auth con email/password).
+El sistema pide login con Google y solo entran los emails cargados en la tabla `usuarios_permitidos`. La restricción está en la base (RLS), no solo en la pantalla: aunque alguien tenga la URL y la key pública, no puede leer ni modificar productos, ventas, proveedores ni gastos. El catálogo público sigue funcionando (ve productos con stock sin el costo, nombres de proveedores, y registra visitas).
+
+> El login con Google no funciona abriendo el HTML con doble click (`file://`): hay que entrar por la URL de GitHub Pages.
+
+Pasos, **en este orden**:
+
+1. **Google Cloud** ([console.cloud.google.com](https://console.cloud.google.com)):
+   - Crear un proyecto → **APIs y servicios** → **Pantalla de consentimiento de OAuth** → tipo *Externo*, completar nombre y email.
+   - **Credenciales** → **Crear credenciales** → **ID de cliente de OAuth** → tipo *Aplicación web*.
+   - En **URIs de redireccionamiento autorizados** poner: `https://bovuhrcqrhhrbmktmnkj.supabase.co/auth/v1/callback`
+   - Copiar el *Client ID* y el *Client Secret*.
+2. **Supabase** → **Authentication**:
+   - **Sign In / Providers** → **Google** → activarlo y pegar Client ID y Client Secret.
+   - **Sign In / Providers** → desactivar **Email** (para que nadie pueda registrarse con email/contraseña).
+   - **URL Configuration** → *Site URL*: `https://TU-USUARIO.github.io/TU-REPO/sistema_compartido.html` (y agregarla también en *Redirect URLs*).
+3. Publicar en GitHub Pages la versión nueva de `sistema_compartido.html` y `catalogo.html` (push a `main`).
+4. Editar en `supabase_auth.sql` los dos emails autorizados y correrlo en el **SQL Editor**.
+
+Para agregar o quitar a alguien después, en el SQL Editor:
+
+```sql
+insert into usuarios_permitidos (email) values ('alguien@gmail.com');
+delete from usuarios_permitidos where email = 'alguien@gmail.com';
+```
+
+Si alguien no autorizado entra con Google, el sistema le muestra "no tiene acceso" y lo desloguea. Su usuario queda creado en Supabase (Authentication → Users) pero no puede ver ningún dato. Si querés, podés borrarlo desde ahí.
 
 ## Estructura
 
@@ -41,6 +66,7 @@ La `anon key` de Supabase está embebida en el HTML (es pública por diseño). L
 - `supabase_setup.sql` — schema de las tablas (productos, ventas, proveedores)
 - `supabase_gastos.sql` — tabla de gastos generales + migración desde ventas
 - `supabase_gastos_limpieza.sql` — limpieza posterior a la migración de gastos
+- `supabase_auth.sql` — acceso restringido: usuarios autorizados y policies de RLS
 - `catalogo.html` + `generar_catalogo.py` — generador de catálogo de productos en stock con imágenes de los proveedores
 - `recolorear.py` + `recolorear_remera_dryfit.py` — scripts para generar variantes de color de imágenes de productos
 
